@@ -40,8 +40,8 @@ struct KeywordName_t {
   configKeyword_e m_Keyword;
 };
 
-typedef bool (*procptr_t)(const char *pPropertyName);
-typedef bool (*GetSymbolProc_t)(const char *pKey);
+using procptr_t = bool (*)(const char *pPropertyName);
+using GetSymbolProc_t = bool (*)(const char *pKey);
 
 #define INVALID_INDEX -1
 
@@ -96,24 +96,24 @@ struct macro_t {
   bool m_bInternalCreatedMacro;
 };
 
-typedef intp scriptIndex_t;
+using scriptIndex_t = intp;
 struct script_t {
   CUtlString name;
   CUtlString m_condition;
 };
 
-typedef intp projectIndex_t;
+using projectIndex_t = intp;
 struct project_t {
   CUtlString name;
   CUtlVector<script_t> scripts;
 };
 
-typedef intp groupIndex_t;
+using groupIndex_t = intp;
 struct group_t {
   CUtlVector<projectIndex_t> projects;
 };
 
-typedef intp groupTagIndex_t;
+using groupTagIndex_t = intp;
 struct groupTag_t {
   groupTag_t() { bSameAsProject = false; }
 
@@ -131,8 +131,7 @@ struct scriptList_t {
   CRC32_t m_crc;
 };
 
-class IProjectIterator {
- public:
+struct IProjectIterator {
   // iProject indexes g_projectList.
   virtual bool VisitProject(projectIndex_t iProject,
                             const char *szScriptPath) = 0;
@@ -509,7 +508,6 @@ struct folderConfig_t {
 void VPC_Keyword_FolderConfiguration(folderConfig_t *pFolderConfig);
 void VPC_ApplyFolderConfigurationToFile(const folderConfig_t &folderConfig);
 
-extern void VPC_Config_SpewProperties(configKeyword_e keyword);
 extern bool VPC_Config_IgnoreOption(const char *pPropertyName);
 
 extern void VPC_FakeKeyword_SchemaFolder(

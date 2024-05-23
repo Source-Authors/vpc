@@ -1437,7 +1437,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
               sInputFile.SetLength(MAX_PATH);
 
               int cCommand =
-                  MAX(sCustomBuildCommandLine.Length() * 2, 8 * 1024);
+                  MAX((int)sCustomBuildCommandLine.Length() * 2, 8 * 1024);
               sCommand.SetLength(cCommand);
 
               Write("\n");
@@ -1567,8 +1567,8 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
             const char *file_name =
                 g_vecPGenerators[iGenerator]->m_Files[i]->m_Filename.String();
 
-            V_snprintf(
-                rgchFilePath, sizeof(rgchFilePath), "%s/%s", rgchProjectDir, file_name);
+            V_snprintf(rgchFilePath, sizeof(rgchFilePath), "%s/%s",
+                       rgchProjectDir, file_name);
             V_RemoveDotSlashes(rgchFilePath);
 
             const char *pFileName = V_UnqualifiedFileName(file_name);
@@ -2197,7 +2197,8 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
                   ->GetOption(g_pOption_PreBuildEventCommandLine);
           if (sPreBuildCommandLine.Length()) {
             CUtlString sCommand;
-            int cCommand = MAX(sPreBuildCommandLine.Length() * 2, 8 * 1024);
+            int cCommand =
+                MAX((int)sPreBuildCommandLine.Length() * 2, 8 * 1024);
             sCommand.SetLength(cCommand);
 
             Write("\n");
@@ -2274,7 +2275,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
               sInputFile.SetLength(MAX_PATH);
 
               int cCommand =
-                  MAX(sCustomBuildCommandLine.Length() * 2, 8 * 1024);
+                  MAX((int)sCustomBuildCommandLine.Length() * 2, 8 * 1024);
               sCommand.SetLength(cCommand);
 
               Write("\n");
@@ -2330,7 +2331,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
 
                 CUtlString sDescription;
                 if (pFileSpecificData->GetOption(g_pOption_Description)) {
-                  intp cDescription = V_strlen(pFileSpecificData->GetOption(
+                  int cDescription = (int)V_strlen(pFileSpecificData->GetOption(
                                          g_pOption_Description)) *
                                      2;
                   sDescription.SetLength(cDescription);

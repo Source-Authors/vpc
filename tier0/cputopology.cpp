@@ -503,6 +503,8 @@ class CpuidImpl : public ICpuTopology {
   CpuidImpl() : m_nItems(0) {
     _ASSERT(IsSupported());
 
+    memset(m_apicIds, 0, sizeof(m_apicIds));
+
     DWORD nLogProcsPerPkg = 1;
     DWORD nCoresPerPkg = 1;
 

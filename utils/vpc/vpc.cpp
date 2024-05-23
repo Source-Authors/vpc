@@ -816,18 +816,6 @@ void CVPC::SpewUsage(void) {
     }
   }
 
-#if 0
-#if defined(_WIN32)
-	if ( m_bSpewProperties )
-	{
-		for ( int i = 0; i < KEYWORD_MAX; i++ )
-		{
-			VPC_Config_SpewProperties( (configKeyword_e)i );
-		}
-	}
-#endif
-#endif
-
   if (m_BuildCommands.Count()) {
     // spew details about each command
     Log_Msg(LOG_VPC, "\nUser Build Commands:\n");

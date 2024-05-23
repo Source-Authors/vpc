@@ -302,22 +302,32 @@ bool CCountedStringPool::SaveToBuffer(CUtlBuffer &buffer) {
     return true;
   }
 
+  if (m_HashTable.Count() > std::numeric_limits<int>::max()) {
+    // OVerflow int32_t.
+    return false;
+  }
+
+  if (m_Elements.Count() > std::numeric_limits<int>::max()) {
+    // OVerflow int32_t.
+    return false;
+  }
+
   // signature/version
   buffer.PutInt(STRING_POOL_VERSION);
 
   buffer.PutUnsignedShort(m_FreeListStart);
 
-  buffer.PutInt(m_HashTable.Count());
-  for (intp i = 0; i < m_HashTable.Count(); i++) {
-    buffer.PutUnsignedShort(m_HashTable[i]);
+  buffer.PutInt((int)m_HashTable.Count());
+  for (auto &&h : m_HashTable) {
+    buffer.PutUnsignedShort(h);
   }
 
-  buffer.PutInt(m_Elements.Count());
-  for (intp i = 1; i < m_Elements.Count(); i++) {
-    buffer.PutUnsignedShort(m_Elements[i].nNextElement);
-    buffer.PutUnsignedChar(m_Elements[i].nReferenceCount);
+  buffer.PutInt((int)m_Elements.Count());
+  for (auto &&e : m_Elements) {
+    buffer.PutUnsignedShort(e.nNextElement);
+    buffer.PutUnsignedChar(e.nReferenceCount);
 
-    const char *pString = m_Elements[i].pString;
+    const char *pString = e.pString;
     Assert(pString);
 
     if (strlen(pString) >= MAX_STRING_SAVE) {

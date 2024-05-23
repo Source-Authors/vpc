@@ -258,8 +258,14 @@ CUtlSymbol CUtlSymbolTable::AddString(const char *pString) {
   if (id.IsValid()) return id;
 
   intp lenString = V_strlen(pString) + 1;  // length of just the string
-  intp lenDecorated =
-      lenString + sizeof(hashDecoration_t);  // and with its hash decoration
+  if (lenString >=
+      (intp)std::numeric_limits<int>::max() -
+          (int)MAX(sizeof(hashDecoration_t), sizeof(StringPool_t))) {
+    // overflow.
+    return CUtlSymbol(UTL_INVAL_SYMBOL);
+  }
+  // and with its hash decoration
+  int lenDecorated = (int)lenString + (int)sizeof(hashDecoration_t);
   // make sure that all strings are aligned on 2-byte boundaries so the hashes
   // will read correctly
   static_assert(sizeof(hashDecoration_t) == 2);
@@ -270,8 +276,8 @@ CUtlSymbol CUtlSymbolTable::AddString(const char *pString) {
   intp iPool = FindPoolWithSpace(lenDecorated);
   if (iPool == -1) {
     // Add a new pool.
-    intp newPoolSize =
-        MAX(lenDecorated + sizeof(StringPool_t), MIN_STRING_POOL_SIZE);
+    int newPoolSize =
+        MAX(lenDecorated + (int)sizeof(StringPool_t), MIN_STRING_POOL_SIZE);
     StringPool_t *pPool = (StringPool_t *)malloc(newPoolSize);
     pPool->m_TotalLen = newPoolSize - sizeof(StringPool_t);
     pPool->m_SpaceUsed = 0;
