@@ -211,6 +211,7 @@
     <ClInclude Include="tier0\tier0_strtools.h" />
     <ClInclude Include="tier0\ValveETWProviderEvents.h" />
     <ClInclude Include="utils\vpccrccheck\crccheck_shared.h" />
+    <ClInclude Include="utils\vpc\app_version_config.h" />
     <ClInclude Include="utils\vpc\baseprojectdatacollector.h" />
     <ClInclude Include="utils\vpc\dependencies.h" />
     <ClInclude Include="utils\vpc\generatordefinition.h" />
@@ -218,6 +219,7 @@
     <ClInclude Include="utils\vpc\ibasesolutiongenerator.h" />
     <ClInclude Include="utils\vpc\memory_reservation_x64.h" />
     <ClInclude Include="utils\vpc\p4sln.h" />
+    <ClInclude Include="utils\vpc\product_version_config.h" />
     <ClInclude Include="utils\vpc\projectgenerator_codelite.h" />
     <ClInclude Include="utils\vpc\projectgenerator_ps3.h" />
     <ClInclude Include="utils\vpc\projectgenerator_vcproj.h" />
@@ -225,6 +227,7 @@
     <ClInclude Include="utils\vpc\projectgenerator_win32_2010.h" />
     <ClInclude Include="utils\vpc\projectgenerator_xbox360.h" />
     <ClInclude Include="utils\vpc\projectgenerator_xbox360_2010.h" />
+    <ClInclude Include="utils\vpc\resource.h" />
     <ClInclude Include="utils\vpc\scriptsource.h" />
     <ClInclude Include="utils\vpc\sys_utils.h" />
     <ClInclude Include="utils\vpc\vpc.h" />
@@ -233,6 +236,12 @@
   <ItemGroup>
     <None Include=".clang-format" />
     <None Include="public\tier0\threadtools.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="utils\vpc\windows_vpc.rc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SRC_PRODUCT_INTERNAL_NAME_STRING=\"$(TargetName)\";SRC_PRODUCT_ORIGINAL_NAME_STRING=\"$(TargetFileName)\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SRC_PRODUCT_INTERNAL_NAME_STRING=\"$(TargetName)\";SRC_PRODUCT_ORIGINAL_NAME_STRING=\"$(TargetFileName)\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -279,7 +288,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NO_PERFORCE;STANDALONE_VPC;STATIC_TIER0;STATIC_VSTDLIB;COMPILER_MSVC;_CRT_SECURE_NO_WARNINGS;COMPILER_MSVC64;PLATFORM_64BITS;X64BITS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_PERFORCE;STANDALONE_VPC;STATIC_TIER0;STATIC_VSTDLIB;COMPILER_MSVC;_CRT_SECURE_NO_WARNINGS;COMPILER_MSVC64;PLATFORM_64BITS;X64BITS;SRC_PRODUCT_INTERNAL_NAME_STRING=\"$(TargetName)\";SRC_PRODUCT_ORIGINAL_NAME_STRING=\"$(TargetFileName)\";_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>public;public\tier0;public\tier1;public\tier2;public\vstdlib</AdditionalIncludeDirectories>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
@@ -301,6 +310,9 @@
       <IgnoreSpecificDefaultLibraries>libc;libcd;libcmt;libcpmt;libcpmt1</IgnoreSpecificDefaultLibraries>
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG</PreprocessorDefinitions>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -308,7 +320,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NO_PERFORCE;STANDALONE_VPC;STATIC_TIER0;STATIC_VSTDLIB;COMPILER_MSVC;_CRT_SECURE_NO_WARNINGS;COMPILER_MSVC64;PLATFORM_64BITS;X64BITS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_PERFORCE;STANDALONE_VPC;STATIC_TIER0;STATIC_VSTDLIB;COMPILER_MSVC;_CRT_SECURE_NO_WARNINGS;COMPILER_MSVC64;PLATFORM_64BITS;X64BITS;SRC_PRODUCT_INTERNAL_NAME_STRING=\"$(TargetName)\";SRC_PRODUCT_ORIGINAL_NAME_STRING=\"$(TargetFileName)\";NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>public;public\tier0;public\tier1;public\tier2;public\vstdlib</AdditionalIncludeDirectories>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>

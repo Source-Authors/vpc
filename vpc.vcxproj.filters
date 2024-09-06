@@ -692,11 +692,25 @@
     <ClInclude Include="utils\vpc\memory_reservation_x64.h">
       <Filter>Header Files\public</Filter>
     </ClInclude>
+    <ClInclude Include="utils\vpc\app_version_config.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\vpc\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\vpc\product_version_config.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="public\tier0\threadtools.inl">
       <Filter>Header Files\public\tier0</Filter>
     </None>
     <None Include=".clang-format" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="utils\vpc\windows_vpc.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
