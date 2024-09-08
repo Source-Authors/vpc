@@ -252,9 +252,10 @@ inline UtlHashHandle_t CUtlHash<Data, C, K>::Insert(Data const &src,
   }
 
   *pDidInsert = true;
-  ndxKeyData = m_Buckets[ndxBucket].AddToTail(src);
+  intp ndxKeyData2 = m_Buckets[ndxBucket].AddToTail(src);
+  Assert(ndxKeyData2 < 65536);
 
-  return (BuildHandle(ndxBucket, ndxKeyData));
+  return (BuildHandle(ndxBucket, static_cast<int>(ndxKeyData2)));
 }
 
 //-----------------------------------------------------------------------------
@@ -1005,7 +1006,7 @@ class CUtlScalarHash {
   //	void Purge( void );
 
   // Invalid handle.
-  static const UtlHashFastHandle_t InvalidHandle(void) {
+  static constexpr UtlHashFastHandle_t InvalidHandle(void) {
     return (unsigned int)~0;
   }
 

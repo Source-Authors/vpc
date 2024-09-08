@@ -1304,7 +1304,7 @@ const wchar_t *KeyValues::GetWString(const char *keyName,
         intp bufSize = V_strlen(dat->m_sValue) + 1;
         wchar_t *pWBuf = new wchar_t[bufSize];
         int result =
-            V_UTF8ToUnicode(dat->m_sValue, pWBuf, bufSize * sizeof(wchar_t));
+            V_UTF8ToUnicode(dat->m_sValue, pWBuf, bufSize * static_cast<intp>(sizeof(wchar_t)));
         if (result >= 0)  // may be a zero length string
         {
           SetWString(keyName, pWBuf);

@@ -32,8 +32,10 @@ class DummyInitL10N {
 
 // Purpose: Converts a UTF8 string into a unicode string
 int V_UTF8ToUnicode(const char *pUTF8, wchar_t *pwchDest,
-                    int cubDestSizeInBytes) {
+                    intp cubDestSizeInBytes) {
   if (!pUTF8) return 0;
+
+  Assert(cubDestSizeInBytes <= INT_MAX / 2);
 
   AssertValidStringPtr(pUTF8);
   AssertValidWritePtr(pwchDest);
@@ -42,7 +44,7 @@ int V_UTF8ToUnicode(const char *pUTF8, wchar_t *pwchDest,
 
 #ifdef _WIN32
   int cchResult = MultiByteToWideChar(CP_UTF8, 0, pUTF8, -1, pwchDest,
-                                      cubDestSizeInBytes / sizeof(wchar_t));
+                                      static_cast<int>(cubDestSizeInBytes) / static_cast<int>(sizeof(wchar_t)));
 #elif defined(_PS3)
   size_t cchResult = cubDestSizeInBytes / sizeof(uint16),
          cchSrc = V_strlen(pUTF8) + 1;

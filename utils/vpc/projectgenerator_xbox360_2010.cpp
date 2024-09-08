@@ -375,7 +375,7 @@ bool CProjectGenerator_Xbox360_2010::WriteFolderToSecondaryXML(
   V_memset(&ctx, 0, sizeof(ctx));
   V_memset(digest, 0, sizeof(digest));
   MD5Init(&ctx);
-  MD5Update(&ctx, (unsigned char *)parentPath.Get(), V_strlen(parentPath.Get()));
+  MD5Update(&ctx, (unsigned char *)parentPath.Get(), strlen(parentPath.Get()));
   MD5Final(digest, &ctx);
 
   char szMD5[64];

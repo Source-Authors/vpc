@@ -704,7 +704,7 @@ void V_strncpy(char *pDest, char const *pSrc, intp maxLen) {
 
   DEBUG_LINK_CHECK;
 
-  strncpy(pDest, pSrc, maxLen); //-V781
+  strncpy(pDest, pSrc, maxLen);  //-V781
   if (maxLen > 0) {
     pDest[maxLen - 1] = '\0';
   }
@@ -749,8 +749,8 @@ int V_snwprintf(wchar_t *pDest, int maxLenInNumWideCharacters,
   return len;
 }
 
-int V_snprintf(char *pDest, int maxLen,
-               PRINTF_FORMAT_STRING char const *pFormat, ...) {
+intp V_snprintf(char *pDest, intp maxLen,
+                PRINTF_FORMAT_STRING char const *pFormat, ...) {
   Assert(maxLen >= 0);
   AssertValidStringPtr(pFormat);
 
@@ -758,9 +758,9 @@ int V_snprintf(char *pDest, int maxLen,
 
   va_start(marker, pFormat);
 #ifdef _WIN32
-  int len = _vsnprintf(pDest, maxLen, pFormat, marker);
+  intp len = _vsnprintf(pDest, maxLen, pFormat, marker);
 #elif POSIX
-  int len = vsnprintf(pDest, maxLen, pFormat, marker);
+  intp len = vsnprintf(pDest, maxLen, pFormat, marker);
 #else
 #error "define vsnprintf type."
 #endif

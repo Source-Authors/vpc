@@ -241,14 +241,14 @@ inline bool V_isspace(int c) {
 //
 // This means the last parameter can usually be a sizeof() of a string.
 void V_strncpy(char *pDest, const char *pSrc, intp maxLen);
-int V_snprintf(char *pDest, int destLen,
-               PRINTF_FORMAT_STRING const char *pFormat, ...)
+intp V_snprintf(char *pDest, intp destLen,
+                PRINTF_FORMAT_STRING const char *pFormat, ...)
     FMTFUNCTION(3, 4);
 void V_wcsncpy(wchar_t *pDest, wchar_t const *pSrc, intp maxLenInBytes);
 int V_snwprintf(wchar_t *pDest, int maxLenInNumWideCharacters,
                 PRINTF_FORMAT_STRING const wchar_t *pFormat, ...);
 
-#define COPY_ALL_CHARACTERS (intp)-1
+#define COPY_ALL_CHARACTERS static_cast<intp>(-1)
 char *V_strncat(char *, const char *, size_t maxLenInBytes,
                 intp max_chars_to_copy = COPY_ALL_CHARACTERS);
 wchar_t *V_wcsncat(wchar_t *, const wchar_t *, size_t maxLenInBytes,
@@ -315,7 +315,8 @@ char *V_pretifynum(int64 value);
 // char buffer[ 9 ];
 // V_binarytohex( &output, sizeof( output ), buffer, sizeof( buffer ) );
 // would put "ffffffff" into buffer (note null terminator!!!)
-void V_hextobinary(char const *in, intp numchars, byte *out, intp maxoutputbytes);
+void V_hextobinary(char const *in, intp numchars, byte *out,
+                   intp maxoutputbytes);
 void V_binarytohex(const byte *in, intp inputbytes, char *out, intp outsize);
 
 // Tools for working with filenames
@@ -470,7 +471,7 @@ void V_TranslateLineFeedsToUnix(char *pStr);
 
 // returns -1 if no match, nDefault if pName==prefix, and N if pName==prefix+N
 inline intp V_IndexAfterPrefix(const char *pName, const char *prefix,
-                              intp nDefault = 0) {
+                               intp nDefault = 0) {
   if (!pName || !prefix) return -1;
 
   const char *pIndexStr = StringAfterPrefix(pName, prefix);
@@ -485,7 +486,7 @@ inline intp V_IndexAfterPrefix(const char *pName, const char *prefix,
 // found
 template <class NameArray>
 intp V_GenerateUniqueNameIndex(const char *prefix, const NameArray &nameArray,
-                              intp startindex = 0) {
+                               intp startindex = 0) {
   if (!prefix) return 0;
 
   intp freeindex = startindex;

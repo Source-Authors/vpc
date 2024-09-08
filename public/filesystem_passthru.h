@@ -27,10 +27,10 @@ class CInternalFileSystemPassThru : public Base {
   virtual void InitPassThru(IBaseFileSystem *pBaseFileSystemPassThru) {
     m_pBaseFileSystemPassThru = pBaseFileSystemPassThru;
   }
-  virtual int Read(void *pOutput, int size, FileHandle_t file) {
+  virtual intp Read(void *pOutput, intp size, FileHandle_t file) {
     return m_pBaseFileSystemPassThru->Read(pOutput, size, file);
   }
-  virtual int Write(void const *pInput, int size, FileHandle_t file) {
+  virtual intp Write(void const *pInput, intp size, FileHandle_t file) {
     return m_pBaseFileSystemPassThru->Write(pInput, size, file);
   }
   virtual FileHandle_t Open(const char *pFileName, const char *pOptions,

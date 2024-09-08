@@ -404,8 +404,8 @@ class CUnverifiedCRCFile {
 
 abstract_class IBaseFileSystem {
  public:
-  virtual int Read(void *pOutput, int size, FileHandle_t file) = 0;
-  virtual int Write(void const *pInput, int size, FileHandle_t file) = 0;
+  virtual intp Read(void *pOutput, intp size, FileHandle_t file) = 0;
+  virtual intp Write(void const *pInput, intp size, FileHandle_t file) = 0;
 
   // if pathID is NULL, all paths will be searched for the file
   virtual FileHandle_t Open(const char *pFileName, const char *pOptions,

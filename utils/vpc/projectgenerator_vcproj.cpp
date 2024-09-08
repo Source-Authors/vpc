@@ -978,7 +978,7 @@ void CVCProjGenerator::SetGUID(const char *pOutputFilename) {
   V_memset(&ctx, 0, sizeof(ctx));
   V_memset(digest, 0, sizeof(digest));
   MD5Init(&ctx);
-  MD5Update(&ctx, (unsigned char *)szBasename, V_strlen(szBasename));
+  MD5Update(&ctx, (unsigned char *)szBasename, strlen(szBasename));
   MD5Final(digest, &ctx);
 
   char szMD5[64];

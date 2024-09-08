@@ -132,7 +132,7 @@ class CKeyValuesSystem : public IKeyValuesSystem {
   int CaseInsensitiveHash(const char *string, intp iBounds);
 
   struct MemoryLeakTracker_t {
-    int nameIndex;
+    intp nameIndex;
     void *pMem;
   };
   static bool MemoryLeakTrackerLessFunc(const MemoryLeakTracker_t &lhs,

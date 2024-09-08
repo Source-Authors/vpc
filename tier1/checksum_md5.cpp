@@ -144,12 +144,14 @@ void MD5Init(MD5Context_t *ctx) {
 //			*buf -
 //			len -
 //-----------------------------------------------------------------------------
-void MD5Update(MD5Context_t *ctx, unsigned char const *buf, size_t len) {
-  unsigned int t;
-
+void MD5Update(MD5Context_t *ctx, unsigned char const *buf, size_t len_in) {
   /* Update bitcount */
 
-  t = ctx->bits[0];
+  Assert(len_in <= UINT_MAX);
+
+  unsigned len = static_cast<unsigned>(len_in);
+
+  unsigned t = ctx->bits[0];
   if ((ctx->bits[0] = t + (len << 3)) < t)
     ctx->bits[1]++; /* Carry from low to high */
   ctx->bits[1] += len >> 29;
@@ -159,7 +161,7 @@ void MD5Update(MD5Context_t *ctx, unsigned char const *buf, size_t len) {
   /* Handle any leading odd-sized chunks */
 
   if (t) {
-    unsigned char *p = (unsigned char *)ctx->in + t;
+    unsigned char *p = ctx->in + t;
 
     t = 64 - t;
     if (len < t) {
@@ -263,7 +265,8 @@ char *MD5_Print(unsigned char *hash, int hashlen) {
 unsigned int MD5_PseudoRandom(unsigned int nSeed) {
   nSeed = LittleDWord(nSeed);
   MD5Context_t ctx;
-  alignas(unsigned int) unsigned char digest[MD5_DIGEST_LENGTH];  // The MD5 Hash
+  alignas(
+      unsigned int) unsigned char digest[MD5_DIGEST_LENGTH];  // The MD5 Hash
 
   memset(&ctx, 0, sizeof(ctx));
 

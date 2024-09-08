@@ -6,7 +6,7 @@
 #include "vstdlib/vstdlib.h"
 
 // handle to a KeyValues key name symbol
-using HKeySymbol = int;
+using HKeySymbol = intp;
 
 #define INVALID_KEY_SYMBOL (-1)
 
