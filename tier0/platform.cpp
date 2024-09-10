@@ -397,7 +397,7 @@ PLATFORM_INTERFACE const char *Plat_GetCommandLineA() {
 //-----------------------------------------------------------------------------
 #ifdef PLATFORM_WINDOWS
 
-void *Plat_GetProcAddress(const char *pszModule, const char *pszName) {
+Proc Plat_GetProcAddress(const char *pszModule, const char *pszName) {
   HMODULE hModule = ::LoadLibrary(pszModule);
   return (hModule) ? ::GetProcAddress(hModule, pszName) : NULL;
 }

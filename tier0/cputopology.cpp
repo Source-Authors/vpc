@@ -87,14 +87,11 @@ class GlpiImpl : public ICpuTopology {
   GlpiImpl() : m_pSlpi(NULL), m_nItems(0) {
     _ASSERT(IsSupported());
 
-    GlpiFnPtr pGlpi = GetGlpiFn_();
-    _ASSERT(pGlpi);
-
     DWORD cbBuffer = 0;
-    pGlpi(0, &cbBuffer);
+    GetLogicalProcessorInformation(0, &cbBuffer);
 
     m_pSlpi = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)malloc(cbBuffer);
-    pGlpi(m_pSlpi, &cbBuffer);
+    GetLogicalProcessorInformation(m_pSlpi, &cbBuffer);
     m_nItems = cbBuffer / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
   }
 
@@ -168,77 +165,9 @@ class GlpiImpl : public ICpuTopology {
   //-----------------------------------------------------------------------------
   // Name: GlpiImpl::IsSupported
   //-----------------------------------------------------------------------------
-  static BOOL IsSupported() { return NULL != GetGlpiFn_(); }
+  static BOOL IsSupported() { return TRUE; }
 
  private:
-  // GetLogicalProcessorInformation function pointer
-  typedef BOOL(WINAPI* GlpiFnPtr)(SYSTEM_LOGICAL_PROCESSOR_INFORMATION*,
-                                  PDWORD);
-
-  //-----------------------------------------------------------------------------
-  // Name: GlpiImpl::VerifyGlpiFn_
-  // Desc: Gets a pointer to the GetLogicalProcessorInformation function only if
-  //       it is supported on the current platform.
-  //       GetLogicalProcessorInformation is supported on Windows Server 2003
-  //       and XP64, however there is a bug with the implementation.  Therefore,
-  //       only GetLogicalProcessorInformation on Windows Vista is supported in
-  //       this sample.
-  //-----------------------------------------------------------------------------
-  static GlpiFnPtr VerifyGlpiFn_() {
-    // VerifyVersionInfo function pointer
-    typedef BOOL(WINAPI * VviFnPtr)(LPOSVERSIONINFOEX, DWORD, DWORDLONG);
-
-    HMODULE hMod = GetModuleHandle(TEXT("kernel32"));
-#ifdef _UNICODE
-    VviFnPtr pVvi = (VviFnPtr)GetProcAddress(hMod, "VerifyVersionInfoW");
-#else
-    VviFnPtr pVvi = (VviFnPtr)GetProcAddress(hMod, "VerifyVersionInfoA");
-#endif
-    GlpiFnPtr pGlpi = NULL;
-
-    if (pVvi) {
-      // VerSetConditionMask function pointer
-      typedef ULONGLONG(WINAPI * VscmFnPtr)(ULONGLONG, DWORD, BYTE);
-
-      VscmFnPtr pVscm = (VscmFnPtr)GetProcAddress(hMod, "VerSetConditionMask");
-
-      _ASSERT(pVscm);
-
-      // Check for Windows Vista
-      OSVERSIONINFOEX osvi = {sizeof(OSVERSIONINFOEX)};
-      osvi.dwMajorVersion = 6;
-      osvi.dwMinorVersion = 0;
-      osvi.wServicePackMajor = 0;
-      osvi.wServicePackMinor = 0;
-
-      ULONGLONG dwlMask = 0;
-      dwlMask = pVscm(dwlMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
-      dwlMask = pVscm(dwlMask, VER_MINORVERSION, VER_GREATER_EQUAL);
-      dwlMask = pVscm(dwlMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-      dwlMask = pVscm(dwlMask, VER_SERVICEPACKMINOR, VER_GREATER_EQUAL);
-
-      if (pVvi(&osvi,
-               VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR |
-                   VER_SERVICEPACKMINOR,
-               dwlMask)) {
-        pGlpi =
-            (GlpiFnPtr)GetProcAddress(hMod, "GetLogicalProcessorInformation");
-        _ASSERT(pGlpi);
-      }
-    }
-
-    return pGlpi;
-  }
-
-  //-----------------------------------------------------------------------------
-  // Name: GlpiImpl::GetGlpiFn_
-  // Desc: Gets a cached pointer to the GetLogicalProcessorInformation function.
-  //-----------------------------------------------------------------------------
-  static GlpiFnPtr GetGlpiFn_() {
-    static GlpiFnPtr pGlpi = VerifyGlpiFn_();
-    return pGlpi;
-  }
-
   // Private Members
   SYSTEM_LOGICAL_PROCESSOR_INFORMATION* m_pSlpi;
   DWORD m_nItems;

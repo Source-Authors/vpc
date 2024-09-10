@@ -130,33 +130,33 @@ void *GetModuleHandle(const char *name) {
 // Input  : pModuleName - module name
 //			*pName - proc name
 //-----------------------------------------------------------------------------
-static void *Sys_GetProcAddress(const char *pModuleName, const char *pName) {
+static Proc Sys_GetProcAddress(const char *pModuleName, const char *pName) {
 #if defined(_PS3)
   Assert(!"Unsupported, use HMODULE");
   return NULL;
 #else  // !_PS3
   HMODULE hModule = (HMODULE)GetModuleHandle(pModuleName);
 #if defined(WIN32)
-  return (void *)GetProcAddress(hModule, pName);
+  return GetProcAddress(hModule, pName);
 #else   // !WIN32
-  return (void *)dlsym((void *)hModule, pName);
+  return (proc)dlsym((void *)hModule, pName);
 #endif  // WIN32
 #endif  // _PS3
 }
 
-static void *Sys_GetProcAddress(HMODULE hModule, const char *pName) {
+static Proc Sys_GetProcAddress(HMODULE hModule, const char *pName) {
 #if defined(WIN32)
-  return (void *)GetProcAddress(hModule, pName);
+  return GetProcAddress(hModule, pName);
 #elif defined(_PS3)
   PS3_LoadAppSystemInterface_Parameters_t *pPRX =
       reinterpret_cast<PS3_LoadAppSystemInterface_Parameters_t *>(hModule);
   if (!pPRX) return NULL;
   if (!strcmp(pName, CREATEINTERFACE_PROCNAME))
-    return reinterpret_cast<void *>(pPRX->pfnCreateInterface);
+    return reinterpret_cast<Proc>(pPRX->pfnCreateInterface);
   Assert(!"Unknown PRX function requested!");
   return NULL;
 #else
-  return (void *)dlsym((void *)hModule, pName);
+  return (Proc)dlsym((void *)hModule, pName);
 #endif
 }
 
@@ -341,7 +341,7 @@ static bool s_bRunningWithDebugModules = false;
 // if any debug modules were loaded
 //-----------------------------------------------------------------------------
 static void DebugKernelMemoryObjectName(char *pszNameBuffer) {
-  sprintf(pszNameBuffer, "VALVE-MODULE-DEBUG-%08X", GetCurrentProcessId());
+  sprintf(pszNameBuffer, "VALVE-MODULE-DEBUG-%08lX", GetCurrentProcessId());
 }
 #endif
 
@@ -551,7 +551,7 @@ CreateInterfaceFn Sys_GetFactoryThis(void) { return &CreateInterfaceInternal; }
 //-----------------------------------------------------------------------------
 CreateInterfaceFn Sys_GetFactory(const char *pModuleName) {
 #ifdef _WIN32
-  return static_cast<CreateInterfaceFn>(
+  return reinterpret_cast<CreateInterfaceFn>(
       Sys_GetProcAddress(pModuleName, CREATEINTERFACE_PROCNAME));
 #elif defined(_PS3)
   Assert(0);
