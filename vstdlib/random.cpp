@@ -20,7 +20,7 @@
 
 // fran1 -- return a random floating-point number on the interval [0,1)
 //
-#define AM (1.0F / IM)
+#define AM (1.0F / static_cast<float>(IM))
 #define EPS 1.2e-7F
 #define RNMX (1.0F - EPS)
 

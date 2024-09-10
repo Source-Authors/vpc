@@ -275,15 +275,12 @@ HKeySymbol CKeyValuesSystem::GetSymbolForString(const char *name,
   MEM_ALLOC_CREDIT();
 
   int hash = CaseInsensitiveHash(name, m_HashTable.Count());
-  int i = 0;
   hash_item_t *item = &m_HashTable[hash];
 
   while (true) {
     if (!stricmp(name, (char *)m_Strings.GetBase() + item->stringIndex)) {
       return (HKeySymbol)item->stringIndex;
     }
-
-    i++;
 
     if (item->next == NULL) {
       if (!bCreate) {
@@ -334,7 +331,6 @@ HKeySymbol CKeyValuesSystem::GetSymbolForStringCaseSensitive(
 
   int hash = CaseInsensitiveHash(name, m_HashTable.Count());
   intp numNameStringBytes = -1;
-  int i = 0;
   hash_item_t *item = &m_HashTable[hash];
   while (1) {
     char *pCompareString = (char *)m_Strings.GetBase() + item->stringIndex;
@@ -393,8 +389,6 @@ HKeySymbol CKeyValuesSystem::GetSymbolForStringCaseSensitive(
         return (HKeySymbol)nNewAlternativeStringIndex;
       }
     }
-
-    i++;
 
     if (item->next == NULL) {
       // not found

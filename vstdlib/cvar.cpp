@@ -401,7 +401,7 @@ void CCvar::RegisterConCommand(ConCommandBase *variable) {
 
         COMPILE_TIME_ASSERT(std::size(nFlags) == std::size(szFlags));
 
-        for (int k = 0; k < V_ARRAYSIZE(nFlags); ++k) {
+        for (size_t k = 0; k < V_ARRAYSIZE(nFlags); ++k) {
           if ((pChildVar->m_nFlags & nFlags[k]) !=
               (pParentVar->m_nFlags & nFlags[k])) {
             Warning(
