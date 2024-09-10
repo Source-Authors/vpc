@@ -315,10 +315,8 @@ inline uint32 FloatBits(const vec_t &f) {
     uint32 ul;
   } tmp;
 
-  switch (false) {
-    case false:;
-    case (sizeof(tmp) == 4 && sizeof(tmp.f) == 4 && sizeof(tmp.ul) == 4):;
-  };
+  static_assert(sizeof(tmp) == 4 && sizeof(tmp.f) == 4 && sizeof(tmp.ul) == 4);
+
   tmp.f = f;
   return tmp.ul;
 }
@@ -328,10 +326,9 @@ inline vec_t BitsToFloat(uint32 i) {
     vec_t f;
     uint32 ul;
   } tmp;
-  switch (false) {
-    case false:;
-    case (sizeof(tmp) == 4 && sizeof(tmp.f) == 4 && sizeof(tmp.ul) == 4):;
-  };
+
+  static_assert(sizeof(tmp) == 4 && sizeof(tmp.f) == 4 && sizeof(tmp.ul) == 4);
+
   tmp.ul = i;
   return tmp.f;
 }
