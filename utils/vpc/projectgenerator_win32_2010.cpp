@@ -243,8 +243,6 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
   m_XMLWriter.PushNode("ItemGroup", "Label=\"ProjectConfigurations\"");
   CUtlVector<CUtlString> configurationNames;
   m_pVCProjGenerator->GetAllConfigurationNames(configurationNames);
-  const char *pPlatformString = "Win32";
-  if (g_pVPC->IsPlatformDefined("WIN64")) pPlatformString = "x64";
   for (int i = 0; i < configurationNames.Count(); i++) {
     m_XMLWriter.PushNode(
         "ProjectConfiguration",
