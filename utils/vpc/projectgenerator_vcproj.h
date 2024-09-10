@@ -105,12 +105,12 @@ class CProjectTool {
   CVCProjGenerator *m_pGenerator;
 };
 
-class CDebuggingTool : public CProjectTool {
+class CDebuggingTool final : public CProjectTool {
  public:
   CDebuggingTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CCompilerTool : public CProjectTool {
+class CCompilerTool final : public CProjectTool {
  public:
   CCompilerTool(CVCProjGenerator *pGenerator, const char *pConfigName,
                 bool bIsFileConfig)
@@ -127,53 +127,53 @@ class CCompilerTool : public CProjectTool {
   bool m_bIsFileConfig;
 };
 
-class CLibrarianTool : public CProjectTool {
+class CLibrarianTool final : public CProjectTool {
  public:
   CLibrarianTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CLinkerTool : public CProjectTool {
+class CLinkerTool final : public CProjectTool {
  public:
   CLinkerTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CManifestTool : public CProjectTool {
+class CManifestTool final : public CProjectTool {
  public:
   CManifestTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CXMLDocGenTool : public CProjectTool {
+class CXMLDocGenTool final : public CProjectTool {
  public:
   CXMLDocGenTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CBrowseInfoTool : public CProjectTool {
+class CBrowseInfoTool final : public CProjectTool {
  public:
   CBrowseInfoTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CResourcesTool : public CProjectTool {
+class CResourcesTool final : public CProjectTool {
  public:
   CResourcesTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CPreBuildEventTool : public CProjectTool {
+class CPreBuildEventTool final : public CProjectTool {
  public:
   CPreBuildEventTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CPreLinkEventTool : public CProjectTool {
+class CPreLinkEventTool final : public CProjectTool {
  public:
   CPreLinkEventTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CPostBuildEventTool : public CProjectTool {
+class CPostBuildEventTool final : public CProjectTool {
  public:
   CPostBuildEventTool(CVCProjGenerator *pGenerator)
       : CProjectTool(pGenerator) {}
 };
 
-class CCustomBuildTool : public CProjectTool {
+class CCustomBuildTool final : public CProjectTool {
  public:
   CCustomBuildTool(CVCProjGenerator *pGenerator, const char *pConfigName,
                    bool bIsFileConfig)
@@ -190,12 +190,12 @@ class CCustomBuildTool : public CProjectTool {
   bool m_bIsFileConfig;
 };
 
-class CXboxImageTool : public CProjectTool {
+class CXboxImageTool final : public CProjectTool {
  public:
   CXboxImageTool(CVCProjGenerator *pGenerator) : CProjectTool(pGenerator) {}
 };
 
-class CXboxDeploymentTool : public CProjectTool {
+class CXboxDeploymentTool final : public CProjectTool {
  public:
   CXboxDeploymentTool(CVCProjGenerator *pGenerator)
       : CProjectTool(pGenerator) {}
