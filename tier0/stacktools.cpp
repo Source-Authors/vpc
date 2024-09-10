@@ -76,7 +76,7 @@ bool GetModuleNameFromAddress(const void *pAddress, tchar *pModuleNameOut,
   return false;
 }
 
-#else  //#if !defined( ENABLE_RUNTIME_STACK_TRANSLATION )
+#else  // #if !defined( ENABLE_RUNTIME_STACK_TRANSLATION )
 
 //===============================================================================================================
 // Shared Windows/X360 code
@@ -139,8 +139,9 @@ inline bool ValidStackAddress(void *pAddress, const void *pNoLessThan,
 }
 
 #pragma auto_inline(off)
-int GetCallStack_Fast(void **pReturnAddressesOut, int iArrayCount,
-                      int iSkipCount) {
+int GetCallStack_Fast([[maybe_unused]] void **pReturnAddressesOut,
+                      [[maybe_unused]] int iArrayCount,
+                      [[maybe_unused]] int iSkipCount) {
   // Only tested in windows. This function won't work with frame pointer
   // omission enabled. "vpc /nofpo" all projects
 #if (defined(TIER0_FPO_DISABLED) || defined(_DEBUG)) && \
@@ -229,9 +230,9 @@ int GetCallStack_Fast(void **pReturnAddressesOut, int iArrayCount,
 //===============================================================================================================
 
 #if defined(TIER0_FPO_DISABLED)
-//#	define USE_CAPTURESTACKBACKTRACE //faster than StackWalk64, but only
-// works on XP or newer and only with Frame Pointer Omission optimization
-// disabled(/Oy-) for every function it traces through
+// #	define USE_CAPTURESTACKBACKTRACE //faster than StackWalk64, but only
+//  works on XP or newer and only with Frame Pointer Omission optimization
+//  disabled(/Oy-) for every function it traces through
 #endif
 
 #if defined(_M_IX86) || defined(_M_X64)
@@ -288,75 +289,58 @@ typedef USHORT(WINAPI *PFN_CaptureStackBackTrace)(
 
 DWORD WINAPI SymGetOptions_DummyFn(VOID) { return 0; }
 
-DWORD WINAPI SymSetOptions_DummyFn(IN DWORD SymOptions) { return 0; }
+DWORD WINAPI SymSetOptions_DummyFn(IN DWORD) { return 0; }
 
-BOOL WINAPI SymSetSearchPath_DummyFn(IN HANDLE hProcess, IN PSTR SearchPath) {
+BOOL WINAPI SymSetSearchPath_DummyFn(IN HANDLE, IN PSTR) { return FALSE; }
+
+BOOL WINAPI SymInitialize_DummyFn(IN HANDLE, IN PSTR, IN BOOL) { return FALSE; }
+
+BOOL WINAPI SymCleanup_DummyFn(IN HANDLE) { return TRUE; }
+
+BOOL WINAPI SymEnumerateModules64_DummyFn(IN HANDLE,
+                                          IN PSYM_ENUMMODULES_CALLBACK64,
+                                          IN PVOID) {
   return FALSE;
 }
 
-BOOL WINAPI SymInitialize_DummyFn(IN HANDLE hProcess, IN PSTR UserSearchPath,
-                                  IN BOOL fInvadeProcess) {
+BOOL WINAPI EnumerateLoadedModules64_DummyFn(IN HANDLE,
+                                             IN PENUMLOADED_MODULES_CALLBACK64,
+                                             IN PVOID) {
   return FALSE;
 }
 
-BOOL WINAPI SymCleanup_DummyFn(IN HANDLE hProcess) { return TRUE; }
-
-BOOL WINAPI SymEnumerateModules64_DummyFn(
-    IN HANDLE hProcess, IN PSYM_ENUMMODULES_CALLBACK64 EnumModulesCallback,
-    IN PVOID UserContext) {
-  return FALSE;
-}
-
-BOOL WINAPI EnumerateLoadedModules64_DummyFn(IN HANDLE hProcess,
-                                             IN PENUMLOADED_MODULES_CALLBACK64
-                                                 EnumLoadedModulesCallback,
-                                             IN PVOID UserContext) {
-  return FALSE;
-}
-
-DWORD64 WINAPI SymLoadModule64_DummyFn(IN HANDLE hProcess, IN HANDLE hFile,
-                                       IN PSTR ImageName, IN PSTR ModuleName,
-                                       IN DWORD64 BaseOfDll,
-                                       IN DWORD SizeOfDll) {
+DWORD64 WINAPI SymLoadModule64_DummyFn(IN HANDLE, IN HANDLE, IN PSTR, IN PSTR,
+                                       IN DWORD64, IN DWORD) {
   return 0;
 }
 
-BOOL WINAPI SymUnloadModule64_DummyFn(IN HANDLE hProcess,
-                                      IN DWORD64 BaseOfDll) {
+BOOL WINAPI SymUnloadModule64_DummyFn(IN HANDLE, IN DWORD64) { return FALSE; }
+
+BOOL WINAPI SymFromAddr_DummyFn(IN HANDLE, IN DWORD64, OUT PDWORD64,
+                                IN OUT PSYMBOL_INFO) {
   return FALSE;
 }
 
-BOOL WINAPI SymFromAddr_DummyFn(IN HANDLE hProcess, IN DWORD64 Address,
-                                OUT PDWORD64 Displacement,
-                                IN OUT PSYMBOL_INFO Symbol) {
+BOOL WINAPI SymGetLineFromAddr64_DummyFn(IN HANDLE, IN DWORD64, OUT PDWORD,
+                                         OUT PIMAGEHLP_LINE64) {
   return FALSE;
 }
 
-BOOL WINAPI SymGetLineFromAddr64_DummyFn(IN HANDLE hProcess, IN DWORD64 qwAddr,
-                                         OUT PDWORD pdwDisplacement,
-                                         OUT PIMAGEHLP_LINE64 Line64) {
+BOOL WINAPI SymGetModuleInfo64_DummyFn(IN HANDLE, IN DWORD64,
+                                       OUT PIMAGEHLP_MODULE64) {
   return FALSE;
 }
 
-BOOL WINAPI SymGetModuleInfo64_DummyFn(IN HANDLE hProcess, IN DWORD64 dwAddr,
-                                       OUT PIMAGEHLP_MODULE64 ModuleInfo) {
+BOOL WINAPI StackWalk64_DummyFn(DWORD, HANDLE, HANDLE, LPSTACKFRAME64, PVOID,
+                                PREAD_PROCESS_MEMORY_ROUTINE64,
+                                PFUNCTION_TABLE_ACCESS_ROUTINE64,
+                                PGET_MODULE_BASE_ROUTINE64,
+                                PTRANSLATE_ADDRESS_ROUTINE64) {
   return FALSE;
 }
 
-BOOL WINAPI
-StackWalk64_DummyFn(DWORD MachineType, HANDLE hProcess, HANDLE hThread,
-                    LPSTACKFRAME64 StackFrame, PVOID ContextRecord,
-                    PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
-                    PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
-                    PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,
-                    PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress) {
-  return FALSE;
-}
-
-USHORT WINAPI CaptureStackBackTrace_DummyFn(IN ULONG FramesToSkip,
-                                            IN ULONG FramesToCapture,
-                                            OUT PVOID *BackTrace,
-                                            OUT OPTIONAL PULONG BackTraceHash) {
+USHORT WINAPI CaptureStackBackTrace_DummyFn(IN ULONG, IN ULONG, OUT PVOID *,
+                                            OUT OPTIONAL PULONG) {
   return 0;
 }
 
@@ -844,7 +828,7 @@ int CrawlStack_StackWalk64(CONTEXT *pExceptionContext,
   CONTEXT currentContext;
   memcpy(&currentContext, pExceptionContext, sizeof(CONTEXT));
 
-  STACKFRAME64 sfFrame = {0};  // memset(&sfFrame, 0x0, sizeof(sfFrame));
+  STACKFRAME64 sfFrame = {};  // memset(&sfFrame, 0x0, sizeof(sfFrame));
   sfFrame.AddrPC.Mode = sfFrame.AddrFrame.Mode = AddrModeFlat;
 #ifdef _WIN64
   sfFrame.AddrPC.Offset = currentContext.Rip;
@@ -891,7 +875,7 @@ void GetCallStackReturnAddresses_Exception(
       iSkipCount + 1);  // skipping RaiseException()
   *pRetCount = iCount;
 }
-#endif  //#if defined( USE_STACKWALK64 )
+#endif  // #if defined( USE_STACKWALK64 )
 
 int GetCallStack(void **pReturnAddressesOut, int iArrayCount, int iSkipCount) {
   s_HelperFunctions.EnsureReady();
@@ -932,7 +916,7 @@ void SetStackTranslationSymbolSearchPath(const char *szSemicolonSeparatedList) {
       szSemicolonSeparatedList);
 }
 
-void StackToolsNotify_LoadedLibrary(const char *szLibName) {
+void StackToolsNotify_LoadedLibrary(const char *) {
   s_HelperFunctions.m_bShouldReloadSymbols = true;
 }
 
@@ -999,7 +983,7 @@ bool GetModuleNameFromAddress(const void *pAddress, tchar *pModuleNameOut,
                                                     iMaxModuleNameLength);
 }
 
-#else  //#if defined( WIN32 ) && !defined( _X360 )
+#else  // #if defined( WIN32 ) && !defined( _X360 )
 
 //===============================================================================================================
 // X360 version of the toolset
@@ -1408,8 +1392,8 @@ int TranslateStackInfo(const void *const *pCallStack, int iCallStackCount,
       (iEncodedSize + (int)cControlLength + 2))  //+2 for ']' and null term
   {
     static_assert(TSISTYLEFLAG_LAST <
-                        (1 << 8));  // need to update the encoder/decoder to use
-                                    // more than a byte for style flags
+                  (1 << 8));  // need to update the encoder/decoder to use
+                              // more than a byte for style flags
 
     uint8 *pData = (uint8 *)stackalloc(iDataSize);
     pData[0] = (uint8)style;
@@ -1459,9 +1443,9 @@ bool GetModuleNameFromAddress(const void *pAddress, tchar *pModuleNameOut,
                                                        iMaxModuleNameLength);
 }
 
-#endif  //#else //#if defined( WIN32 ) && !defined( _X360 )
+#endif  // #else //#if defined( WIN32 ) && !defined( _X360 )
 
-#endif  //#if !defined( ENABLE_RUNTIME_STACK_TRANSLATION )
+#endif  // #if !defined( ENABLE_RUNTIME_STACK_TRANSLATION )
 
 CCallStackStorage::CCallStackStorage(FN_GetCallStack GetStackFunction,
                                      uint32 iSkipCalls) {
@@ -1507,7 +1491,7 @@ CStackTop_CopyParentStack::CStackTop_CopyParentStack(
   m_pPrevTop = g_StackTop;
   g_StackTop = this;
   Assert((CStackTop_Base *)g_StackTop == this);
-#endif  //#if defined( ENABLE_RUNTIME_STACK_TRANSLATION )
+#endif  // #if defined( ENABLE_RUNTIME_STACK_TRANSLATION )
 }
 
 CStackTop_CopyParentStack::~CStackTop_CopyParentStack(void) {
@@ -1554,7 +1538,7 @@ CStackTop_ReferenceParentStack::CStackTop_ReferenceParentStack(
   m_pPrevTop = g_StackTop;
   g_StackTop = this;
   Assert((CStackTop_Base *)g_StackTop == this);
-#endif  //#if defined( ENABLE_RUNTIME_STACK_TRANSLATION )
+#endif  // #if defined( ENABLE_RUNTIME_STACK_TRANSLATION )
 }
 
 CStackTop_ReferenceParentStack::~CStackTop_ReferenceParentStack(void) {

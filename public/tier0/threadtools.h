@@ -1078,7 +1078,7 @@ class ALIGN128 CAlignedThreadFastMutex : public CThreadFastMutex {
   }
 
  private:
-  uint8 pad[128 - sizeof(CThreadFastMutex)];  //-V730_NOINIT
+  [[maybe_unused]] uint8 pad[128 - sizeof(CThreadFastMutex)];  //-V730_NOINIT
 };
 
 #else
@@ -1335,7 +1335,7 @@ class PLATFORM_CLASS CThreadSyncObject {
   //-----------------------------------------------------
 #ifdef _WIN32
   operator HANDLE() { return GetHandle(); }
-  const HANDLE GetHandle() const { return m_hSyncObject; }
+  HANDLE GetHandle() const { return m_hSyncObject; }
 #endif
   //-----------------------------------------------------
   // Wait for a signal from the object
@@ -1912,10 +1912,10 @@ class PLATFORM_CLASS CThread {
 
   // Allow for custom start waiting
   virtual bool WaitForCreateComplete(CThreadEvent *pEvent);
-  const ThreadId_t GetThreadID() const { return (ThreadId_t)m_threadId; }
+  ThreadId_t GetThreadID() const { return (ThreadId_t)m_threadId; }
 
 #ifdef PLATFORM_WINDOWS
-  const ThreadHandle_t GetThreadHandle() const {
+  ThreadHandle_t GetThreadHandle() const {
     return (ThreadHandle_t)m_hThread;
   }
 

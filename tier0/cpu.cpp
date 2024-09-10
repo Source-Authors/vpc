@@ -393,7 +393,7 @@ const CPUInformation& GetCPUInformation() {
   pi.m_nPhysicalProcessors = 1;
   pi.m_nLogicalProcessors = 2;
 #elif defined(_WIN32) && !defined(_X360)
-  SYSTEM_INFO si = {0};
+  SYSTEM_INFO si = {};
   GetNativeSystemInfo(&si);
 
   pi.m_nLogicalProcessors =

@@ -15,8 +15,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static const int MAX_PARAMETER_LEN = 128;
-
 //-----------------------------------------------------------------------------
 // Purpose: Implements ICommandLine
 //-----------------------------------------------------------------------------
@@ -216,7 +214,7 @@ void CCommandLine::CreateCmdLine(const char *commandline) {
     }
 
     // Don't go past the end.
-    if ((pDst - szFull) >= (sizeof(szFull) - 1)) break;
+    if ((pDst - szFull) >= (static_cast<intp>(sizeof(szFull)) - 1)) break;
 
     *pDst++ = *pSrc++;
   }

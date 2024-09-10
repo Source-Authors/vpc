@@ -284,13 +284,11 @@ class CStdMemAlloc : public IMemAlloc {
 
   virtual bool IsDebugHeap() { return false; }
 
-  virtual void GetActualDbgInfo(const char *&pFileName, int &nLine) {}
-  virtual void RegisterAllocation(const char *pFileName, int nLine,
-                                  size_t nLogicalSize, size_t nActualSize,
-                                  unsigned nTime) {}
-  virtual void RegisterDeallocation(const char *pFileName, int nLine,
-                                    size_t nLogicalSize, size_t nActualSize,
-                                    unsigned nTime) {}
+  virtual void GetActualDbgInfo(const char *&, int &) {}
+  virtual void RegisterAllocation(const char *, int, size_t, size_t, unsigned) {
+  }
+  virtual void RegisterDeallocation(const char *, int, size_t, size_t,
+                                    unsigned) {}
 
   virtual int GetVersion() { return MEMALLOC_VERSION; }
 
@@ -313,13 +311,12 @@ class CStdMemAlloc : public IMemAlloc {
   }
 
   virtual uint32 GetDebugInfoSize() { return 0; }
-  virtual void SaveDebugInfo(void *pvDebugInfo) {}
-  virtual void RestoreDebugInfo(const void *pvDebugInfo) {}
-  virtual void InitDebugInfo(void *pvDebugInfo, const char *pchRootFileName,
-                             int nLine) {}
+  virtual void SaveDebugInfo(void *) {}
+  virtual void RestoreDebugInfo(const void *) {}
+  virtual void InitDebugInfo(void *, const char *, int) {}
 
   static size_t DefaultFailHandler(size_t);
-  void DumpBlockStats(void *p) {}
+  void DumpBlockStats(void *) {}
 
 #if MEM_SBH_ENABLED
   class CVirtualAllocator {

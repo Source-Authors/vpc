@@ -122,17 +122,7 @@ HRESULT PME::SelectP5P6PerformanceEvent(uint32 dw_event, uint32 dw_counter,
   switch (version.Family) {
     case PENTIUM_FAMILY: {
       uint64 i64_cesr;
-      int i_kernel_bit, i_user_bit;
       BYTE u1_event = (BYTE)((dw_event & (0x3F0000)) >> 16);
-
-      if (dw_counter == 0)  // the kernel and user mode bits depend on
-      {                     // counter being used.
-        i_kernel_bit = 6;
-        i_user_bit = 7;
-      } else {
-        i_kernel_bit = 22;
-        i_user_bit = 23;
-      }
 
       ReadMSR(0x11, &i64_cesr);  // get current P5 event select (cesr)
 

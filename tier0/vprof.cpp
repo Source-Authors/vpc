@@ -367,8 +367,8 @@ void CVProfNode::SetCurFrameTime(unsigned long milliseconds) {
 // Purpose: Ensure that all of our internal structures are consistent, and
 //			account for all memory that we've allocated.
 // Input:	validator -		Our global validator object
-//			pchName -		Our name (typically a member var in our
-//container)
+//			pchName -		Our name (typically a member var
+// in our container)
 //-----------------------------------------------------------------------------
 void CVProfNode::Validate(CValidator &validator, tchar *pchName) {
   validator.Push(_T("CVProfNode"), this, pchName);
@@ -1243,13 +1243,15 @@ void CVProfile::OutputReport(int type, const tchar *pszStartNode,
 //=============================================================================
 
 CVProfile::CVProfile()
-    : m_Root(_T("Root"), 0, NULL, VPROF_BUDGETGROUP_OTHER_UNACCOUNTED, 0),
-      m_pCurNode(&m_Root),
+    : m_enabled(0),  // don't change this. if m_enabled is anything but zero
+                     // coming out of this constructor, vprof will
+                     // break.
+      m_fAtRoot(true),
+      m_Root(_T("Root"), 0, NULL, VPROF_BUDGETGROUP_OTHER_UNACCOUNTED, 0),
       m_nFrames(0),
-      m_enabled(0),  // don't change this. if m_enabled is anything but zero
-                     // coming out of this constructor, vprof will break.
-      m_pausedEnabledDepth(0),
-      m_fAtRoot(true) {
+      m_pausedEnabledDepth(0) {
+  m_pCurNode = &m_Root;
+
 #ifdef VPROF_VTUNE_GROUP
   m_GroupIDStackDepth = 1;
   m_GroupIDStack[0] = 0;  // VPROF_BUDGETGROUP_OTHER_UNACCOUNTED
@@ -1566,8 +1568,8 @@ const int k_cSTLMapAllocOffset = 4;
 // Purpose: Ensure that all of our internal structures are consistent, and
 //			account for all memory that we've allocated.
 // Input:	validator -		Our global validator object
-//			pchName -		Our name (typically a member var in our
-//container)
+//			pchName -		Our name (typically a member var
+// in our container)
 //-----------------------------------------------------------------------------
 void CVProfile::Validate(CValidator &validator, tchar *pchName) {
   validator.Push(_T("CVProfile"), this, pchName);

@@ -59,7 +59,7 @@
 // be sure to disable frame pointer omission for all projects. "vpc /nofpo" when
 // using stack traces #define USE_STACK_TRACES
 // or:
-//#define USE_STACK_TRACES_DETAILED
+// #define USE_STACK_TRACES_DETAILED
 const size_t STACK_TRACE_LENGTH = 32;
 #endif
 
@@ -801,8 +801,8 @@ class CDbgMemAlloc : public IMemAlloc {
   virtual void *Expand_NoLongerSupported(void *pMem, size_t nSize,
                                          const char *pFileName, int nLine);
 
-  virtual void *RegionAlloc(int region, size_t nSize) { return Alloc(nSize); }
-  virtual void *RegionAlloc(int region, size_t nSize, const char *pFileName,
+  virtual void *RegionAlloc(int, size_t nSize) { return Alloc(nSize); }
+  virtual void *RegionAlloc(int, size_t nSize, const char *pFileName,
                             int nLine) {
     return Alloc(nSize, pFileName, nLine);
   }
@@ -850,14 +850,14 @@ class CDbgMemAlloc : public IMemAlloc {
   }
 
   virtual void CompactIncremental() {}
-  virtual void OutOfMemory(size_t nBytesAttempted = 0) {}
+  virtual void OutOfMemory([[maybe_unused]] size_t nBytesAttempted = 0) {}
 
-  virtual MemAllocFailHandler_t SetAllocFailHandler(
-      MemAllocFailHandler_t pfnMemAllocFailHandler) {
+  virtual MemAllocFailHandler_t SetAllocFailHandler(MemAllocFailHandler_t) {
     return NULL;
   }  // debug heap doesn't attempt retries
 
-  void SetStatsExtraInfo(const char *pMapName, const char *pComment) {
+  void SetStatsExtraInfo([[maybe_unused]] const char *pMapName,
+                         [[maybe_unused]] const char *pComment) {
 #if defined(_MEMTEST)
     strncpy(s_szStatsMapName, pMapName, sizeof(s_szStatsMapName));
     s_szStatsMapName[sizeof(s_szStatsMapName) - 1] = '\0';
@@ -1001,7 +1001,7 @@ class CDbgMemAlloc : public IMemAlloc {
   virtual size_t ComputeMemoryUsedBy(char const *pchSubStr);
 
   virtual IVirtualMemorySection *AllocateVirtualMemorySection(
-      size_t numMaxBytes) {
+      [[maybe_unused]] size_t numMaxBytes) {
 #if defined(_GAMECONSOLE)
     extern IVirtualMemorySection *
     VirtualMemoryManager_AllocateVirtualMemorySection(size_t numMaxBytes);
@@ -1011,7 +1011,7 @@ class CDbgMemAlloc : public IMemAlloc {
 #endif
   }
 
-  virtual int GetGenericMemoryStats(GenericMemoryStat_t **ppMemoryStats) {
+  virtual int GetGenericMemoryStats(GenericMemoryStat_t **) {
     // TODO: reuse code from GlobalMemoryStatus (though this is only really
     // useful when using CStdMemAlloc...)
     return 0;
@@ -1295,9 +1295,7 @@ void CDbgMemAlloc::Free(void *pMem) {
   //	free( pMem );
 }
 
-void *CDbgMemAlloc::Expand_NoLongerSupported(void *pMem, size_t nSize) {
-  return NULL;
-}
+void *CDbgMemAlloc::Expand_NoLongerSupported(void *, size_t) { return NULL; }
 
 //-----------------------------------------------------------------------------
 // Force file + line information for an allocation
@@ -1880,7 +1878,7 @@ void *CDbgMemAlloc::ReallocAlign(void *pMem, size_t nSize, size_t align,
 }
 #endif
 
-void CDbgMemAlloc::Free(void *pMem, const char * /*pFileName*/, int nLine) {
+void CDbgMemAlloc::Free(void *pMem, const char *, int) {
   if (!pMem) return;
 
   HEAP_LOCK();
@@ -1913,8 +1911,8 @@ void CDbgMemAlloc::Free(void *pMem, const char * /*pFileName*/, int nLine) {
 #endif
 }
 
-void *CDbgMemAlloc::Expand_NoLongerSupported(void *pMem, size_t nSize,
-                                             const char *pFileName, int nLine) {
+void *CDbgMemAlloc::Expand_NoLongerSupported(void *, size_t, const char *,
+                                             int) {
   return NULL;
 }
 
@@ -2703,8 +2701,9 @@ void *operator new[](size_t nSize, int nBlockUse, const char *pFileName,
 
 #endif  // OSX
 
-int GetAllocationCallStack(void *mem, void **pCallStackOut,
-                           int iMaxEntriesOut) {
+int GetAllocationCallStack([[maybe_unused]] void *mem,
+                           [[maybe_unused]] void **pCallStackOut,
+                           [[maybe_unused]] int iMaxEntriesOut) {
 #if defined(USE_MEM_DEBUG) && (defined(USE_STACK_TRACES))
   return s_DbgMemAlloc.GetCallStackForIndex(
       GetAllocationStatIndex_Internal(mem), pCallStackOut, iMaxEntriesOut);
