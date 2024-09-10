@@ -168,7 +168,7 @@
 #endif
 
 #if !defined(PORTAL2)
-//#define PORTAL2
+// #define PORTAL2
 #endif
 
 // C functions for external declarations that call the appropriate C++ methods
@@ -305,8 +305,8 @@
 #endif
 
 #ifndef _PS3
-//#include <malloc.h>
-//#include <new.h>
+// #include <malloc.h>
+// #include <new.h>
 #else
 #include <stdlib.h>  // For malloc()
 #include <alloca.h>  // for alloca()
@@ -582,7 +582,7 @@ typedef void *HINSTANCE;
 #undef offsetof
 // Note: can't use builtin offsetof because many use cases (esp. in templates)
 // wouldn't compile due to restrictions on the builtin offsetof
-//#define offsetof( type, var ) __builtin_offsetof( type, var )
+// #define offsetof( type, var ) __builtin_offsetof( type, var )
 #define offsetof(s, m) ((size_t) & (((s *)0x1000000)->m) - 0x1000000u)
 #else
 #include <stddef.h>
@@ -854,8 +854,8 @@ typedef void *HINSTANCE;
 //-----------------------------------------------------------------------------
 // Convert int<-->pointer, avoiding 32/64-bit compiler warnings:
 //-----------------------------------------------------------------------------
-#define INT_TO_POINTER(i) (void *)((i) + (char *)NULL)
-#define POINTER_TO_INT(p) ((int)(uint64)(p))
+#define INT_TO_POINTER(i) (void *)((uintp)(i))
+#define POINTER_TO_INT(p) ((int)(uintp)(p))
 
 //-----------------------------------------------------------------------------
 // Stack-based allocation related helpers
@@ -948,7 +948,7 @@ FORCEINLINE double fsel(double fComparand, double fValGE, double fLT) {
 #else  // BUILD_AS_DLL
 
 #define PLATFORM_INTERFACE extern "C"
-#define PLATFORM_OVERLOAD
+#define PLATFORM_OVERLOAD extern "C++"
 #define PLATFORM_CLASS
 
 #endif  // BUILD_AS_DLL
@@ -1077,8 +1077,8 @@ typedef int socklen_t;
 //-----------------------------------------------------------------------------
 // FP exception handling
 //-----------------------------------------------------------------------------
-//#define CHECK_FLOAT_EXCEPTIONS		1
-//#define CHECK_FPU_CONTROL_WORD_SET	1	// x360 only
+// #define CHECK_FLOAT_EXCEPTIONS		1
+// #define CHECK_FPU_CONTROL_WORD_SET	1	// x360 only
 
 #if defined(COMPILER_MSVC64)
 
@@ -1509,7 +1509,7 @@ struct CPUInformation {
   CPUInformation() : m_Size(0) {}
 };
 
-PLATFORM_INTERFACE const CPUInformation &GetCPUInformation();
+PLATFORM_OVERLOAD const CPUInformation &GetCPUInformation();
 
 PLATFORM_INTERFACE void GetCurrentDate(int *pDay, int *pMonth, int *pYear);
 PLATFORM_INTERFACE void GetCurrentDayOfTheWeek(int *pDay);  // 0 = Sunday
@@ -1807,8 +1807,10 @@ PLATFORM_INTERFACE bool vtune(bool resume);
 //-----------------------------------------------------------------------------
 #if defined(PLATFORM_WINDOWS)
 
-PLATFORM_INTERFACE void *Plat_GetProcAddress(const char *pszModule,
-                                             const char *pszName);
+using Proc = intp(__stdcall *)();
+
+PLATFORM_INTERFACE Proc Plat_GetProcAddress(const char *pszModule,
+                                            const char *pszName);
 
 template <typename FUNCPTR_TYPE>
 class CDynamicFunction {
@@ -1816,7 +1818,7 @@ class CDynamicFunction {
   CDynamicFunction(const char *pszModule, const char *pszName,
                    FUNCPTR_TYPE pfnFallback = NULL) {
     m_pfn = pfnFallback;
-    void *pAddr = Plat_GetProcAddress(pszModule, pszName);
+    Proc pAddr = Plat_GetProcAddress(pszModule, pszName);
     if (pAddr) {
       m_pfn = (FUNCPTR_TYPE)pAddr;
     }
