@@ -180,9 +180,6 @@ class Vector {
   // Dot product.
   vec_t Dot(const Vector& vOther) const;
 
-  // assignment
-  Vector& operator=(const Vector& vOther);
-
   // returns 0, 1, 2 corresponding to the component with the largest absolute
   // value
   inline int LargestComponent() const;
@@ -228,7 +225,7 @@ class Vector {
 #endif
 };
 
-#define USE_M64S defined(PLATFORM_WINDOWS_PC)
+#define USE_M64S PLATFORM_WINDOWS_PC
 
 //=========================================================
 // 4D Short Vector (aligned on 8-byte boundary)
@@ -335,7 +332,6 @@ class VectorByValue : public Vector {
   // Construction/destruction:
   VectorByValue(void) : Vector() {}
   VectorByValue(vec_t X, vec_t Y, vec_t Z) : Vector(X, Y, Z) {}
-  VectorByValue(const VectorByValue& vOther) { *this = vOther; }
 };
 
 //-----------------------------------------------------------------------------
@@ -611,18 +607,6 @@ inline void Vector::Random(vec_t minVal, vec_t maxVal) {
 inline void Vector::Zero() { x = y = z = 0.0f; }
 
 inline void VectorClear(Vector& a) { a.x = a.y = a.z = 0.0f; }
-
-//-----------------------------------------------------------------------------
-// assignment
-//-----------------------------------------------------------------------------
-
-inline Vector& Vector::operator=(const Vector& vOther) {
-  CHECK_VALID(vOther);
-  x = vOther.x;
-  y = vOther.y;
-  z = vOther.z;
-  return *this;
-}
 
 //-----------------------------------------------------------------------------
 // Array access
@@ -1814,9 +1798,6 @@ class QAngle {
   // negate the QAngle components
   // void	Negate();
 
-  // No assignment operators either...
-  QAngle& operator=(const QAngle& src);
-
 #ifndef VECTOR_NO_SLOW_OPERATIONS
   // copy constructors
 
@@ -1844,7 +1825,6 @@ class QAngleByValue : public QAngle {
   // Construction/destruction:
   QAngleByValue(void) : QAngle() {}
   QAngleByValue(vec_t X, vec_t Y, vec_t Z) : QAngle(X, Y, Z) {}
-  QAngleByValue(const QAngleByValue& vOther) { *this = vOther; }
 };
 
 inline void VectorAdd(const QAngle& a, const QAngle& b, QAngle& result) {
@@ -1921,17 +1901,6 @@ inline QAngle RadianEuler::ToQAngle(void) const {
   return QAngle(y * 180.f / 3.14159265358979323846f,
                 z * 180.f / 3.14159265358979323846f,
                 x * 180.f / 3.14159265358979323846f);
-}
-
-//-----------------------------------------------------------------------------
-// assignment
-//-----------------------------------------------------------------------------
-inline QAngle& QAngle::operator=(const QAngle& vOther) {
-  CHECK_VALID(vOther);
-  x = vOther.x;
-  y = vOther.y;
-  z = vOther.z;
-  return *this;
 }
 
 //-----------------------------------------------------------------------------
