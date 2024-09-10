@@ -16,10 +16,8 @@ inline void cpuid(int *info, int function_id) noexcept {
       "xchgq\t%%rbx, %%rsi\n\t"
       : "=a"(info[0]), "=S"(info[1]), "=c"(info[2]), "=d"(info[3])
       : "a"(function_id));
-  return info;
 #else
 #error "Please add cpuid support for your arhitecture."
-  return info;
 #endif  // defined(_M_X64) || defined(__amd64__)
 #elif defined(_MSC_VER)
   __cpuid(info, function_id);
