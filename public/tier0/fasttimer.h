@@ -225,8 +225,6 @@ class CAverageCycleCounter {
   unsigned m_nIters;
   CCycleCount m_Total;
   CCycleCount m_Peak;
-  const tchar *m_pszName;
-  bool m_fReport;
 };
 
 // -------------------------------------------------------------------------- //
@@ -435,7 +433,7 @@ inline CCycleCount const &CFastTimer::GetDuration() const {
 // CAverageCycleCounter inlines
 
 inline CAverageCycleCounter::CAverageCycleCounter()
-    : m_nIters(0), m_fReport(false), m_pszName(nullptr) {}
+    : m_nIters(0) {}
 
 inline void CAverageCycleCounter::Init() {
   m_Total.Init();
