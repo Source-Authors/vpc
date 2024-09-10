@@ -315,7 +315,6 @@ size_t Sys_LoadTextFileWithIncludes(const char *file_name, char **buffer,
   *buffer = result_buffer;                               // tell caller
 
   // copy all strings and null terminate
-  size_t line{0};
   StringNode_t *next;
   for (it = file_lines; it; it = next) {
     next = it->m_pNext;
@@ -324,7 +323,6 @@ size_t Sys_LoadTextFileWithIncludes(const char *file_name, char **buffer,
 
     memcpy(result_buffer, it->m_Text, length);
     result_buffer += length;
-    line++;
 
     // Cleanup the line..
     // delete [] (unsigned char*)pCur;
