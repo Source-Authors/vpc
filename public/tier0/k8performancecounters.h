@@ -13,7 +13,9 @@ extern "C" {
 unsigned __int64 __readpmc(unsigned long);
 }
 
+#ifndef __clang__
 #pragma intrinsic(__readpmc)
+#endif
 #endif
 
 typedef union EVENT_MASK(NULL_MASK) {
@@ -1396,6 +1398,8 @@ class k8Event_HYPERTRANSPORT_BUS2_WIDTH : public k8BaseEvent {
   EVENT_MASK(k8_ht) * eventMask;
   // name = _T("HYPERTRANSPORT_BUS2_WIDTH");
 };
+
+#pragma pack(pop)
 
 //
 // typedef union EVENT_MASK( perfctr_event_set k8_common_event_set)
