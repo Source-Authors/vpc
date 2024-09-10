@@ -56,8 +56,6 @@ bool V_StrSubstInPlace(char *in_out, int in_out_size, const char *pMatch,
 }
 #endif
 
-static const char *k_pchProjects = "Projects";
-static const char *k_pchLegacyTarget = "build with make";
 static const char *k_rgchConfigNames[] = {"Debug", "Release"};
 
 static const char *g_pOption_AdditionalDependencies = "$AdditionalDependencies";
@@ -135,9 +133,6 @@ static CRelevantPropertyNames g_RelevantPropertyNames = {
 
 static const char *k_rgchXCConfigFiles[] = {
     "debug.xcconfig", "release.xcconfig", "base.xcconfig"};
-
-static int k_oidBuildConfigList = 0xc0de;
-static int k_rgOidBuildConfigs[] = {0x1c0de, 0x1c0e0};
 
 class CProjectGenerator_Xcode : public CBaseProjectDataCollector {
   typedef CBaseProjectDataCollector BaseClass;
@@ -687,7 +682,7 @@ bool IsTrue(const char *str) {
 void CSolutionGenerator_Xcode::EmitBuildSettings(
     const char *pszProjectName, const char *pszProjectDir,
     CUtlDict<CFileConfig *, int> *pDictFiles, KeyValues *pConfigKV,
-    KeyValues *pFirstConfigKV, bool bIsDebug) {
+    KeyValues *pFirstConfigKV, [[maybe_unused]] bool bIsDebug) {
   if (!pConfigKV) {
     Write("PRODUCT_NAME = \"%s\";\n", pszProjectName);
     return;
@@ -721,7 +716,8 @@ void CSolutionGenerator_Xcode::EmitBuildSettings(
   CUtlString sBuildOutputFile =
       OutputFileWithDirectoryFromConfig(pFirstConfigKV);
   CUtlString sGameOutputFile = GameOutputFileFromConfig(pFirstConfigKV);
-  for (int iConfig = 1; iConfig < V_ARRAYSIZE(k_rgchXCConfigFiles); iConfig++) {
+  for (size_t iConfig = 1; iConfig < V_ARRAYSIZE(k_rgchXCConfigFiles);
+       iConfig++) {
     CUtlString sConfigOutputFile = OutputFileWithDirectoryFromConfig(pConfigKV);
     CUtlString sConfigGameOutputFile = GameOutputFileFromConfig(pConfigKV);
     if (sConfigOutputFile != sBuildOutputFile ||
@@ -1012,7 +1008,7 @@ void CSolutionGenerator_Xcode::EmitBuildSettings(
 
 class CStringLess {
  public:
-  bool Less(const char *lhs, const char *rhs, void *pCtx) {
+  bool Less(const char *lhs, const char *rhs, void *) {
     return (strcmp(lhs, rhs) < 0 ? true : false);
   }
 };
@@ -1171,7 +1167,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
             const char *pFileName = pFileConfig->m_Filename.String();
 
             bool bExcluded = true;
-            for (int iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
+            for (size_t iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
                  iConfig++) {
               bExcluded &=
                   (pFileConfig->IsExcludedFrom(k_rgchConfigNames[iConfig]));
@@ -1531,7 +1527,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
       ++m_nIndent;
       {
         // include the xcconfig files
-        for (int iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchXCConfigFiles);
+        for (size_t iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchXCConfigFiles);
              iConfig++) {
           char rgchFilePath[MAX_PATH];
           V_snprintf(rgchFilePath, sizeof(rgchFilePath),
@@ -1932,7 +1928,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
             }
 
             // add the build config (.xcconfig) files
-            for (int iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchXCConfigFiles);
+            for (size_t iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchXCConfigFiles);
                  iConfig++) {
               Write("%024llX /* %s */, \n",
                     makeoid2(oidStrSolutionRoot, k_rgchXCConfigFiles[iConfig],
@@ -3190,7 +3186,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
       ++m_nIndent;
       {
         // project and aggregate "all" target
-        for (int iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
+        for (size_t iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
              iConfig++) {
           bool bIsDebug = !V_stristr(k_rgchConfigNames[iConfig], "release");
 
@@ -3243,7 +3239,8 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
           KeyValues *pReleaseKV = g_vecPGenerators[iProject]
                                       ->m_BaseConfigData.m_Configurations[0]
                                       ->m_pKV;
-          for (int iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
+          for (int iConfig = 0;
+               iConfig < static_cast<int>(V_ARRAYSIZE(k_rgchConfigNames));
                iConfig++) {
             bool bIsDebug = !V_stristr(k_rgchConfigNames[iConfig], "release");
 
@@ -3309,7 +3306,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
           Write("isa = XCConfigurationList;\n");
           Write("buildConfigurations = (\n");
           ++m_nIndent;
-          for (int iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
+          for (size_t iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
                iConfig++) {
             Write("%024llX /* %s */,\n",
                   makeoid2(oidStrSolutionRoot, k_rgchConfigNames[iConfig],
@@ -3333,7 +3330,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
           Write("isa = XCConfigurationList;\n");
           Write("buildConfigurations = (\n");
           ++m_nIndent;
-          for (int iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
+          for (size_t iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
                iConfig++) {
             Write("%024llX /* %s */,\n",
                   makeoid2(oidStrSolutionRoot, k_rgchConfigNames[iConfig],
@@ -3361,7 +3358,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
             Write("isa = XCConfigurationList;\n");
             Write("buildConfigurations = (\n");
             ++m_nIndent;
-            for (int iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
+            for (size_t iConfig = 0; iConfig < V_ARRAYSIZE(k_rgchConfigNames);
                  iConfig++) {
               Write("%024llX /* %s */,\n",
                     makeoid3(
