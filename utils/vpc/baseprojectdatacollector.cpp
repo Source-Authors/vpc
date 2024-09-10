@@ -148,8 +148,8 @@ void CBaseProjectDataCollector::GetAllConfigurationNames(
   }
 }
 
-void CBaseProjectDataCollector::StartConfigurationBlock(const char *pConfigName,
-                                                        bool bFileSpecific) {
+void CBaseProjectDataCollector::StartConfigurationBlock(
+    const char *pConfigName, [[maybe_unused]] bool bFileSpecific) {
   CFileConfig *pFileConfig = m_CurFileConfig.Top();
 
   // Find or add a new config block.
@@ -239,11 +239,12 @@ void CBaseProjectDataCollector::EndPropertySection(configKeyword_e keyword) {
   Assert(kw == keyword);
 }
 
-void CBaseProjectDataCollector::StartFolder(const char *pFolderName) {}
+void CBaseProjectDataCollector::StartFolder(
+    [[maybe_unused]] const char *pFolderName) {}
 void CBaseProjectDataCollector::EndFolder() {}
 
-bool CBaseProjectDataCollector::StartFile(const char *pFilename,
-                                          bool bWarnIfAlreadyExists) {
+bool CBaseProjectDataCollector::StartFile(
+    const char *pFilename, [[maybe_unused]] bool bWarnIfAlreadyExists) {
   CFileConfig *pFileConfig = new CFileConfig;
   pFileConfig->m_Filename = pFilename;
   pFileConfig->m_nInsertOrder = m_Files.Count();

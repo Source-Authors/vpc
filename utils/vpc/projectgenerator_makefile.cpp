@@ -337,7 +337,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
   class FileSortSortFunc {
    public:
     bool Less(const CFileConfig *const &src1, const CFileConfig *const &src2,
-              void *pCtx) {
+              void *) {
       return src1->m_nInsertOrder < src2->m_nInsertOrder;
     }
   };

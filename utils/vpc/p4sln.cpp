@@ -188,7 +188,7 @@ static void UpdateProjects( CUtlVector<CDependency_Project*> &projects )
 class CStringCaseLess
 {
 public:
-	bool Less( const char *lhs, const char *rhs, void *pCtx )
+	bool Less( const char *lhs, const char *rhs, void * )
 	{
 		return ( V_stricmp( lhs, rhs ) < 0 ? true : false );
 	}

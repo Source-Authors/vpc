@@ -788,7 +788,7 @@ bool CProjectTool::SetProperty(ToolProperty_t *pToolProperty,
 //-----------------------------------------------------------------------------
 
 bool CCompilerTool::SetProperty(ToolProperty_t *pToolProperty,
-                                CProjectTool *pRootTool) {
+                                [[maybe_unused]] CProjectTool *pRootTool) {
   if (m_bIsFileConfig) {
     CProjectConfiguration *pConfig;
     if (!GetGenerator()->GetRootConfiguration(m_ConfigName.Get(), &pConfig))
@@ -802,7 +802,7 @@ bool CCompilerTool::SetProperty(ToolProperty_t *pToolProperty,
 //-----------------------------------------------------------------------------
 
 bool CCustomBuildTool::SetProperty(ToolProperty_t *pToolProperty,
-                                   CProjectTool *pRootTool) {
+                                   [[maybe_unused]] CProjectTool *pRootTool) {
   if (m_bIsFileConfig) {
     CProjectConfiguration *pConfig;
     if (!GetGenerator()->GetRootConfiguration(m_ConfigName.Get(), &pConfig))

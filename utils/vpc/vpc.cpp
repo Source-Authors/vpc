@@ -273,7 +273,7 @@ void CVPC::UnloadPerforceInterface() {
   }
 }
 
-bool VPC_Config_IgnoreOption(const char *pPropertyName) {
+bool VPC_Config_IgnoreOption([[maybe_unused]] const char *pPropertyName) {
   char buff[MAX_SYSTOKENCHARS];
   g_pVPC->GetScript().ParsePropertyValue(NULL, buff, sizeof(buff));
   return true;
@@ -1658,7 +1658,7 @@ void CVPC::FindProjectFromVCPROJ(const char *pScriptNameVCProj) {
   int localArgc = 0;
   char *localArgv[16];
   char argBuffers[16][MAX_PATH];
-  for (int i = 0; i < V_ARRAYSIZE(localArgv); i++) {
+  for (size_t i = 0; i < V_ARRAYSIZE(localArgv); i++) {
     localArgv[i] = argBuffers[i];
   }
   strcpy(localArgv[localArgc++], "vpc.exe");
@@ -2121,7 +2121,8 @@ bool CVPC::HasP4SLNCommand() { return HasCommandLineParameter("/p4sln"); }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CVPC::HandleP4SLN(IBaseSolutionGenerator *pSolutionGenerator) {
+bool CVPC::HandleP4SLN(
+    [[maybe_unused]] IBaseSolutionGenerator *pSolutionGenerator) {
 #if defined(WIN32) && !defined(NO_PERFORCE)
   // If they want to generate a solution based on a Perforce changelist, adjust
   // m_targetProjects and set it up like /mksln had been passed in.

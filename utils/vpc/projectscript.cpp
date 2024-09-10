@@ -1570,7 +1570,8 @@ void VPC_HandleIncludeStatement(int depth, bool bQuiet,
   }
 }
 
-void VPC_HandleProjectCommands(const char *pUnusedScriptName, int depth,
+void VPC_HandleProjectCommands([[maybe_unused]] const char *pUnusedScriptName,
+                               int depth,
                                bool bQuiet) {
   const char *pToken;
 
@@ -1833,8 +1834,8 @@ void VPC_Keyword_CustomBuildStep(void) {
   }
 }
 
-void VPC_ParseProjectScriptParameters(const char *szScriptName, int depth,
-                                      bool bQuiet) {
+void VPC_ParseProjectScriptParameters([[maybe_unused]] const char *szScriptName,
+                                      int depth, bool bQuiet) {
   while (1) {
     const char *pToken = g_pVPC->GetScript().GetToken(true);
     if (!pToken || !pToken[0]) {

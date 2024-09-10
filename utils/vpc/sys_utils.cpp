@@ -134,7 +134,7 @@ CUtlString CXMLWriter::FixupXMLString(const char *pInput) {
   CUtlString outString;
 
   needsFixups.SetCount(ARRAYSIZE(xmlFixups));
-  for (int i = 0; i < ARRAYSIZE(xmlFixups); i++) {
+  for (intp i = 0; i < static_cast<intp>(ARRAYSIZE(xmlFixups)); i++) {
     needsFixups[i] = false;
 
     if (!m_b2010Format && xmlFixups[i].m_b2010Only) continue;
@@ -152,7 +152,7 @@ CUtlString CXMLWriter::FixupXMLString(const char *pInput) {
     char bigBuffer[2][8192];
     V_strncpy(bigBuffer[flip], pInput, sizeof(bigBuffer[0]));
 
-    for (int i = 0; i < ARRAYSIZE(xmlFixups); i++) {
+    for (intp i = 0; i < static_cast<intp>(ARRAYSIZE(xmlFixups)); i++) {
       if (!needsFixups[i]) continue;
 
       if (!V_StrSubst(bigBuffer[flip], xmlFixups[i].m_pFrom, xmlFixups[i].m_pTo,
@@ -542,7 +542,6 @@ bool Sys_GetActualFilenameCase(const char *pFilename, char *pOutputBuffer,
   CUtlString actualFilename;
 
   // march along filename, resolving up to next seperator
-  intp nLastComponentStart = 0;
   bool bAddSeparator = false;
   intp i = 0;
   while (i < nFilenameLength) {
@@ -570,7 +569,7 @@ bool Sys_GetActualFilenameCase(const char *pFilename, char *pOutputBuffer,
     // truncate at separator, windows resolves each component in pieces
     filenameBuffer[i] = 0;
 
-    SHFILEINFOA info = {0};
+    SHFILEINFOA info = {};
     DWORD_PTR hr{SHGetFileInfoA(filenameBuffer, 0, &info, sizeof(info),
                                 SHGFI_DISPLAYNAME)};
     if (hr != 0) {
@@ -588,7 +587,6 @@ bool Sys_GetActualFilenameCase(const char *pFilename, char *pOutputBuffer,
     }
 
     ++i;
-    nLastComponentStart = i;
     bAddSeparator = true;
   }
 
