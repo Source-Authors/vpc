@@ -536,6 +536,7 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 // Valve specific defines [5/22/2009 tom]
 #define USE_DL_PREFIX
 #define USE_SPIN_LOCKS 2
+#define USE_RECURSIVE_LOCKS 0
 #define MALLOC_ALIGNMENT ((size_t)16U)
 #define MSPACES 1
 #define FOOTERS 1  // for mspace retrieval support
@@ -612,8 +613,8 @@ MAX_RELEASE_CHECK_RATE   default: 4095 unless not HAVE_MMAP
 #define MAX_SIZE_T           (~(size_t)0)
 
 #ifndef USE_LOCKS /* ensure true if spin or recursive locks set */
-#define USE_LOCKS  ((defined(USE_SPIN_LOCKS) && USE_SPIN_LOCKS != 0) || \
-                    (defined(USE_RECURSIVE_LOCKS) && USE_RECURSIVE_LOCKS != 0))
+#define USE_LOCKS  ((USE_SPIN_LOCKS != 0) || \
+                    (USE_RECURSIVE_LOCKS != 0))
 #endif /* USE_LOCKS */
 
 #if USE_LOCKS /* Spin locks for gcc >= 4.1, older gcc on x86, MSC >= 1310 */
@@ -1899,10 +1900,12 @@ static FORCEINLINE void x86_clear_lock(int* sl) {
 #endif /* ... yield ... */
 
 #if !defined(USE_RECURSIVE_LOCKS) || USE_RECURSIVE_LOCKS == 0
+#define MLOCK_T               long
+
 /* Plain spin locks use single word (embedded in malloc_states) */
-static int spin_acquire_lock(int *sl) {
+static int spin_acquire_lock(MLOCK_T *sl) {
   int spins = 0;
-  while (*(volatile int *)sl != 0 || CAS_LOCK(sl)) {
+  while (*(volatile MLOCK_T *)sl != 0 || CAS_LOCK(sl)) {
     if ((++spins & SPINS_PER_YIELD) == 0) {
       SPIN_LOCK_YIELD;
     }
@@ -1910,7 +1913,6 @@ static int spin_acquire_lock(int *sl) {
   return 0;
 }
 
-#define MLOCK_T               int
 #define TRY_LOCK(sl)          !CAS_LOCK(sl)
 #define RELEASE_LOCK(sl)      CLEAR_LOCK(sl)
 #define ACQUIRE_LOCK(sl)      (CAS_LOCK(sl)? spin_acquire_lock(sl) : 0)
@@ -4015,7 +4017,7 @@ static void add_segment(mstate m, char* tbase, size_t tsize, flag_t mmapped) {
   msegmentptr ss = (msegmentptr)(chunk2mem(sp));
   mchunkptr tnext = chunk_plus_offset(sp, ssize);
   mchunkptr p = tnext;
-  int nfences = 0;
+  [[maybe_unused]] int nfences = 0;
 
   /* reset top to new space */
   init_top(m, (mchunkptr)tbase, tsize - TOP_FOOT_SIZE);
