@@ -350,7 +350,7 @@ int CUtlString::Format(PRINTF_FORMAT_STRING const char *pFormat, ...) {
   va_end(marker);
 
   // Len > maxLen represents an overflow on POSIX, < 0 is an overflow on windows
-  if (len < 0 || len >= sizeof(tmpBuf) - 1) {
+  if (len < 0 || len >= static_cast<intp>(sizeof(tmpBuf)) - 1) {
     len = sizeof(tmpBuf) - 1;
     tmpBuf[sizeof(tmpBuf) - 1] = 0;
   }

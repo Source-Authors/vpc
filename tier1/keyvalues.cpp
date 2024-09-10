@@ -196,8 +196,8 @@ class CKeyValuesGrowableStringTable {
  public:
   // Constructor
   CKeyValuesGrowableStringTable()
-      : m_vecStrings((intp)0, (intp)512 * 1024),
-        m_hashLookup(2048, 0, 0, m_Functor, m_Functor) {
+      : m_hashLookup(2048, 0, 0, m_Functor, m_Functor),
+        m_vecStrings((intp)0, (intp)512 * 1024) {
     m_vecStrings.AddToTail('\0');
   }
 
@@ -1303,8 +1303,8 @@ const wchar_t *KeyValues::GetWString(const char *keyName,
       case TYPE_STRING: {
         intp bufSize = V_strlen(dat->m_sValue) + 1;
         wchar_t *pWBuf = new wchar_t[bufSize];
-        int result =
-            V_UTF8ToUnicode(dat->m_sValue, pWBuf, bufSize * static_cast<intp>(sizeof(wchar_t)));
+        int result = V_UTF8ToUnicode(
+            dat->m_sValue, pWBuf, bufSize * static_cast<intp>(sizeof(wchar_t)));
         if (result >= 0)  // may be a zero length string
         {
           SetWString(keyName, pWBuf);
@@ -2799,7 +2799,8 @@ KeyValues *KeyValues::FromString(char const *szName, char const *szStringVal,
       szStringVal = szVarName + 1;
       break;
     }
-    V_strncpy(chName, szVarName, MIN((intp)sizeof(chName), szEnd - szVarName + 1));
+    V_strncpy(chName, szVarName,
+              MIN((intp)sizeof(chName), szEnd - szVarName + 1));
     szVarName = chName;
     szStringVal = szEnd;
 
@@ -2833,7 +2834,7 @@ KeyValues *KeyValues::FromString(char const *szName, char const *szStringVal,
     }
     continue;
 
-  do_sub_key : {
+  do_sub_key: {
     KeyValues *pSubKey = KeyValues::FromString(szVarName, szStringVal, &szEnd);
     if (pSubKey) {
       kv->AddSubKey(pSubKey);

@@ -2143,7 +2143,7 @@ static const wchar_t wszCantEndLine[] = {
 static const wchar_t wszCantBreakRepeated[] = {0x002d, 0x002e, 0x3002};
 
 bool AsianWordWrap::CanEndLine(wchar_t wcCandidate) {
-  for (intp i = 0; i < SIZE_OF_ARRAY(wszCantEndLine); ++i) {
+  for (size_t i = 0; i < SIZE_OF_ARRAY(wszCantEndLine); ++i) {
     if (wcCandidate == wszCantEndLine[i]) return false;
   }
 
@@ -2151,7 +2151,7 @@ bool AsianWordWrap::CanEndLine(wchar_t wcCandidate) {
 }
 
 bool AsianWordWrap::CanBeginLine(wchar_t wcCandidate) {
-  for (intp i = 0; i < SIZE_OF_ARRAY(wszCantBeginLine); ++i) {
+  for (size_t i = 0; i < SIZE_OF_ARRAY(wszCantBeginLine); ++i) {
     if (wcCandidate == wszCantBeginLine[i]) return false;
   }
 
@@ -2159,7 +2159,7 @@ bool AsianWordWrap::CanBeginLine(wchar_t wcCandidate) {
 }
 
 bool AsianWordWrap::CanBreakRepeated(wchar_t wcCandidate) {
-  for (intp i = 0; i < SIZE_OF_ARRAY(wszCantBreakRepeated); ++i) {
+  for (size_t i = 0; i < SIZE_OF_ARRAY(wszCantBreakRepeated); ++i) {
     if (wcCandidate == wszCantBreakRepeated[i]) return false;
   }
 

@@ -41,7 +41,7 @@ class CUtlNoEscConversion : public CUtlCharConversion {
       : CUtlCharConversion(nEscapeChar, pDelimiter, nCount, pArray) {}
 
   // Finds a conversion for the passed-in string, returns length
-  virtual char FindConversion(const char *pString, intp *pLength) {
+  virtual char FindConversion(const char *, intp *pLength) {
     *pLength = 0;
     return 0;
   }
@@ -1180,8 +1180,8 @@ void CUtlBuffer::VaPrintf(const char *pFmt, va_list list) {
   char temp[8192];
   int nLen = V_vsnprintf(temp, sizeof(temp), pFmt, list);
   ErrorIfNot(
-      nLen < sizeof(temp),
-      ("CUtlBuffer::VaPrintf: String overflowed buffer [%d]\n", sizeof(temp)));
+      nLen < static_cast<intp>(sizeof(temp)),
+      ("CUtlBuffer::VaPrintf: String overflowed buffer [%zu]\n", sizeof(temp)));
   PutString(temp);
 }
 

@@ -19,7 +19,7 @@
 #include "tier0/memdbgon.h"
 
 // Comment this out when we release.
-//#define ALLOW_DEVELOPMENT_CVARS
+// #define ALLOW_DEVELOPMENT_CVARS
 // This enables the l4d style of culling all cvars that are not marked
 // FCVAR_RELEASE : #define CULL_ALL_CVARS_NOT_FCVAR_RELEASE
 
@@ -426,9 +426,9 @@ int CCommand::FindArgInt(const char *pName, int nDefaultVal) const {
 //-----------------------------------------------------------------------------
 // Default console command autocompletion function
 //-----------------------------------------------------------------------------
-int DefaultCompletionFunc(const char *partial,
-                          char commands[COMMAND_COMPLETION_MAXITEMS]
-                                       [COMMAND_COMPLETION_ITEM_LENGTH]) {
+int DefaultCompletionFunc(
+    const char *,
+    char[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH]) {
   return 0;
 }
 
@@ -1046,11 +1046,11 @@ class CEmptyConVar : public ConVar {
  public:
   CEmptyConVar() : ConVar("", "0") {}
   // Used for optimal read access
-  virtual void SetValue(const char *pValue) {}
-  virtual void SetValue(float flValue) {}
-  virtual void SetValue(int nValue) {}
+  virtual void SetValue(const char *) {}
+  virtual void SetValue(float) {}
+  virtual void SetValue(int) {}
   virtual const char *GetName(void) const { return ""; }
-  virtual bool IsFlagSet(int nFlags) const { return false; }
+  virtual bool IsFlagSet(int) const { return false; }
 };
 
 static CEmptyConVar s_EmptyConVar;

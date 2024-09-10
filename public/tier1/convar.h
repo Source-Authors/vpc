@@ -872,28 +872,28 @@ class CConCommandMemberAccessor : public ConCommand,
 #define CON_COMMAND(name, description)                        \
   static void name(const CCommand &args);                     \
   static ConCommand name##_command(#name, name, description); \
-  static void name(const CCommand &args)
+  static void name([[maybe_unused]] const CCommand &args)
 
 #define CON_COMMAND_F(name, description, flags)                      \
   static void name(const CCommand &args);                            \
   static ConCommand name##_command(#name, name, description, flags); \
-  static void name(const CCommand &args)
+  static void name([[maybe_unused]] const CCommand &args)
 
 #define CON_COMMAND_F_COMPLETION(name, description, flags, completion) \
   static void name(const CCommand &args);                              \
   static ConCommand name##_command(#name, name, description, flags,    \
                                    completion);                        \
-  static void name(const CCommand &args)
+  static void name([[maybe_unused]] const CCommand &args)
 
 #define CON_COMMAND_EXTERN(name, _funcname, description)           \
   void _funcname(const CCommand &args);                            \
   static ConCommand name##_command(#name, _funcname, description); \
-  void _funcname(const CCommand &args)
+  void _funcname([[maybe_unused]] const CCommand &args)
 
 #define CON_COMMAND_EXTERN_F(name, _funcname, description, flags)         \
   void _funcname(const CCommand &args);                                   \
   static ConCommand name##_command(#name, _funcname, description, flags); \
-  void _funcname(const CCommand &args)
+  void _funcname([[maybe_unused]] const CCommand &args)
 
 #define CON_COMMAND_MEMBER_F(_thisclass, name, _funcname, description, flags) \
   void _funcname(const CCommand &args);                                       \

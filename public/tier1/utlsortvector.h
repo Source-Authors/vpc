@@ -112,15 +112,15 @@ class CUtlSortVector : public BaseVector {
 template <class T, class LessFunc, class BaseVector>
 CUtlSortVector<T, LessFunc, BaseVector>::CUtlSortVector(intp nGrowSize,
                                                         intp initSize)
-    : m_pLessContext(NULL),
-      BaseVector(nGrowSize, initSize),
+    : BaseVector(nGrowSize, initSize),
+      m_pLessContext(NULL),
       m_bNeedsSort(false) {}
 
 template <class T, class LessFunc, class BaseVector>
 CUtlSortVector<T, LessFunc, BaseVector>::CUtlSortVector(T* pMemory,
                                                         intp numElements)
-    : m_pLessContext(NULL),
-      BaseVector(pMemory, numElements),
+    : BaseVector(pMemory, numElements),
+      m_pLessContext(NULL),
       m_bNeedsSort(false) {}
 
 //-----------------------------------------------------------------------------

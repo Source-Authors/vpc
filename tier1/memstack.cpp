@@ -35,21 +35,24 @@ MEMALLOC_DEFINE_EXTERNAL_TRACKING(CMemoryStack);
 //-----------------------------------------------------------------------------
 
 CMemoryStack::CMemoryStack()
-    : m_pBase(NULL),
-      m_pNextAlloc(NULL),
-      m_pAllocLimit(NULL),
+    : m_pNextAlloc(NULL),
       m_pCommitLimit(NULL),
-      m_alignment(16),
-#ifdef MEMSTACK_VIRTUAL_MEMORY_AVAILABLE
-      m_commitSize(0),
-      m_minCommit(0),
-#ifdef _PS3
-      m_pVirtualMemorySection(NULL),
-#endif
-#endif
-      m_maxSize(0),
+      m_pAllocLimit(NULL),
+      m_pBase(NULL),
       m_bRegisteredAllocation(false),
-      m_bPhysical(false) {
+      m_bPhysical(false),
+      m_maxSize(0),
+      m_alignment(16)
+#ifdef MEMSTACK_VIRTUAL_MEMORY_AVAILABLE
+      ,
+      m_commitSize(0),
+      m_minCommit(0)
+#ifdef _PS3
+      ,
+      m_pVirtualMemorySection(NULL)
+#endif
+#endif
+{
   m_pszAllocOwner = _strdup("CMemoryStack unattributed");
 }
 
@@ -258,7 +261,7 @@ intp CMemoryStack::GetSize() {
 
 //-------------------------------------
 
-bool CMemoryStack::CommitTo(byte *pNextAlloc) RESTRICT {
+bool CMemoryStack::CommitTo(byte *pNextAlloc) {
   if (m_bPhysical) {
     return NULL;
   }

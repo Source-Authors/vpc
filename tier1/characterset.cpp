@@ -24,7 +24,7 @@ void CharacterSetBuild( characterset_t *pSetBuffer, const char *pszSetString )
 
 	while ( pszSetString[i] )
 	{
-		pSetBuffer->set[ pszSetString[i] ] = 1;
+		pSetBuffer->set[ static_cast<unsigned char>(pszSetString[i]) ] = 1;
 		i++;
 	}
 

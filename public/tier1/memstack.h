@@ -34,7 +34,7 @@ class CMemoryStack {
   size_t GetMaxSize();
   intp GetUsed();
 
-  void *Alloc(size_t bytes, bool bClear = false) RESTRICT;
+  void *Alloc(size_t bytes, bool bClear = false);
 
   MemoryStackMark_t GetCurrentAllocPoint();
   void FreeToAllocPoint(MemoryStackMark_t mark, bool bDecommit = true);
@@ -54,7 +54,7 @@ class CMemoryStack {
   void SetAllocOwner(const char *pszAllocOwner);
 
  private:
-  bool CommitTo(byte *) RESTRICT;
+  bool CommitTo(byte *);
   void RegisterAllocation();
   void RegisterDeallocation(bool bShouldSpew);
 
@@ -80,7 +80,7 @@ class CMemoryStack {
 
 //-------------------------------------
 
-FORCEINLINE void *CMemoryStack::Alloc(size_t bytes, bool bClear) RESTRICT {
+FORCEINLINE void *CMemoryStack::Alloc(size_t bytes, bool bClear) {
   Assert(m_pBase);
 
   bytes = MAX(bytes, m_alignment);

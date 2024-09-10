@@ -39,7 +39,7 @@ CUtlMemoryPool::CUtlMemoryPool(int blockSize, int numElements, int growMode,
 
   m_nAlignment = (nAlignment != 0) ? nAlignment : 1;
   Assert(IsPowerOfTwo(m_nAlignment));
-  m_BlockSize = blockSize < sizeof(void *) ? sizeof(void *) : blockSize;
+  m_BlockSize = blockSize < static_cast<int>(sizeof(void *)) ? static_cast<int>(sizeof(void *)) : blockSize;
   m_BlockSize = AlignValue(m_BlockSize, m_nAlignment);
   m_BlocksPerBlob = numElements;
   m_PeakAlloc = 0;
