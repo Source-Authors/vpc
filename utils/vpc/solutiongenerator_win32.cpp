@@ -178,22 +178,6 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
     fprintf(fp, "#\n");
     fprintf(fp, "#\n");
 
-    if (!g_pVPC->Is2010()) {
-      // if /slnItems <filename> is passed on the command line, build a Solution
-      // Items project
-      const char *pSolutionItemsFilename = g_pVPC->GetSolutionItemsFilename();
-      if (pSolutionItemsFilename[0] != '\0') {
-        fprintf(fp,
-                "Project(\"{2150E333-8FDC-42A3-9474-1A3956D46DE8}\") = "
-                "\"Solution Items\", \"Solution Items\", "
-                "\"{AAAAAAAA-8B4A-11D0-8D11-90A07D6D6F7D}\"\n");
-        fprintf(fp, "\tProjectSection(SolutionItems) = preProject\n");
-        WriteSolutionItems(fp);
-        fprintf(fp, "\tEndProjectSection\n");
-        fprintf(fp, "EndProject\n");
-      }
-    }
-
     for (int i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
       CVCProjInfo *pProjInfo = &vcprojInfos[i];
@@ -238,6 +222,22 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
       if (bHasDependencies) fprintf(fp, "\tEndProjectSection\n");
 
       fprintf(fp, "EndProject\n");
+    }
+
+    if (!g_pVPC->Is2010()) {
+      // if /slnItems <filename> is passed on the command line, build a Solution
+      // Items project
+      const char *pSolutionItemsFilename = g_pVPC->GetSolutionItemsFilename();
+      if (pSolutionItemsFilename[0] != '\0') {
+        fprintf(fp,
+                "Project(\"{2150E333-8FDC-42A3-9474-1A3956D46DE8}\") = "
+                "\"Solution Items\", \"Solution Items\", "
+                "\"{AAAAAAAA-8B4A-11D0-8D11-90A07D6D6F7D}\"\n");
+        fprintf(fp, "\tProjectSection(SolutionItems) = preProject\n");
+        WriteSolutionItems(fp);
+        fprintf(fp, "\tEndProjectSection\n");
+        fprintf(fp, "EndProject\n");
+      }
     }
 
     fclose(fp);
