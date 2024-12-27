@@ -33,7 +33,8 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
     int firstVer;
     const int lastVer = 14;  // Handle up to VS 14, AKA VS 2015
 
-    if (g_pVPC->Is2010()) {
+    // VS2010+ uses 10 as first version.
+    if (g_pVPC->Is2010PlusFileFormat()) {
       firstVer = 10;
     } else if (g_pVPC->Is2008()) {
       firstVer = 9;
@@ -267,7 +268,7 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
         g_pVPC->VPCError("Can't open %s to get ProjectGUID.", pFilename);
 
       const char *pSearchFor;
-      if (g_pVPC->Is2010()) {
+      if (g_pVPC->Is2010PlusFileFormat()) {
         pSearchFor = "<ProjectGuid>{";
       } else {
         pSearchFor = "ProjectGUID=\"{";
@@ -280,7 +281,7 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
       vcprojInfo.m_ProjectGUID = szGuid;
 
       const char *pEnd;
-      if (g_pVPC->Is2010()) {
+      if (g_pVPC->Is2010PlusFileFormat()) {
         pPos = FindInFile(pFilename, pFileData, "<ProjectName>");
         pEnd = V_stristr(pPos, "<");
       } else {

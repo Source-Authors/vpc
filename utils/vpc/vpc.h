@@ -193,25 +193,12 @@ class CVPC {
   const char *GetDecorateString() { return m_strDecorate.String(); }
   bool IsCheckFiles() const { return m_bCheckFiles; }
   bool Is2008() const { return m_eVSVersion == k_EVSVersion_2008; }
-  bool Is2010() const {
-    return m_bUseVS2010FileFormat || m_eVSVersion == k_EVSVersion_2010;
-  }
-  bool Is2012() const {
-    return m_eVSVersion == k_EVSVersion_2012;
-  }  // When this returns true so does Is2010() because of the file format
-     // similarities
-  bool Is2013() const {
-    return m_eVSVersion == k_EVSVersion_2013;
-  }  // When this returns true so does Is2010() because of the file format
-     // similarities
-  bool Is2015() const {
-    return m_eVSVersion == k_EVSVersion_2015;
-  }  // When this returns true so does Is2010() because of the file format
-     // similarities
-  bool Is2022() const {
-    return m_eVSVersion == k_EVSVersion_2022;
-  }  // When this returns true so does Is2010() because of the file format
-     // similarities
+  bool Is2010() const { return m_eVSVersion == k_EVSVersion_2010; }
+  bool Is2010PlusFileFormat() const { return m_bUseVS2010FileFormat; }
+  bool Is2012() const { return m_eVSVersion == k_EVSVersion_2012; }
+  bool Is2013() const { return m_eVSVersion == k_EVSVersion_2013; }
+  bool Is2015() const { return m_eVSVersion == k_EVSVersion_2015; }
+  bool Is2022() const { return m_eVSVersion == k_EVSVersion_2022; }
   bool IsDedicatedBuild() const { return m_bDedicatedBuild; }
   bool IsUnity() const { return m_bUseUnity; }
   bool IsShowCaseIssues() const { return m_bShowCaseIssues; }

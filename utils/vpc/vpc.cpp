@@ -560,7 +560,7 @@ bool CVPC::IsProjectCurrent(const char *pOutputFilename, bool bSpewStatus) {
     return false;
   }
 
-  if (Is2010() && !Sys_Exists(CFmtStr("%s.filters", pOutputFilename))) {
+  if (Is2010PlusFileFormat() && !Sys_Exists(CFmtStr("%s.filters", pOutputFilename))) {
     return false;
   }
 
@@ -1762,7 +1762,7 @@ void CVPC::SetMacrosAndConditionals() {
         m_ExtraOptionsCRCString += "VS2022";
         SetConditional("VS2022", true);
 
-        // temporarily allow VS2013 conditionals also as there are many. Will
+        // temporarily allow VS2015 conditionals also as there are many. Will
         // fix.
         SetConditional("VS2015", true);
 
