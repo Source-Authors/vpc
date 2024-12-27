@@ -973,22 +973,7 @@ void CVCProjGenerator::SetGUID(const char *pOutputFilename) {
   V_FileBase(pOutputFilename, szBasename, sizeof(szBasename));
 
   // set the GUID
-  MD5Context_t ctx;
-  unsigned char digest[MD5_DIGEST_LENGTH];
-  V_memset(&ctx, 0, sizeof(ctx));
-  V_memset(digest, 0, sizeof(digest));
-  MD5Init(&ctx);
-  MD5Update(&ctx, (unsigned char *)szBasename, strlen(szBasename));
-  MD5Final(digest, &ctx);
-
-  char szMD5[64];
-  V_binarytohex(digest, MD5_DIGEST_LENGTH, szMD5, sizeof(szMD5));
-  V_strupr(szMD5);
-
-  char szGUID[MAX_PATH];
-  V_snprintf(szGUID, sizeof(szGUID), "{%8.8s-%4.4s-%4.4s-%4.4s-%12.12s}", szMD5,
-             &szMD5[8], &szMD5[12], &szMD5[16], &szMD5[20]);
-  m_GUIDString = szGUID;
+  m_GUIDString = Sys_GuidFromFileName(szBasename);
 }
 
 CUtlString CVCProjGenerator::GetProjectName() { return m_ProjectName; }

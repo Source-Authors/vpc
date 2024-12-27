@@ -137,4 +137,6 @@ inline bool IsHFileExtension(const char *pExtension) {
          !V_stricmp(pExtension, "hh") || !V_stricmp(pExtension, "h");
 }
 
+CUtlString Sys_GuidFromFileName(const char *szFileName);
+
 #endif  // VPC_SYS_UTILS_H_

@@ -240,6 +240,9 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
       }
     }
 
+    // Write solution global data
+    WriteGlobalSolutionData(fp, pSolutionFilename, vcprojInfos);
+
     fclose(fp);
     Sys_CopyToMirror(pSolutionFilename);
   }
@@ -383,6 +386,84 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
 
     Msg("Found %d solution files in %s\n", numSolutionItems,
         g_pVPC->GetSolutionItemsFilename());
+  }
+
+  void WriteGlobalSolutionData(FILE *fp, const char *pSolutionFilename,
+                               const CUtlVector<CVCProjInfo> &vcprojInfos) {
+    fprintf(fp, "Global\n");
+
+    {
+      // Write solution configuration platforms
+      fprintf(
+          fp,
+          "\tGlobalSection(SolutionConfigurationPlatforms) = preSolution\n");
+      WriteSolutionConfigurationPlatforms(fp);
+      fprintf(fp, "\tEndGlobalSection\n");
+    }
+
+    {
+      // Write project configuration platforms.
+      fprintf(
+          fp,
+          "\tGlobalSection(ProjectConfigurationPlatforms) = postSolution\n");
+      WriteProjectConfigurationPlatforms(fp, vcprojInfos);
+      fprintf(fp, "\tEndGlobalSection\n");
+    }
+
+    {
+      // Do not hide solution node
+      fprintf(fp, "\tGlobalSection(SolutionProperties) = preSolution\n");
+      fprintf(fp, "\t\tHideSolutionNode = FALSE\n");
+      fprintf(fp, "\tEndGlobalSection\n");
+    }
+
+    {
+      // Set solution GUID for extensions
+      fprintf(fp, "\tGlobalSection(ExtensibilityGlobals) = postSolution\n");
+      fprintf(fp, "\t\tSolutionGuid = %s\n",
+              Sys_GuidFromFileName(pSolutionFilename).Get());
+      fprintf(fp, "\tEndGlobalSection\n");
+    }
+
+    fprintf(fp, "EndGlobal\n");
+  }
+
+  void WriteSolutionConfigurationPlatforms(FILE *fp) {
+    const char *pSolutionTargetPlatformName =
+        g_pVPC->IsPlatformDefined("win64") ? "x64" : "x86";
+
+    CUtlVector<CUtlString> configurationNames;
+    g_pVPC->GetProjectGenerator()->GetAllConfigurationNames(configurationNames);
+
+    for (auto &&configuration : configurationNames) {
+      fprintf(fp, "\t\t%s|%s = %s|%s\n", configuration.Get(),
+              pSolutionTargetPlatformName, configuration.Get(),
+              pSolutionTargetPlatformName);
+    }
+  }
+
+  void WriteProjectConfigurationPlatforms(
+      FILE *fp, const CUtlVector<CVCProjInfo> &vcprojInfos) {
+    const char *pSolutionTargetPlatformName =
+        g_pVPC->IsPlatformDefined("win64") ? "x64" : "x86";
+    const char *pProjectTargetPlatformName =
+        g_pVPC->IsPlatformDefined("win64") ? "x64" : "Win32";
+
+    CUtlVector<CUtlString> configurationNames;
+    g_pVPC->GetProjectGenerator()->GetAllConfigurationNames(configurationNames);
+
+    for (const CVCProjInfo &projInfo : vcprojInfos) {
+      for (auto &&configuration : configurationNames) {
+        fprintf(fp, "\t\t{%s}.%s|%s.ActiveCfg = %s|%s\n",
+                projInfo.m_ProjectGUID.Get(), configuration.Get(),
+                pSolutionTargetPlatformName, configuration.Get(),
+                pProjectTargetPlatformName);
+        fprintf(fp, "\t\t{%s}.%s|%s.Build.0 = %s|%s\n",
+                projInfo.m_ProjectGUID.Get(), configuration.Get(),
+                pSolutionTargetPlatformName, configuration.Get(),
+                pProjectTargetPlatformName);
+      }
+    }
   }
 
   void ConvertToRelativePath(char (&szFullPath)[MAX_PATH]) {

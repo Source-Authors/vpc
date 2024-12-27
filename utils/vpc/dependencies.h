@@ -113,12 +113,12 @@ class CDependency_Project : public CDependency {
   // Straight out of the $AdditionalOutputFiles key (split on semicolons).
   CUtlVector<CUtlString> m_AdditionalOutputFiles;
 
-  CUtlString
-      m_ProjectName;  // This comes from the $Project key in the .vpc file.
-  CUtlString
-      m_ProjectFilename;  // Absolute path to the VCPROJ file
-                          // (g_pVPC->GetOutputFilename() - see
-                          // CDependency::m_Filename for the VPC filename).
+  // This comes from the $Project key in the .vpc file.
+  CUtlString m_ProjectName;
+
+  // Absolute path to the VCPROJ file (g_pVPC->GetOutputFilename() - see
+  // CDependency::m_Filename for the VPC filename).
+  CUtlString m_ProjectFilename;
   CUtlString m_ImportLibrary;
 
   // Note that there can be multiple CDependency_Projects with the same
