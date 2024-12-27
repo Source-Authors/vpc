@@ -360,6 +360,8 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
                                 sizeof(szFullPath));
 
               if (V_RemoveDotSlashes(szFullPath)) {
+                ConvertToRelativePath(szFullPath);
+
                 fprintf(fp, "\t\t%s = %s\n", szFullPath, szFullPath);
                 ++numSolutionItems;
               }
@@ -369,6 +371,8 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
           _findclose(handle);
         }
       } else {
+        ConvertToRelativePath(szFullPath);
+
         // just a file - add it
         fprintf(fp, "\t\t%s = %s\n", szFullPath, szFullPath);
         ++numSolutionItems;
@@ -379,6 +383,18 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
 
     Msg("Found %d solution files in %s\n", numSolutionItems,
         g_pVPC->GetSolutionItemsFilename());
+  }
+
+  void ConvertToRelativePath(char (&szFullPath)[MAX_PATH]) {
+    // If file in start directory, drop latter from full path.
+    if (V_strstr(szFullPath, g_pVPC->GetStartDirectory()) == &szFullPath[0]) {
+      intp relativeFilePathIdx = V_strlen(g_pVPC->GetStartDirectory()) +
+                                 sizeof(CORRECT_PATH_SEPARATOR_S) - 1;
+      if (relativeFilePathIdx < sizeof(szFullPath)) {
+        V_memmove(szFullPath, szFullPath + relativeFilePathIdx,
+                  sizeof(szFullPath) - relativeFilePathIdx);
+      }
+    }
   }
 };
 
