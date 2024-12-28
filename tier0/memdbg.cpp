@@ -239,13 +239,27 @@ char *StackDescribe(void *const *ppAddresses, int nMaxAddresses) {
 
 //-----------------------------------------------------------------------------
 
+// The size of the no-man's land used in unaligned and aligned allocations:
+static size_t const no_mans_land_size = 4;
+
 // NOTE: This exactly mirrors the dbg header in the MSDEV crt
 // eventually when we write our own allocator, we can kill this
+// See struct _CrtMemBlockHeader at debug_heap.cpp
 struct CrtDbgMemHeader_t {
-  unsigned char m_Reserved[8];
+  CrtDbgMemHeader_t *m_pBlockHeaderNext;
+  CrtDbgMemHeader_t *m_pBlockHeaderPrev;
   const char *m_pFileName;
   int m_nLineNumber;
-  unsigned char m_Reserved2[16];
+
+  int m_BlockUse;
+  size_t m_DataSize;
+
+  long m_RequestNumber;
+  unsigned char m_Gap[no_mans_land_size];
+
+  // Followed by:
+  // unsigned char    m_data[_data_size];
+  // unsigned char    m_AnotherGap[no_mans_land_size];
 };
 
 struct Sentinal_t {
@@ -285,13 +299,14 @@ struct DbgMemHeader_t
   size_t nLogicalSize;
 #if defined(USE_STACK_TRACES)
   unsigned int nStatIndex;
-  byte reserved[16 - (sizeof(unsigned int) *
-                      2)];  // MS allocator always returns mem aligned on 16
-                            // bytes, which some of our code depends on
+  byte reserved[16 - sizeof(size_t) -
+                sizeof(unsigned int)];  // MS allocator always returns mem
+                                        // aligned on 16 bytes, which some of
+                                        // our code depends on
 #else
-  byte reserved[16 - sizeof(unsigned int)];  // MS allocator always returns mem
-                                             // aligned on 16 bytes, which some
-                                             // of our code depends on
+  byte reserved[16 - sizeof(size_t)];  // MS allocator always returns mem
+                                       // aligned on 16 bytes, which some
+                                       // of our code depends on
 #endif
   Sentinal_t sentinal;
 };
@@ -355,7 +370,7 @@ void LMDValidateBlock(DbgMemHeader_t *pHeader, bool bFreeList) {
 #elif defined(OSX)
 DbgMemHeader_t *GetCrtDbgMemHeader(void *pMem);
 #else
-#define GetCrtDbgMemHeader(pMem) ((DbgMemHeader_t *)(pMem)-1)
+#define GetCrtDbgMemHeader(pMem) ((DbgMemHeader_t *)(pMem) - 1)
 #endif
 
 #if defined(USE_STACK_TRACES)
@@ -1594,11 +1609,16 @@ void CDbgMemAlloc::RegisterDeallocation(MemInfo_t &info, size_t nLogicalSize,
 const char *CDbgMemAlloc::GetAllocatonFileName(void *pMem) {
   if (!pMem) return "";
 
+#ifndef __SANITIZE_ADDRESS__
   CrtDbgMemHeader_t *pHeader = GetCrtDbgMemHeader(pMem);
   if (pHeader->m_pFileName)
     return pHeader->m_pFileName;
   else
     return g_pszUnknown;
+#else
+
+  return g_pszUnknown;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1607,8 +1627,13 @@ const char *CDbgMemAlloc::GetAllocatonFileName(void *pMem) {
 int CDbgMemAlloc::GetAllocatonLineNumber(void *pMem) {
   if (!pMem) return 0;
 
+#ifndef __SANITIZE_ADDRESS__
   CrtDbgMemHeader_t *pHeader = GetCrtDbgMemHeader(pMem);
   return pHeader->m_nLineNumber;
+#else
+
+  return 0;
+#endif
 }
 
 //-----------------------------------------------------------------------------
