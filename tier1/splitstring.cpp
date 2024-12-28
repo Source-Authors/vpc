@@ -4,6 +4,8 @@
 
 #include "utlvector.h"
 
+#include "tier0/memdbgon.h"
+
 CSplitString::CSplitString(const char *pString, const char **pSeparators,
                            intp nSeparators) {
   Construct(pString, pSeparators, nSeparators);

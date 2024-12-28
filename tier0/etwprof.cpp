@@ -10,6 +10,8 @@
 
 #include <memory>
 
+#include "tier0/memdbgon.h"
+
 #ifdef ETW_MARKS_ENABLED
 
 // After building the DLL if it has never been registered on this machine or

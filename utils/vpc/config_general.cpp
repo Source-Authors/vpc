@@ -4,6 +4,8 @@
 
 #include "vpc.h"
 
+#include "tier0/memdbgon.h"
+
 bool VPC_Config_General_AdditionalOutputFiles( const char *pPropertyName )
 {
 	// Ignore this. We only care about it when looking at dependencies,

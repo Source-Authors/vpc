@@ -12,6 +12,8 @@
 #include <crtdbg.h>
 #include <cstdlib>
 
+#include "tier0/memdbgon.h"
+
 #undef malloc
 #undef free
 

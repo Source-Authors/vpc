@@ -30,6 +30,8 @@ class DummyInitL10N {
 } s_dummyInitL10N;
 #endif
 
+#include "tier0/memdbgon.h"
+
 // Purpose: Converts a UTF8 string into a unicode string
 int V_UTF8ToUnicode(const char *pUTF8, wchar_t *pwchDest,
                     intp cubDestSizeInBytes) {

@@ -9,6 +9,8 @@
 
 #include <algorithm>
 
+#include "tier0/memdbgon.h"
+
 // Tier 1 libraries
 ICvar *cvar{nullptr};
 ICvar *g_pCVar{nullptr};
