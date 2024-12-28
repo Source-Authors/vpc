@@ -928,12 +928,30 @@ class CDbgMemAlloc : public IMemAlloc {
   };
 
   struct MemInfoKey_FileLine_t {
-    MemInfoKey_FileLine_t(const char *pFileName, int line)
-        : m_pFileName(pFileName), m_nLine(line) {}
+    MemInfoKey_FileLine_t(const char *pFileName, int line) noexcept
+        : m_pFileName(_strdup(pFileName)), m_nLine(line) {}
+    ~MemInfoKey_FileLine_t() noexcept {
+      free(const_cast<void *>(reinterpret_cast<const void *>(m_pFileName)));
+    }
+
+    MemInfoKey_FileLine_t(MemInfoKey_FileLine_t &&k) noexcept
+        : m_pFileName{k.m_pFileName}, m_nLine{k.m_nLine} {
+      k.m_pFileName = nullptr;
+      k.m_nLine = 0;
+    }
+    MemInfoKey_FileLine_t(MemInfoKey_FileLine_t &k) = delete;
+
+    MemInfoKey_FileLine_t &operator=(MemInfoKey_FileLine_t &&k) noexcept {
+      std::swap(k.m_pFileName, m_pFileName);
+      std::swap(k.m_nLine, m_nLine);
+      return *this;
+    }
+    MemInfoKey_FileLine_t &operator=(MemInfoKey_FileLine_t &k) = delete;
+
     bool operator<(const MemInfoKey_FileLine_t &key) const {
       int iret = V_tier0_stricmp(m_pFileName, key.m_pFileName);
-      if (iret < 0) return true;
 
+      if (iret < 0) return true;
       if (iret > 0) return false;
 
       return m_nLine < key.m_nLine;
@@ -1448,12 +1466,15 @@ const char *CDbgMemAlloc::FindOrCreateFilename(const char *pFileName) {
 #endif  // #if defined( USE_STACK_TRACES_DETAILED )
 
   char *pszFilenameCopy;
-  Filenames_t::const_iterator iter = m_Filenames.find(pFileName);
+  auto iter = m_Filenames.find(pFileName);
   if (iter == m_Filenames.end()) {
     size_t nLen = strlen(pFileName) + 1;
     pszFilenameCopy = (char *)DebugAlloc(nLen);
-    memcpy(pszFilenameCopy, pFileName, nLen);
-    m_Filenames.insert(pszFilenameCopy);
+
+    if (pszFilenameCopy) {
+      memcpy(pszFilenameCopy, pFileName, nLen);
+      m_Filenames.insert(pszFilenameCopy);
+    }
   } else {
     pszFilenameCopy = (char *)(*iter);
   }
@@ -1466,12 +1487,9 @@ const char *CDbgMemAlloc::FindOrCreateFilename(const char *pFileName) {
 //-----------------------------------------------------------------------------
 CDbgMemAlloc::MemInfo_t &CDbgMemAlloc::FindOrCreateEntry(const char *pFileName,
                                                          int line) {
-  // Oh how I love crazy STL. retval.first == the StatMapIter_t in the std::pair
-  // retval.first->second == the MemInfo_t that's part of the StatMapIter_t
-  std::pair<StatMapIter_FileLine_t, bool> retval;
-  retval = m_StatMap_FileLine.insert(StatMapEntry_FileLine_t(
-      MemInfoKey_FileLine_t(pFileName, line), MemInfo_t()));
-  return retval.first->second;
+  auto [key, value] = m_StatMap_FileLine.emplace(
+      MemInfoKey_FileLine_t(pFileName, line), MemInfo_t());
+  return key->second;
 }
 
 #if defined(USE_STACK_TRACES)
@@ -1537,6 +1555,7 @@ void CDbgMemAlloc::RegisterDeallocation(unsigned int nStatIndex,
 
 void CDbgMemAlloc::RegisterAllocation(MemInfo_t &info, size_t nLogicalSize,
                                       size_t nActualSize, unsigned nTime) {
+#ifndef __SANITIZE_ADDRESS__
   ++info.m_nCurrentCount;
   ++info.m_nTotalCount;
   if (info.m_nCurrentCount > info.m_nPeakCount) {
@@ -1574,10 +1593,12 @@ void CDbgMemAlloc::RegisterAllocation(MemInfo_t &info, size_t nLogicalSize,
   }
 
   info.m_nTime += nTime;
+#endif
 }
 
 void CDbgMemAlloc::RegisterDeallocation(MemInfo_t &info, size_t nLogicalSize,
                                         size_t nActualSize, unsigned nTime) {
+#ifndef __SANITIZE_ADDRESS__
   --info.m_nCurrentCount;
   info.m_nCurrentSize -= nLogicalSize;
 
@@ -1600,6 +1621,7 @@ void CDbgMemAlloc::RegisterDeallocation(MemInfo_t &info, size_t nLogicalSize,
   info.m_nOverheadSize -= (nActualSize - nLogicalSize);
 
   info.m_nTime += nTime;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2096,21 +2118,17 @@ void CDbgMemAlloc::DumpMemInfo(const char *pAllocationName, int line,
 //-----------------------------------------------------------------------------
 size_t CDbgMemAlloc::ComputeMemoryUsedBy(char const *pchSubStr) {
   size_t total = 0;
-  StatMapIter_FileLine_t iter = m_StatMap_FileLine.begin();
-  while (iter != m_StatMap_FileLine.end()) {
-    if (!pchSubStr || strstr(iter->first.m_pFileName, pchSubStr)) {
-      total += iter->second.m_nCurrentSize;
+  for (auto &[key, info] : m_StatMap_FileLine) {
+    if (!pchSubStr || strstr(key.m_pFileName, pchSubStr)) {
+      total += info.m_nCurrentSize;
     }
-    iter++;
   }
   return total;
 }
 
 void CDbgMemAlloc::DumpFileStats() {
-  StatMapIter_FileLine_t iter = m_StatMap_FileLine.begin();
-  while (iter != m_StatMap_FileLine.end()) {
-    DumpMemInfo(iter->first.m_pFileName, iter->first.m_nLine, iter->second);
-    iter++;
+  for (auto &[key, info] : m_StatMap_FileLine) {
+    DumpMemInfo(key.m_pFileName, key.m_nLine, info);
   }
 }
 
