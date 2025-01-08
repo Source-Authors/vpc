@@ -300,6 +300,9 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
   m_XMLWriter.Write(
       "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.props\" />");
   m_XMLWriter.PushNode("ImportGroup", "Label=\"ExtensionSettings\"");
+  m_XMLWriter.Write(
+      "<Import Project=\"$(VCTargetsPath)\\BuildCustomizations\\masm.props\" "
+      "/>");
   m_XMLWriter.PopNode(true);
 
   for (int i = 0; i < configurationNames.Count(); i++) {
@@ -381,6 +384,9 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
   m_XMLWriter.Write(
       "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.targets\" />");
   m_XMLWriter.PushNode("ImportGroup", "Label=\"ExtensionTargets\"");
+  m_XMLWriter.Write(
+      "<Import Project=\"$(VCTargetsPath)\\BuildCustomizations\\masm.targets\" "
+      "/>");
   m_XMLWriter.PopNode(true);
 
   m_XMLWriter.PopNode(true);
