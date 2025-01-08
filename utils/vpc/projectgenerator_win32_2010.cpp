@@ -37,13 +37,14 @@ enum TypeKeyNames_e {
   TKN_COMPILE,
   TKN_RESOURCECOMPILE,
   TKN_CUSTOMBUILD,
+  TKN_MASM,
   TKN_NONE,
   TKN_MAX_COUNT,
 };
 
-static const char *s_TypeKeyNames[] = {"Library",     "ClInclude",
-                                       "ClCompile",   "ResourceCompile",
-                                       "CustomBuild", "None"};
+static const char *s_TypeKeyNames[] = {
+    "Library",     "ClInclude", "ClCompile", "ResourceCompile",
+    "CustomBuild", "MASM",      "None"};
 
 const char *CProjectGenerator_Win32_2010::GetKeyNameForFile(
     CProjectFile *pFile) {
@@ -59,10 +60,36 @@ const char *CProjectGenerator_Win32_2010::GetKeyNameForFile(
       pKeyName = s_TypeKeyNames[TKN_COMPILE];
     } else if (IsHFileExtension(pExtension)) {
       pKeyName = s_TypeKeyNames[TKN_INCLUDE];
+    } else if (IsMasmFileExtension(pExtension)) {
+      pKeyName = s_TypeKeyNames[TKN_MASM];
     } else if (!V_stricmp(pExtension, "lib")) {
       pKeyName = s_TypeKeyNames[TKN_LIBRARY];
     } else if (!V_stricmp(pExtension, "rc")) {
       pKeyName = s_TypeKeyNames[TKN_RESOURCECOMPILE];
+    }
+  }
+
+  return pKeyName;
+}
+
+enum FileTypeNames_e {
+  FTN_DOCUMENT = 0,
+  FTN_NONE,
+  FTN_MAX_COUNT,
+};
+
+static const char *s_FileTypeNames[] = {"Document", ""};
+
+const char *CProjectGenerator_Win32_2010::GetFileTypeForFile(
+    CProjectFile *pFile) {
+  static_assert(V_ARRAYSIZE(s_FileTypeNames) == FTN_MAX_COUNT);
+
+  const char *pExtension = V_GetFileExtension(pFile->m_Name.Get());
+
+  const char *pKeyName = s_FileTypeNames[FTN_NONE];
+  if (pExtension) {
+    if (IsMasmFileExtension(pExtension)) {
+      pKeyName = s_FileTypeNames[FTN_DOCUMENT];
     }
   }
 
@@ -99,12 +126,26 @@ bool CProjectGenerator_Win32_2010::WriteFile(CProjectFile *pFile,
     return true;
   }
 
+  const char *pFileType = GetFileTypeForFile(pFile);
+  bool bHasFileType = pFileType && *pFileType;
+
   if (!pFile->m_Configs.Count()) {
-    m_XMLWriter.Write(
-        CFmtStrMax("<%s Include=\"%s\" />", pKeyName, pFile->m_Name.Get()));
+    if (!bHasFileType) {
+      m_XMLWriter.Write(
+          CFmtStrMax("<%s Include=\"%s\" />", pKeyName, pFile->m_Name.Get()));
+    } else {
+      m_XMLWriter.PushNode(pKeyName,
+                           CFmtStr("Include=\"%s\"", pFile->m_Name.Get()));
+      m_XMLWriter.Write(CFmtStrMax("<FileType>%s</FileType>", pFileType));
+      m_XMLWriter.PopNode(true);
+    }
   } else {
     m_XMLWriter.PushNode(pKeyName,
                          CFmtStr("Include=\"%s\"", pFile->m_Name.Get()));
+
+    if (bHasFileType) {
+      m_XMLWriter.Write(CFmtStrMax("<FileType>%s</FileType>", pFileType));
+    }
 
     for (int i = 0; i < pFile->m_Configs.Count(); i++) {
       if (!WriteConfiguration(pFile->m_Configs[i])) return false;

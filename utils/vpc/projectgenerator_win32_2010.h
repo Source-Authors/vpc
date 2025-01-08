@@ -49,6 +49,7 @@ class CProjectGenerator_Win32_2010 : public IVCProjWriter {
                                const char *pFileTypeName);
 
   const char *GetKeyNameForFile(CProjectFile *pFile);
+  const char *GetFileTypeForFile(CProjectFile *pFile);
 
   CXMLWriter m_XMLWriter;
   CXMLWriter m_XMLFilterWriter;
