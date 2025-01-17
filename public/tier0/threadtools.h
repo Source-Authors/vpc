@@ -15,6 +15,7 @@
 #if defined(POSIX) && !defined(_PS3) && !defined(_X360)
 #include <pthread.h>
 #include <cerrno>
+#include <cstddef>  // std::size
 #define WAIT_OBJECT_0 0
 #define WAIT_TIMEOUT 0x00000102
 #define WAIT_FAILED -1
@@ -193,12 +194,10 @@ DLL_IMPORT unsigned long STDCALL GetCurrentThreadId();
 inline void ThreadPause() {
 #if defined(COMPILER_PS3)
   __db16cyc();
-#elif defined(COMPILER_GCC)
+#elif defined(COMPILER_GCC) || defined(COMPILER_CLANG)
   __asm __volatile("pause");
-#elif defined(COMPILER_MSVC64)
+#elif defined(COMPILER_MSVC64) || defined(COMPILER_MSVC32)
   _mm_pause();
-#elif defined(COMPILER_MSVC32)
-  __asm pause;
 #elif defined(COMPILER_MSVCX360)
   YieldProcessor();
   __asm { or r0,r0,r0}

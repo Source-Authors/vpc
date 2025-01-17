@@ -1,6 +1,6 @@
 // Copyright Valve Corporation, All rights reserved.
 
-#include "checksum_md5.h"
+#include "tier1/checksum_md5.h"
 
 #include <cstring>
 #include <cstdio>
@@ -144,7 +144,7 @@ void MD5Init(MD5Context_t *ctx) {
 //			*buf -
 //			len -
 //-----------------------------------------------------------------------------
-void MD5Update(MD5Context_t *ctx, unsigned char const *buf, size_t len_in) {
+void MD5Update(MD5Context_t *ctx, unsigned char const *buf, std::size_t len_in) {
   /* Update bitcount */
 
   Assert(len_in <= UINT_MAX);

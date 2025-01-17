@@ -49,7 +49,7 @@ groupIndex_t VPC_Group_CreateGroup()
 //-----------------------------------------------------------------------------
 groupTagIndex_t VPC_Group_FindOrCreateGroupTag( const char *pName, bool bCreate )
 {
-	for (intp i=0; i<g_pVPC->m_GroupTags.Count(); i++)
+	for ( intp i=0; i<g_pVPC->m_GroupTags.Count(); i++ )
 	{
 		if ( !V_stricmp( pName, g_pVPC->m_GroupTags[i].name.String() ) )
 			return i;

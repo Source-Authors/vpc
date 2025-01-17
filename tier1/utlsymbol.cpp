@@ -2,13 +2,13 @@
 //
 // Purpose: Defines a symbol table
 
-#include "utlsymbol.h"
+#include "tier1/utlsymbol.h"
 
 #include <cstddef>
 
 #include "tier0/threadtools.h"
-#include "stringpool.h"
-#include "generichash.h"
+#include "tier1/stringpool.h"
+#include "tier1/generichash.h"
 #include "tier0/vprof.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -332,7 +332,7 @@ const char *CUtlSymbolTable::String(CUtlSymbol id) const {
 void CUtlSymbolTable::RemoveAll() {
   m_Lookup.Purge();
 
-  for (int i = 0; i < m_StringPools.Count(); i++) free(m_StringPools[i]);
+  for (intp i = 0; i < m_StringPools.Count(); i++) free(m_StringPools[i]);
 
   m_StringPools.RemoveAll();
 }
@@ -373,7 +373,9 @@ FileNameHandle_t CUtlFilenameSymbolTable::FindOrAddFileName(
   if (handle.path && handle.file) {
     // found
     m_lock.UnlockWrite();
-    return *(FileNameHandle_t *)(&handle);
+    FileNameHandle_t h;
+    V_memcpy(&h, &handle, sizeof(h));
+    return h;
   }
 
   // safely add it
@@ -381,7 +383,9 @@ FileNameHandle_t CUtlFilenameSymbolTable::FindOrAddFileName(
   handle.file = m_StringPool.ReferenceStringHandle(filename);
   m_lock.UnlockWrite();
 
-  return *(FileNameHandle_t *)(&handle);
+  FileNameHandle_t h;
+  V_memcpy(&h, &handle, sizeof(h));
+  return h;
 }
 
 FileNameHandle_t CUtlFilenameSymbolTable::FindFileName(const char *pFileName) {
@@ -409,7 +413,9 @@ FileNameHandle_t CUtlFilenameSymbolTable::FindFileName(const char *pFileName) {
 
   if ((handle.path == 0) || (handle.file == 0)) return NULL;
 
-  return *(FileNameHandle_t *)(&handle);
+  FileNameHandle_t h;
+  V_memcpy(&h, &handle, sizeof(h));
+  return h;
 }
 
 //-----------------------------------------------------------------------------

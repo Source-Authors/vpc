@@ -3,7 +3,7 @@
 // Purpose: Win32 Console API helpers
 
 #include "pch_tier0.h"
-#include "win32consoleio.h"
+#include "tier0/win32consoleio.h"
 
 #if defined(_WIN32)
 

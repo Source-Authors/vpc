@@ -25,7 +25,7 @@
 #include "tier0/valve_on.h"
 #include "tier0/vprof.h"
 #include "tier0/l2cache.h"
-#include "strtools.h"
+#include "tier1/strtools.h"
 
 #ifdef _X360
 

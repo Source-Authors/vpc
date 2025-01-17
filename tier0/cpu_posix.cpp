@@ -3,9 +3,12 @@
 // Purpose: determine CPU speed under linux
 
 #include <sys/types.h>
-#include <sys/sysctl.h>
 #include <sys/time.h>
 #include <unistd.h>
+
+#ifdef OSX
+#include <sys/sysctl.h>
+#endif
 
 #include <cstdio>
 #include <cstdlib>
@@ -18,7 +21,7 @@
 class TimeVal {
  public:
   TimeVal() {}
-  TimeVal &operator=(const TimeVal &val) { m_TimeVal = val.m_TimeVal; }
+  TimeVal &operator=(const TimeVal &val) { m_TimeVal = val.m_TimeVal; return *this; }
   inline double operator-(const TimeVal &left) {
     uint64 left_us =
         (uint64)left.m_TimeVal.tv_sec * 1000000 + left.m_TimeVal.tv_usec;
@@ -32,11 +35,10 @@ class TimeVal {
 
 // Compute the positive difference between two 64 bit numbers.
 static inline uint64 diff(uint64 v1, uint64 v2) {
-  uint64 d = v1 - v2;
-  if (d >= 0)
-    return d;
+  if (v1 >= v2)
+    return v1 - v2;
   else
-    return -d;
+    return v2 - v1;
 }
 
 #ifdef OSX

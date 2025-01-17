@@ -8,6 +8,7 @@
 #include "tier0/dbg.h"
 
 #include <algorithm>
+#include <string>  // std::size
 
 #include "tier0/memdbgon.h"
 

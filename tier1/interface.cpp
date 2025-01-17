@@ -17,7 +17,7 @@
 #endif
 
 #include "tier1/interface.h"
-#include "basetypes.h"
+#include "tier0/basetypes.h"
 #include "tier0/dbg.h"
 #include "tier1/strtools.h"
 #include "tier0/icommandline.h"
@@ -136,9 +136,9 @@ static Proc Sys_GetProcAddress(const char *pModuleName, const char *pName) {
 #else  // !_PS3
   HMODULE hModule = (HMODULE)GetModuleHandle(pModuleName);
 #if defined(WIN32)
-  return GetProcAddress(hModule, pName);
+  return hModule ? GetProcAddress(hModule, pName) : nullptr;
 #else   // !WIN32
-  return (proc)dlsym((void *)hModule, pName);
+  return (Proc)dlsym((void *)hModule, pName);
 #endif  // WIN32
 #endif  // _PS3
 }
@@ -186,8 +186,10 @@ uint ThreadedLoadLibraryFunc(void *pParam) {
 }
 #endif
 
+#ifdef _X360
 // global to propagate a library load error from thread into Sys_LoadModule
 static DWORD g_nLoadLibraryError = 0;
+#endif
 
 static HMODULE Sys_LoadLibraryGuts(const char *pLibraryName) {
 #ifdef PLATFORM_PS3
@@ -269,11 +271,16 @@ static HMODULE Sys_LoadLibraryGuts(const char *pLibraryName) {
   ReleaseThreadHandle(h);
 
   if (context.m_hLibrary) {
+#ifdef _X360
     g_nLoadLibraryError = 0;
+#endif
     StackToolsNotify_LoadedLibrary(str);
-  } else {
+  }
+#ifdef _X360
+  else {
     g_nLoadLibraryError = context.m_nError;
   }
+#endif
 
   return context.m_hLibrary;
 
@@ -353,7 +360,7 @@ CSysModule *Sys_LoadModule(const char *pModuleName) {
   // If using the Steam filesystem, either the DLL must be a minimum footprint
   // file in the depot (MFP) or a filesystem GetLocalCopy() call must be made
   // prior to the call to this routine.
-  HMODULE hDLL = NULL;
+  HMODULE hDLL = 0;
 
   char alteredFilename[MAX_PATH];
   if (IsPS3()) {
@@ -385,7 +392,10 @@ CSysModule *Sys_LoadModule(const char *pModuleName) {
     }
 #else   // !_PS3
     char szCwd[1024];
-    _getcwd(szCwd, sizeof(szCwd));
+    if (!_getcwd(szCwd, sizeof(szCwd))) {
+      Msg("Failed to load %s: getcwd failed.\n", pModuleName);
+      return nullptr;
+    }
 
     if (IsX360()) {
       int i = CommandLine()->FindParm("-basedir");
@@ -438,7 +448,7 @@ CSysModule *Sys_LoadModule(const char *pModuleName) {
       Msg("Failed to load %s: %s\n", pModuleName, dlerror());
 #endif  // _WIN32
     }
-#endif  // DEBUG
+#endif  // _DEBUG
   }
 
   // If running in the debugger, assume debug binaries are okay, otherwise they

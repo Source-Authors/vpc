@@ -969,7 +969,7 @@ void CVPC::HandleSingleCommandLineArg(const char *pArg) {
       m_bUsageOnly = true;
     } else if (!V_stricmp(pArgName, "allgames")) {
       // shortcut for all games defined
-      for (int j = 0; j < m_Conditionals.Count(); j++) {
+      for (intp j = 0; j < m_Conditionals.Count(); j++) {
         if (m_Conditionals[j].type == CONDITIONAL_GAME) {
           m_Conditionals[j].m_bDefined = true;
         }
@@ -1488,12 +1488,12 @@ void CVPC::IterateTargetProjects(CUtlVector<projectIndex_t> &projectList,
     return;
   }
 
-  for (int nProject = 0; nProject < projectList.Count(); nProject++) {
+  for (intp nProject = 0; nProject < projectList.Count(); nProject++) {
     project_t *pProject = &m_Projects[projectList[nProject]];
 
     // each project can have 1 or more scripts that are predicated by
     // game/platform conditionals (i.e. client or server)
-    for (int nScript = 0; nScript < pProject->scripts.Count(); nScript++) {
+    for (intp nScript = 0; nScript < pProject->scripts.Count(); nScript++) {
       script_t *pProjectScript = &pProject->scripts[nScript];
 
       // occurrence of game condition(s) dictates iteration behavior
@@ -1509,7 +1509,7 @@ void CVPC::IterateTargetProjects(CUtlVector<projectIndex_t> &projectList,
         // auto iterate through all defined game conditionals, setting each in
         // turn this provides for building say client for all mod(s) that it can
         // support
-        for (int nTargetGame = 0; nTargetGame < m_Conditionals.Count();
+        for (intp nTargetGame = 0; nTargetGame < m_Conditionals.Count();
              nTargetGame++) {
           if (m_Conditionals[nTargetGame].type != CONDITIONAL_GAME ||
               !m_Conditionals[nTargetGame].m_bDefined) {
@@ -1519,7 +1519,7 @@ void CVPC::IterateTargetProjects(CUtlVector<projectIndex_t> &projectList,
           }
 
           // only one game condition is active during project generation
-          for (int k = 0; k < m_Conditionals.Count(); k++) {
+          for (intp k = 0; k < m_Conditionals.Count(); k++) {
             // unmark all game conditionals
             if (m_Conditionals[k].type == CONDITIONAL_GAME) {
               m_Conditionals[k].m_bGameConditionActive = false;
@@ -1613,7 +1613,7 @@ void CVPC::FindProjectFromVCPROJ(const char *pScriptNameVCProj) {
   szProject[0] = '\0';
 
   size_t bestLen = 0;
-  for (int i = 0; i < m_Projects.Count(); i++) {
+  for (intp i = 0; i < m_Projects.Count(); i++) {
     if (V_stristr(pScriptNameVCProj, m_Projects[i].name.String())) {
       if (bestLen < strlen(m_Projects[i].name.String())) {
         bestLen = strlen(m_Projects[i].name.String());
@@ -1684,7 +1684,7 @@ void CVPC::FindProjectFromVCPROJ(const char *pScriptNameVCProj) {
 void CVPC::SetMacrosAndConditionals() {
   // Find the target platform.
   conditional_t *pPlatformConditional = NULL;
-  for (int i = 0; i < m_Conditionals.Count(); i++) {
+  for (intp i = 0; i < m_Conditionals.Count(); i++) {
     if (m_Conditionals[i].type == CONDITIONAL_PLATFORM &&
         m_Conditionals[i].m_bDefined) {
       pPlatformConditional = &m_Conditionals[i];
@@ -1693,7 +1693,7 @@ void CVPC::SetMacrosAndConditionals() {
   }
 
   // Only one platform is allowed to be defined.
-  for (int i = 0; i < m_Conditionals.Count(); i++) {
+  for (intp i = 0; i < m_Conditionals.Count(); i++) {
     if (&m_Conditionals[i] != pPlatformConditional &&
         m_Conditionals[i].type == CONDITIONAL_PLATFORM &&
         m_Conditionals[i].m_bDefined) {
@@ -2056,8 +2056,8 @@ void CVPC::SetMacrosAndConditionals() {
 
   // Set VPCGAME macro based on target game
   if (m_bEnableVpcGameMacro) {
-    int nGameDefineIndex = -1;
-    for (int iOtherGameDefine = 0; iOtherGameDefine < m_Conditionals.Count();
+    intp nGameDefineIndex = -1;
+    for (intp iOtherGameDefine = 0; iOtherGameDefine < m_Conditionals.Count();
          ++iOtherGameDefine) {
       if (m_Conditionals[iOtherGameDefine].type == CONDITIONAL_GAME &&
           m_Conditionals[iOtherGameDefine].m_bDefined) {

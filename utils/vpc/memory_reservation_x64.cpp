@@ -115,7 +115,9 @@ bool ReserveBottomMemoryFor64Bit() noexcept {
 }
 #else
 bool ReserveBottomMemoryFor64Bit() noexcept {
+#ifdef _WIN32
   OutputDebugStringA("No memory reserved as not x64 or Release mode.\n");
+#endif
 
   return true;
 }

@@ -15,8 +15,9 @@
 #endif
 
 #include "tier0/dbg.h"
-#include "memstack.h"
-#include "utlmap.h"
+#include "tier1/memstack.h"
+#include "tier1/utlmap.h"
+#include <cstddef>  // std::ptrdiff_t
 #include "tier0/memdbgon.h"
 
 #ifdef _WIN32
@@ -263,12 +264,12 @@ intp CMemoryStack::GetSize() {
 
 bool CMemoryStack::CommitTo(byte *pNextAlloc) {
   if (m_bPhysical) {
-    return NULL;
+    return false;
   }
 
 #ifdef MEMSTACK_VIRTUAL_MEMORY_AVAILABLE
   unsigned char *pNewCommitLimit = AlignValue(pNextAlloc, m_commitSize);
-  ptrdiff_t commitSize = pNewCommitLimit - m_pCommitLimit;
+  std::ptrdiff_t commitSize = pNewCommitLimit - m_pCommitLimit;
 
   if (m_pCommitLimit + commitSize > m_pAllocLimit) {
     return false;
@@ -300,7 +301,7 @@ bool CMemoryStack::CommitTo(byte *pNextAlloc) {
 
     if (pNewCommitLimit < m_pCommitLimit) {
       RegisterDeallocation(false);
-      ptrdiff_t decommitSize = m_pCommitLimit - pNewCommitLimit;
+      std::ptrdiff_t decommitSize = m_pCommitLimit - pNewCommitLimit;
 #ifdef _WIN32
       VirtualFree(pNewCommitLimit, decommitSize, MEM_DECOMMIT);
 #else

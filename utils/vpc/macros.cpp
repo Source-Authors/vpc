@@ -20,7 +20,7 @@ void CVPC::SetMacro(const char *pName, const char *pValue,
 //-----------------------------------------------------------------------------
 macro_t *CVPC::FindOrCreateMacro(const char *pName, bool bCreate,
                                  const char *pValue) {
-  for (int i = 0; i < m_Macros.Count(); i++) {
+  for (intp i = 0; i < m_Macros.Count(); i++) {
     if (!V_stricmp(pName, m_Macros[i].name.String())) {
       if (pValue && V_stricmp(pValue, m_Macros[i].value.String())) {
         // update
@@ -46,7 +46,7 @@ intp CVPC::GetMacrosMarkedForCompilerDefines(
     CUtlVector<macro_t *> &macroDefines) {
   macroDefines.Purge();
 
-  for (int i = 0; i < m_Macros.Count(); i++) {
+  for (intp i = 0; i < m_Macros.Count(); i++) {
     if (m_Macros[i].m_bSetupDefineInProjectFile) {
       macroDefines.AddToTail(&m_Macros[i]);
     }
@@ -69,7 +69,6 @@ void CVPC::ResolveMacrosInStringInternal(char const *pString, char *pOutBuff,
   char buffer1[MAX_SYSTOKENCHARS];
   char buffer2[MAX_SYSTOKENCHARS];
   buffer2[0] = '\0';
-  int i;
 
   // ensure a "greedy" match by sorting longest to shortest
   m_Macros.Sort(SortMacrosByNameLength);
@@ -80,14 +79,14 @@ void CVPC::ResolveMacrosInStringInternal(char const *pString, char *pOutBuff,
   do {
     bDone = true;
     bool bDoReplace = true;
-    for (i = 0; i < m_Macros.Count(); i++) {
+    for (intp i = 0; i < m_Macros.Count(); i++) {
       sprintf(macroName, "$%s", m_Macros[i].name.String());
       const char *pFound = V_stristr(buffer1, macroName);
       if (pFound && bStringIsConditional) {
         // if expanding a conditional, give conditionals priority over macros
         // i.e. if the string we've found begins both a macro and conditional,
         // don't expand the macro
-        for (int j = 0; j < m_Conditionals.Count(); j++) {
+        for (intp j = 0; j < m_Conditionals.Count(); j++) {
           if (V_stristr(pFound + 1, m_Conditionals[j].name.String()) ==
               pFound + 1) {
             bDoReplace = false;
@@ -143,7 +142,7 @@ void CVPC::ResolveMacrosInConditional(char const *pString, char *pOutBuff,
 }
 
 void CVPC::RemoveScriptCreatedMacros() {
-  for (int i = 0; i < m_Macros.Count(); i++) {
+  for (intp i = 0; i < m_Macros.Count(); i++) {
     if (!m_Macros[i].m_bInternalCreatedMacro) {
       m_Macros.Remove(i);
       --i;
@@ -152,7 +151,7 @@ void CVPC::RemoveScriptCreatedMacros() {
 }
 
 const char *CVPC::GetMacroValue(const char *pName) {
-  for (int i = 0; i < m_Macros.Count(); i++) {
+  for (intp i = 0; i < m_Macros.Count(); i++) {
     if (!V_stricmp(pName, m_Macros[i].name.String())) {
       return m_Macros[i].value.String();
     }

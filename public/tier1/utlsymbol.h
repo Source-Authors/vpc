@@ -242,6 +242,11 @@ class CUtlFilenameSymbolTable {
     unsigned short path;
     // Part after the final '/', including extension
     unsigned short file;
+
+#ifdef PLATFORM_64BITS
+    // Pad to ptr size.
+    [[maybe_unused]] unsigned int pad;
+#endif
   };
 
  public:

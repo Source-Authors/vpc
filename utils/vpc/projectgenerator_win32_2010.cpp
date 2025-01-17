@@ -147,7 +147,7 @@ bool CProjectGenerator_Win32_2010::WriteFile(CProjectFile *pFile,
       m_XMLWriter.Write(CFmtStrMax("<FileType>%s</FileType>", pFileType));
     }
 
-    for (int i = 0; i < pFile->m_Configs.Count(); i++) {
+    for (intp i = 0; i < pFile->m_Configs.Count(); i++) {
       if (!WriteConfiguration(pFile->m_Configs[i])) return false;
     }
 
@@ -284,7 +284,7 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
   m_XMLWriter.PushNode("ItemGroup", "Label=\"ProjectConfigurations\"");
   CUtlVector<CUtlString> configurationNames;
   m_pVCProjGenerator->GetAllConfigurationNames(configurationNames);
-  for (int i = 0; i < configurationNames.Count(); i++) {
+  for (intp i = 0; i < configurationNames.Count(); i++) {
     m_XMLWriter.PushNode(
         "ProjectConfiguration",
         CFmtStr("Include=\"%s|%s\"", configurationNames[i].Get(),
@@ -330,7 +330,7 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
   }
 
   // write the root configurations
-  for (int i = 0; i < configurationNames.Count(); i++) {
+  for (intp i = 0; i < configurationNames.Count(); i++) {
     CProjectConfiguration *pConfiguration = NULL;
     if (m_pVCProjGenerator->GetRootConfiguration(configurationNames[i].Get(),
                                                  &pConfiguration)) {
@@ -346,7 +346,7 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
       "/>");
   m_XMLWriter.PopNode(true);
 
-  for (int i = 0; i < configurationNames.Count(); i++) {
+  for (intp i = 0; i < configurationNames.Count(); i++) {
     m_XMLWriter.PushNode(
         "ImportGroup",
         CFmtStr("Condition=\"'$(Configuration)|$(Platform)'=='%s|%s'\" "
@@ -364,7 +364,7 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
 
   m_XMLWriter.PushNode("PropertyGroup");
   m_XMLWriter.WriteLineNode("_ProjectFileVersion", "", "10.0.30319.1");
-  for (int i = 0; i < configurationNames.Count(); i++) {
+  for (intp i = 0; i < configurationNames.Count(); i++) {
     CProjectConfiguration *pConfiguration = NULL;
     if (m_pVCProjGenerator->GetRootConfiguration(configurationNames[i].Get(),
                                                  &pConfiguration)) {
@@ -408,7 +408,7 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
   m_XMLWriter.PopNode(true);
 
   // write the tool configurations
-  for (int i = 0; i < configurationNames.Count(); i++) {
+  for (intp i = 0; i < configurationNames.Count(); i++) {
     CProjectConfiguration *pConfiguration = NULL;
     if (m_pVCProjGenerator->GetRootConfiguration(configurationNames[i].Get(),
                                                  &pConfiguration)) {

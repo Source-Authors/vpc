@@ -684,12 +684,12 @@ PLATFORM_INTERFACE void LoggingSystem_SetChannelFlags(
 // macros simply pass their variadic parameters through to LoggingSystem_Log().
 // Therefore, you need to ensure that the parameters are in the same general
 // order and that there are no ambiguities with the overload.
-PLATFORM_INTERFACE LoggingResponse_t
-LoggingSystem_Log(LoggingChannelID_t channelID, LoggingSeverity_t severity,
-                  const char *pMessageFormat, ...) FMTFUNCTION(3, 4);
+PLATFORM_INTERFACE LoggingResponse_t LoggingSystem_Log(
+    LoggingChannelID_t channelID, LoggingSeverity_t severity,
+    PRINTF_FORMAT_STRING const char *pMessageFormat, ...) FMTFUNCTION(3, 4);
 PLATFORM_OVERLOAD LoggingResponse_t LoggingSystem_Log(
     LoggingChannelID_t channelID, LoggingSeverity_t severity, Color spewColor,
-    const char *pMessageFormat, ...) FMTFUNCTION(4, 5);
+    PRINTF_FORMAT_STRING const char *pMessageFormat, ...) FMTFUNCTION(4, 5);
 
 PLATFORM_INTERFACE LoggingResponse_t LoggingSystem_LogDirect(
     LoggingChannelID_t channelID, LoggingSeverity_t severity, Color spewColor,

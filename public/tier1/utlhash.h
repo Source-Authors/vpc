@@ -8,8 +8,7 @@
 #include "utlmemory.h"
 #include "utlvector.h"
 #include "utllinkedlist.h"
-#include "utllinkedlist.h"
-#include "commonmacros.h"
+#include "tier0/commonmacros.h"
 #include "generichash.h"
 
 typedef unsigned UtlHashHandle_t;
@@ -32,7 +31,7 @@ class CUtlHash {
   bool IsValidHandle(UtlHashHandle_t handle) const;
 
   // size
-  int Count(void) const;
+  intp Count(void) const;
 
   // memory
   void Purge(void);
@@ -130,11 +129,11 @@ inline bool CUtlHash<Data, C, K>::IsValidHandle(UtlHashHandle_t handle) const {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 template <class Data, typename C, typename K>
-inline int CUtlHash<Data, C, K>::Count(void) const {
-  int count = 0;
+inline intp CUtlHash<Data, C, K>::Count(void) const {
+  intp count = 0;
 
-  int bucketCount = m_Buckets.Count();
-  for (int ndxBucket = 0; ndxBucket < bucketCount; ndxBucket++) {
+  intp bucketCount = m_Buckets.Count();
+  for (intp ndxBucket = 0; ndxBucket < bucketCount; ndxBucket++) {
     count += m_Buckets[ndxBucket].Count();
   }
 
@@ -294,8 +293,8 @@ inline void CUtlHash<Data, C, K>::Remove(UtlHashHandle_t handle) {
 //-----------------------------------------------------------------------------
 template <class Data, typename C, typename K>
 inline void CUtlHash<Data, C, K>::RemoveAll() {
-  int bucketCount = m_Buckets.Count();
-  for (int ndxBucket = 0; ndxBucket < bucketCount; ndxBucket++) {
+  intp bucketCount = m_Buckets.Count();
+  for (intp ndxBucket = 0; ndxBucket < bucketCount; ndxBucket++) {
     m_Buckets[ndxBucket].RemoveAll();
   }
 }
@@ -356,7 +355,7 @@ inline UtlHashHandle_t CUtlHash<Data, C, K>::GetNextHandle(
   int bi = GetBucketIndex(handle);
   int ki = GetKeyDataIndex(handle);
 
-  int nBuckets = m_Buckets.Count();
+  intp nBuckets = m_Buckets.Count();
   for (; bi < nBuckets; ++bi) {
     if (ki < m_Buckets[bi].Count()) return BuildHandle(bi, ki);
 
@@ -374,25 +373,25 @@ inline void CUtlHash<Data, C, K>::Log(const char *filename) {
   pDebugFp = fopen(filename, "w");
   if (!pDebugFp) return;
 
-  int maxBucketSize = 0;
-  int numBucketsEmpty = 0;
+  intp maxBucketSize = 0;
+  intp numBucketsEmpty = 0;
 
-  int bucketCount = m_Buckets.Count();
-  fprintf(pDebugFp, "\n%d Buckets\n", bucketCount);
+  intp bucketCount = m_Buckets.Count();
+  fprintf(pDebugFp, "\n%zd Buckets\n", bucketCount);
 
-  for (int ndxBucket = 0; ndxBucket < bucketCount; ndxBucket++) {
-    int count = m_Buckets[ndxBucket].Count();
+  for (intp ndxBucket = 0; ndxBucket < bucketCount; ndxBucket++) {
+    intp count = m_Buckets[ndxBucket].Count();
 
     if (count > maxBucketSize) {
       maxBucketSize = count;
     }
     if (count == 0) numBucketsEmpty++;
 
-    fprintf(pDebugFp, "Bucket %d: %d\n", ndxBucket, count);
+    fprintf(pDebugFp, "Bucket %zd: %zd\n", ndxBucket, count);
   }
 
-  fprintf(pDebugFp, "\nBucketHeads Used: %d\n", bucketCount - numBucketsEmpty);
-  fprintf(pDebugFp, "Max Bucket Size: %d\n", maxBucketSize);
+  fprintf(pDebugFp, "\nBucketHeads Used: %zd\n", bucketCount - numBucketsEmpty);
+  fprintf(pDebugFp, "Max Bucket Size: %zd\n", maxBucketSize);
 
   fclose(pDebugFp);
 }
@@ -401,25 +400,25 @@ inline void CUtlHash<Data, C, K>::Log(const char *filename) {
 //-----------------------------------------------------------------------------
 template <class Data, typename C, typename K>
 inline void CUtlHash<Data, C, K>::Dump() {
-  int maxBucketSize = 0;
-  int numBucketsEmpty = 0;
+  intp maxBucketSize = 0;
+  intp numBucketsEmpty = 0;
 
-  int bucketCount = m_Buckets.Count();
-  Msg("\n%d Buckets\n", bucketCount);
+  intp bucketCount = m_Buckets.Count();
+  Msg("\n%zd Buckets\n", bucketCount);
 
-  for (int ndxBucket = 0; ndxBucket < bucketCount; ndxBucket++) {
-    int count = m_Buckets[ndxBucket].Count();
+  for (intp ndxBucket = 0; ndxBucket < bucketCount; ndxBucket++) {
+    intp count = m_Buckets[ndxBucket].Count();
 
     if (count > maxBucketSize) {
       maxBucketSize = count;
     }
     if (count == 0) numBucketsEmpty++;
 
-    Msg("Bucket %d: %d\n", ndxBucket, count);
+    Msg("Bucket %zd: %zd\n", ndxBucket, count);
   }
 
-  Msg("\nBucketHeads Used: %d\n", bucketCount - numBucketsEmpty);
-  Msg("Max Bucket Size: %d\n", maxBucketSize);
+  Msg("\nBucketHeads Used: %zd\n", bucketCount - numBucketsEmpty);
+  Msg("Max Bucket Size: %zd\n", maxBucketSize);
 }
 
 //=============================================================================
@@ -705,9 +704,9 @@ template <class Data, class HashFuncs>
 typename CUtlHashFast<Data, HashFuncs>::UtlHashFastIterator_t
 CUtlHashFast<Data, HashFuncs>::First() const {
   // walk through the buckets to find the first one that has some data
-  int bucketCount = m_aBuckets.Count();
+  intp bucketCount = m_aBuckets.Count();
   const UtlHashFastHandle_t invalidIndex = m_aDataPool.InvalidIndex();
-  for (int bucket = 0; bucket < bucketCount; ++bucket) {
+  for (intp bucket = 0; bucket < bucketCount; ++bucket) {
     UtlHashFastHandle_t iElement =
         m_aBuckets[bucket];  // get the head of the bucket
     if (iElement != invalidIndex)
@@ -736,8 +735,8 @@ CUtlHashFast<Data, HashFuncs>::Next(
   }
 
   // otherwise look for the next bucket with data
-  int bucketCount = m_aBuckets.Count();
-  for (int bucket = iter.bucket + 1; bucket < bucketCount; ++bucket) {
+  intp bucketCount = m_aBuckets.Count();
+  for (intp bucket = iter.bucket + 1; bucket < bucketCount; ++bucket) {
     UtlHashFastHandle_t next =
         m_aBuckets[bucket];  // get the head of the bucket
     if (next != invalidIndex) return UtlHashFastIterator_t(bucket, next);
@@ -766,7 +765,7 @@ inline bool CUtlHashFast<Data, HashFuncs>::IsValidHandle(
 // Number of buckets must be a power of 2.
 // Key must be 32-bits (unsigned int).
 //
-typedef int UtlHashFixedHandle_t;
+typedef intp UtlHashFixedHandle_t;
 
 template <int NUM_BUCKETS>
 class CUtlHashFixedGenericHash {
@@ -794,7 +793,7 @@ class CUtlHashFixed {
   void Purge(void);
 
   // Invalid handle.
-  static UtlHashFixedHandle_t InvalidHandle(void) {
+  static constexpr UtlHashFixedHandle_t InvalidHandle(void) {
     return (UtlHashFixedHandle_t)~0;
   }
 

@@ -3,8 +3,8 @@
 #include "vpc.h"
 #include "dependencies.h"
 #include "baseprojectdatacollector.h"
-#include "utlsortvector.h"
-#include "checksum_md5.h"
+#include "tier1/utlsortvector.h"
+#include "tier1/checksum_md5.h"
 
 #include "tier0/memdbgon.h"
 
@@ -76,11 +76,11 @@ static const char *g_pOption_ExtraLinkerFlags = "$GCC_ExtraLinkerFlags";
 static const char *g_pOption_ForceInclude = "$ForceIncludes";
 static const char *g_pOption_LinkAsBundle = "$LinkAsBundle";
 static const char *g_pOption_LocalFrameworks = "$LocalFrameworks";
-static const char *g_pOption_LowerCaseFileNames = "$LowerCaseFileNames";
+//static const char *g_pOption_LowerCaseFileNames = "$LowerCaseFileNames";
 static const char *g_pOption_OptimizerLevel = "$OptimizerLevel";
 static const char *g_pOption_OutputDirectory = "$OutputDirectory";
 static const char *g_pOption_Outputs = "$Outputs";
-static const char *g_pOption_PostBuildEvent = "$PostBuildEvent";
+//static const char *g_pOption_PostBuildEvent = "$PostBuildEvent";
 static const char *g_pOption_PrecompiledHeader = "$Create/UsePrecompiledHeader";
 static const char *g_pOption_PrecompiledHeaderFile = "$PrecompiledHeaderFile";
 static const char *g_pOption_SymbolVisibility = "$SymbolVisibility";
@@ -163,7 +163,6 @@ class CProjectGenerator_Xcode : public CBaseProjectDataCollector {
     extern CUtlVector<CBaseProjectDataCollector *> g_vecPGenerators;
     g_vecPGenerators.AddToTail(this);
 
-    extern IBaseProjectGenerator *g_pGenerator;
     g_pVPC->SetProjectGenerator(new CProjectGenerator_Xcode());
   }
 
@@ -546,12 +545,12 @@ void ResolveAdditionalProjectDependencies(
     CDependency_Project *pCurProject,
     CUtlVector<CDependency_Project *> &projects,
     CUtlVector<CDependency_Project *> &additionalProjectDependencies) {
-  for (int i = 0; i < pCurProject->m_AdditionalProjectDependencies.Count();
+  for (intp i = 0; i < pCurProject->m_AdditionalProjectDependencies.Count();
        i++) {
     const char *pLookingFor =
         pCurProject->m_AdditionalProjectDependencies[i].String();
 
-    int j;
+    intp j;
     for (j = 0; j < projects.Count(); j++) {
       if (V_stricmp(projects[j]->m_ProjectName.String(), pLookingFor) == 0)
         break;
@@ -597,7 +596,7 @@ void CSolutionGenerator_Xcode::WriteFilesFolder(
     const char *pFileExtension =
         V_GetFileExtension(V_UnqualifiedFileName(pFileName));
     if (pFileExtension) {
-      for (int iExt = 0; iExt < extensions.Count(); iExt++) {
+      for (intp iExt = 0; iExt < extensions.Count(); iExt++) {
         const char *pTestExt = extensions[iExt];
 
         if (pTestExt[0] == '*' && pTestExt[1] == '.' &&
@@ -770,7 +769,7 @@ void CSolutionGenerator_Xcode::EmitBuildSettings(
       CSplitString outStrings(pConfigKV->GetString(g_pOption_ForceInclude),
                               (const char **)g_IncludeSeparators,
                               V_ARRAYSIZE(g_IncludeSeparators));
-      for (int i = 0; i < outStrings.Count(); i++) {
+      for (intp i = 0; i < outStrings.Count(); i++) {
         if (V_strlen(outStrings[i]) > 2) {
           // char sIncludeDir[ MAX_PATH ];
           char szIncludeLine[MAX_PATH];
@@ -847,7 +846,7 @@ void CSolutionGenerator_Xcode::EmitBuildSettings(
 #ifdef STEAM
     Write("\"%s\",\n", sIncludeDir);
 #endif
-    for (int i = 0; i < outStrings.Count(); i++) {
+    for (intp i = 0; i < outStrings.Count(); i++) {
       char sExpandedOutString[MAX_PATH];
 
       CBaseProjectDataCollector::DoStandardVisualStudioReplacements(
@@ -884,7 +883,7 @@ void CSolutionGenerator_Xcode::EmitBuildSettings(
     ++m_nIndent;
     {
       Write("\"$(inherited)\",\n");
-      for (int i = 0; i < localFrameworks.Count(); i++) {
+      for (intp i = 0; i < localFrameworks.Count(); i++) {
         char rgchFrameworkPath[MAX_PATH];
         V_snprintf(rgchFrameworkPath, sizeof(rgchFrameworkPath), "%s/%s",
                    pszProjectDir, localFrameworks[i]);
@@ -954,7 +953,7 @@ void CSolutionGenerator_Xcode::EmitBuildSettings(
   CSplitString additionalLibraryDirectories(
       pConfigKV->GetString(g_pOption_AdditionalLibraryDirectories),
       (const char **)g_IncludeSeparators, V_ARRAYSIZE(g_IncludeSeparators));
-  for (int i = 0; i < additionalLibraryDirectories.Count(); i++) {
+  for (intp i = 0; i < additionalLibraryDirectories.Count(); i++) {
     int nIndex = librarySearchPaths.Find(additionalLibraryDirectories[i]);
     if (nIndex == librarySearchPaths.InvalidIndex()) {
       // we need to dup the string so the map can free it later
@@ -1254,7 +1253,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
           CSplitString libs(pKV->GetString(g_pOption_SystemLibraries),
                             (const char **)g_IncludeSeparators,
                             V_ARRAYSIZE(g_IncludeSeparators));
-          for (int i = 0; i < libs.Count(); i++) {
+          for (intp i = 0; i < libs.Count(); i++) {
             Write("\n");
             Write(
                 "%024llX /* lib%s.dylib in Frameworks */ = {isa = "
@@ -1273,7 +1272,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
           CSplitString sysFrameworks(pKV->GetString(g_pOption_SystemFrameworks),
                                      (const char **)g_IncludeSeparators,
                                      V_ARRAYSIZE(g_IncludeSeparators));
-          for (int i = 0; i < sysFrameworks.Count(); i++) {
+          for (intp i = 0; i < sysFrameworks.Count(); i++) {
             Write("\n");
             Write(
                 "%024llX /* %s.framework in Frameworks */ = {isa = "
@@ -1293,7 +1292,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
               pKV->GetString(g_pOption_LocalFrameworks),
               (const char **)g_IncludeSeparators,
               V_ARRAYSIZE(g_IncludeSeparators));
-          for (int i = 0; i < localFrameworks.Count(); i++) {
+          for (intp i = 0; i < localFrameworks.Count(); i++) {
             char rgchFrameworkName[MAX_PATH];
             V_StripExtension(V_UnqualifiedFileName(localFrameworks[i]),
                              rgchFrameworkName, sizeof(rgchFrameworkName));
@@ -1326,7 +1325,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
 
           if (sOutputFile.Length() &&
               (IsStaticLibrary(sOutputFile) || IsDynamicLibrary(sOutputFile))) {
-            for (int iTestProject = 0; iTestProject < projects.Count();
+            for (intp iTestProject = 0; iTestProject < projects.Count();
                  iTestProject++) {
               if (iGenerator == iTestProject) continue;
 
@@ -1466,7 +1465,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
                 ++m_nIndent;
                 {
                   CSplitString outFiles(sOutputFiles, ";");
-                  for (int k = 0; k < outFiles.Count(); k++) {
+                  for (intp k = 0; k < outFiles.Count(); k++) {
                     CUtlString sOutputFile;
                     sOutputFile.SetLength(MAX_PATH);
                     CBaseProjectDataCollector::
@@ -1610,7 +1609,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
           CSplitString libs(pKV->GetString(g_pOption_SystemLibraries),
                             (const char **)g_IncludeSeparators,
                             V_ARRAYSIZE(g_IncludeSeparators));
-          for (int i = 0; i < libs.Count(); i++) {
+          for (intp i = 0; i < libs.Count(); i++) {
             Write("\n");
             Write(
                 "%024llX /* lib%s.dylib */ = {isa = PBXFileReference; "
@@ -1627,7 +1626,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
           CSplitString sysFrameworks(pKV->GetString(g_pOption_SystemFrameworks),
                                      (const char **)g_IncludeSeparators,
                                      V_ARRAYSIZE(g_IncludeSeparators));
-          for (int i = 0; i < sysFrameworks.Count(); i++) {
+          for (intp i = 0; i < sysFrameworks.Count(); i++) {
             Write("\n");
             Write(
                 "%024llX /* %s.framework */ = {isa = PBXFileReference; "
@@ -1646,7 +1645,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
               pKV->GetString(g_pOption_LocalFrameworks),
               (const char **)g_IncludeSeparators,
               V_ARRAYSIZE(g_IncludeSeparators));
-          for (int i = 0; i < localFrameworks.Count(); i++) {
+          for (intp i = 0; i < localFrameworks.Count(); i++) {
             char rgchFrameworkName[MAX_PATH];
             V_StripExtension(V_UnqualifiedFileName(localFrameworks[i]),
                              rgchFrameworkName, sizeof(rgchFrameworkName));
@@ -1773,7 +1772,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
               CSplitString libs(pKV->GetString(g_pOption_SystemLibraries),
                                 (const char **)g_IncludeSeparators,
                                 V_ARRAYSIZE(g_IncludeSeparators));
-              for (int i = 0; i < libs.Count(); i++) {
+              for (intp i = 0; i < libs.Count(); i++) {
                 Write("%024llX /* lib%s.dylib (system library) */,\n",
                       makeoid2(g_vecPGenerators[iGenerator]->GetProjectName(),
                                pKV->GetString(g_pOption_SystemLibraries),
@@ -1786,7 +1785,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
                   pKV->GetString(g_pOption_SystemFrameworks),
                   (const char **)g_IncludeSeparators,
                   V_ARRAYSIZE(g_IncludeSeparators));
-              for (int i = 0; i < sysFrameworks.Count(); i++) {
+              for (intp i = 0; i < sysFrameworks.Count(); i++) {
                 Write("%024llX /* %s.framework (system framework) */,\n",
                       makeoid2(g_vecPGenerators[iGenerator]->GetProjectName(),
                                pKV->GetString(g_pOption_SystemFrameworks),
@@ -1799,7 +1798,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
                   pKV->GetString(g_pOption_LocalFrameworks),
                   (const char **)g_IncludeSeparators,
                   V_ARRAYSIZE(g_IncludeSeparators));
-              for (int i = 0; i < localFrameworks.Count(); i++) {
+              for (intp i = 0; i < localFrameworks.Count(); i++) {
                 char rgchFrameworkName[MAX_PATH];
                 V_StripExtension(V_UnqualifiedFileName(localFrameworks[i]),
                                  rgchFrameworkName, sizeof(rgchFrameworkName));
@@ -2114,7 +2113,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
                 pKV->GetString(g_pOption_LocalFrameworks),
                 (const char **)g_IncludeSeparators,
                 V_ARRAYSIZE(g_IncludeSeparators));
-            for (int i = 0; i < localFrameworks.Count(); i++) {
+            for (intp i = 0; i < localFrameworks.Count(); i++) {
               char rgchFrameworkName[MAX_PATH];
               V_StripExtension(V_UnqualifiedFileName(localFrameworks[i]),
                                rgchFrameworkName, sizeof(rgchFrameworkName));
@@ -2131,7 +2130,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
                 pKV->GetString(g_pOption_SystemFrameworks),
                 (const char **)g_IncludeSeparators,
                 V_ARRAYSIZE(g_IncludeSeparators));
-            for (int i = 0; i < sysFrameworks.Count(); i++) {
+            for (intp i = 0; i < sysFrameworks.Count(); i++) {
               Write("%024llX /* %s in Frameworks (system framework) */,\n",
                     makeoid2(g_vecPGenerators[iProject]->GetProjectName(),
                              pKV->GetString(g_pOption_SystemFrameworks),
@@ -2143,7 +2142,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
             CSplitString libs(pKV->GetString(g_pOption_SystemLibraries),
                               (const char **)g_IncludeSeparators,
                               V_ARRAYSIZE(g_IncludeSeparators));
-            for (int i = 0; i < libs.Count(); i++) {
+            for (intp i = 0; i < libs.Count(); i++) {
               Write("%024llX /* %s in Frameworks (system library) */,\n",
                     makeoid2(g_vecPGenerators[iProject]->GetProjectName(),
                              pKV->GetString(g_pOption_SystemLibraries),
@@ -2354,7 +2353,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
                 ++m_nIndent;
                 {
                   CSplitString outFiles(sOutputFiles, ";");
-                  for (int k = 0; k < outFiles.Count(); k++) {
+                  for (intp k = 0; k < outFiles.Count(); k++) {
                     CUtlString sOutputFile;
                     sOutputFile.SetLength(MAX_PATH);
                     CBaseProjectDataCollector::
@@ -2676,7 +2675,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
             ResolveAdditionalProjectDependencies(pCurProject, projects,
                                                  additionalProjectDependencies);
 
-            for (int iTestProject = 0; iTestProject < projects.Count();
+            for (intp iTestProject = 0; iTestProject < projects.Count();
                  iTestProject++) {
               if (iProject == iTestProject) continue;
 
@@ -2831,7 +2830,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
                 ResolveAdditionalProjectDependencies(
                     pCurProject, projects, additionalProjectDependencies);
 
-                for (int iTestProject = 0; iTestProject < projects.Count();
+                for (intp iTestProject = 0; iTestProject < projects.Count();
                      iTestProject++) {
                   if (iProject == iTestProject) {
                     // the "parent" aggregate depends on all the subaggregates,
@@ -3007,7 +3006,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
           ResolveAdditionalProjectDependencies(pCurProject, projects,
                                                additionalProjectDependencies);
 
-          for (int iTestProject = 0; iTestProject < projects.Count();
+          for (intp iTestProject = 0; iTestProject < projects.Count();
                iTestProject++) {
             if (iProject == iTestProject) {
               int cSubAggregateTargets =
@@ -3110,7 +3109,7 @@ void CSolutionGenerator_Xcode::GenerateSolutionFile(
         ResolveAdditionalProjectDependencies(pCurProject, projects,
                                              additionalProjectDependencies);
 
-        for (int iTestProject = 0; iTestProject < projects.Count();
+        for (intp iTestProject = 0; iTestProject < projects.Count();
              iTestProject++) {
           if (iProject == iTestProject) {
             for (int i = 1;

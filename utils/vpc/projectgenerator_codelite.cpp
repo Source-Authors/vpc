@@ -151,7 +151,7 @@ void CProjectGenerator_CodeLite::WriteFilesFolder(const char *pFolderName,
       bool bValidExt = false;
       const char *pFileExtension = V_GetFileExtension(pFilename);
       if (pFileExtension) {
-        for (int iExt = 0; iExt < extensions.Count(); iExt++) {
+        for (intp iExt = 0; iExt < extensions.Count(); iExt++) {
           const char *pTestExt = extensions[iExt];
 
           if (pTestExt[0] == '*' && pTestExt[1] == '.' &&

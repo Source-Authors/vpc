@@ -1,8 +1,8 @@
 // Copyright Valve Corporation. All Rights Reserved.
 
-#include "strtools.h"
+#include "tier1/strtools.h"
 
-#include "utlvector.h"
+#include "tier1/utlvector.h"
 
 #include "tier0/memdbgon.h"
 
@@ -61,7 +61,7 @@ void CSplitString::Construct(const char *pString, const char **pSeparators,
       pCurPos = pFirstSeparator + separatorLen;
     } else {
       // Copy the rest of the string
-      if (intp nTokenLength = V_strlen(pCurPos)) {
+      if ([[maybe_unused]] intp nTokenLength = V_strlen(pCurPos)) {
         //////////////////////////////////////////////////////////////////////////
         // There's no need to cut this token, because there's no separator after
         // it. just add its copy in the buffer to the tail

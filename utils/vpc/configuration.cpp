@@ -104,7 +104,7 @@ void VPC_Keyword_Configuration() {
   const char *pToken;
   char szConfigName[MAX_PATH];
   bool bAllowNextLine = false;
-  int i;
+  intp i;
   CUtlVector<CUtlString> configs;
   char buff[MAX_SYSTOKENCHARS];
 
@@ -221,7 +221,7 @@ void VPC_Keyword_FileConfiguration() {
   // save parser state
   CScriptSource scriptSource = g_pVPC->GetScript().GetCurrentScript();
 
-  for (int i = 0; i < configurationNames.Count(); i++) {
+  for (intp i = 0; i < configurationNames.Count(); i++) {
     // restore parser state
     g_pVPC->GetScript().RestoreScript(scriptSource);
 
@@ -389,7 +389,7 @@ void VPC_ApplyFolderConfigurationToFile(const folderConfig_t &folderConfig) {
   char buff[MAX_SYSTOKENCHARS];
   g_pVPC->GetScript().PushCurrentScript();
 
-  for (int i = 0; i < folderConfig.vecConfigurationNames.Count(); i++) {
+  for (intp i = 0; i < folderConfig.vecConfigurationNames.Count(); i++) {
     g_pVPC->GetScript().RestoreScript(folderConfig.scriptSource);
 
     // Tell the generator we're about to feed it configuration data for this

@@ -167,7 +167,7 @@ CKeyValuesSystem::CKeyValuesSystem()
   MEM_ALLOC_CREDIT();
   // initialize hash table
   m_HashTable.AddMultipleToTail(2047);
-  for (int i = 0; i < m_HashTable.Count(); i++) {
+  for (intp i = 0; i < m_HashTable.Count(); i++) {
     m_HashTable[i].stringIndex = 0;
     m_HashTable[i].next = NULL;
   }

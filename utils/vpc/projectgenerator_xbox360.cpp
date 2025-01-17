@@ -35,7 +35,7 @@ bool CProjectGenerator_Xbox360::WriteFile(CProjectFile *pFile) {
   m_XMLWriter.Write(CFmtStrMax("RelativePath=\"%s\"", pFile->m_Name.Get()));
   m_XMLWriter.Write(">");
 
-  for (int i = 0; i < pFile->m_Configs.Count(); i++) {
+  for (intp i = 0; i < pFile->m_Configs.Count(); i++) {
     if (!WriteConfiguration(pFile->m_Configs[i])) return false;
   }
 
@@ -89,7 +89,7 @@ bool CProjectGenerator_Xbox360::WriteConfiguration(
   m_XMLWriter.Write(CFmtStrMax("Name=\"%s\"", pOutputName));
 
   // write configuration properties
-  for (int i = 0;
+  for (intp i = 0;
        i < pConfig->m_PropertyStates.m_PropertiesInOutputOrder.Count(); i++) {
     intp sortedIndex = pConfig->m_PropertyStates.m_PropertiesInOutputOrder[i];
     WriteProperty(&pConfig->m_PropertyStates.m_Properties[sortedIndex]);
@@ -180,7 +180,7 @@ bool CProjectGenerator_Xbox360::WriteToXML() {
 
   // write the root configurations
   m_XMLWriter.PushNode("Configurations");
-  for (int i = 0; i < configurationNames.Count(); i++) {
+  for (intp i = 0; i < configurationNames.Count(); i++) {
     CProjectConfiguration *pConfiguration = NULL;
     if (m_pVCProjGenerator->GetRootConfiguration(configurationNames[i].Get(),
                                                  &pConfiguration)) {
@@ -249,7 +249,7 @@ bool CProjectGenerator_Xbox360::WriteTool(const char *pToolName,
 
   m_XMLWriter.Write(CFmtStr("Name=\"%s\"", pToolName));
 
-  for (int i = 0;
+  for (intp i = 0;
        i < pProjectTool->m_PropertyStates.m_PropertiesInOutputOrder.Count();
        i++) {
     intp sortedIndex =

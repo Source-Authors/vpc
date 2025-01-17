@@ -24,7 +24,7 @@ bool CProjectFile::GetConfiguration(const char *pConfigName,
     *ppConfig = NULL;
   }
 
-  for (int i = 0; i < m_Configs.Count(); i++) {
+  for (intp i = 0; i < m_Configs.Count(); i++) {
     if (!V_stricmp(m_Configs[i]->m_Name.Get(), pConfigName)) {
       // found
       if (ppConfig) {
@@ -54,7 +54,7 @@ bool CProjectFile::AddConfiguration(const char *pConfigName,
   CProjectConfiguration *pNewConfig =
       new CProjectConfiguration(m_pGenerator, pConfigName, m_Name.Get());
 
-  int iIndex = 0;
+  intp iIndex = 0;
   for (iIndex = 0; iIndex < m_Configs.Count(); iIndex++) {
     if (V_stricmp(pConfigName, m_Configs[iIndex]->m_Name.Get()) < 0) {
       m_Configs.InsertBefore(iIndex, pNewConfig);
@@ -72,7 +72,7 @@ bool CProjectFile::AddConfiguration(const char *pConfigName,
 }
 
 bool CProjectFile::RemoveConfiguration(CProjectConfiguration *pConfiguration) {
-  for (int i = 0; i < m_Configs.Count(); i++) {
+  for (intp i = 0; i < m_Configs.Count(); i++) {
     if (m_Configs[i] == pConfiguration) {
       m_Configs.Remove(i);
       delete pConfiguration;
@@ -236,7 +236,7 @@ CPropertyStates::CPropertyStates() {
 }
 
 PropertyState_t *CPropertyStates::GetProperty(int nPropertyId) {
-  for (int i = 0; i < m_Properties.Count(); i++) {
+  for (intp i = 0; i < m_Properties.Count(); i++) {
     if (m_Properties[i].m_pToolProperty->m_nPropertyId == nPropertyId) {
       return &m_Properties[i];
     }
@@ -250,7 +250,7 @@ PropertyState_t *CPropertyStates::GetProperty(const char *pPropertyName) {
     pPropertyName++;
   }
 
-  for (int i = 0; i < m_Properties.Count(); i++) {
+  for (intp i = 0; i < m_Properties.Count(); i++) {
     const char *pParseString =
         m_Properties[i].m_pToolProperty->m_ParseString.Get();
     if (pParseString[0] == '$') {
@@ -279,7 +279,7 @@ bool CPropertyStates::SetStringProperty(ToolProperty_t *pToolProperty,
                                         CProjectTool *pRootTool) {
   // find possible current value
   const char *pCurrentValue = NULL;
-  for (int i = 0; i < m_Properties.Count(); i++) {
+  for (intp i = 0; i < m_Properties.Count(); i++) {
     if (m_Properties[i].m_pToolProperty == pToolProperty) {
       pCurrentValue = m_Properties[i].m_StringValue.Get();
       break;
@@ -288,7 +288,7 @@ bool CPropertyStates::SetStringProperty(ToolProperty_t *pToolProperty,
 
   if (!pCurrentValue && pRootTool) {
     // fallback to root tool's config to find current value
-    for (int i = 0; i < pRootTool->m_PropertyStates.m_Properties.Count(); i++) {
+    for (intp i = 0; i < pRootTool->m_PropertyStates.m_Properties.Count(); i++) {
       if (pRootTool->m_PropertyStates.m_Properties[i].m_pToolProperty ==
           pToolProperty) {
         pCurrentValue =
@@ -346,7 +346,7 @@ bool CPropertyStates::SetStringProperty(ToolProperty_t *pToolProperty,
   if (pCurrentValue) {
     // update existing state
     // always replace or add strings due to case changes
-    for (int i = 0; i < m_Properties.Count(); i++) {
+    for (intp i = 0; i < m_Properties.Count(); i++) {
       if (m_Properties[i].m_pToolProperty == pToolProperty) {
         m_Properties[i].m_StringValue = buff;
         return true;
@@ -372,7 +372,7 @@ bool CPropertyStates::SetListProperty(ToolProperty_t *pToolProperty,
 
   // resolve the parsed token to an expected ordinal
   const char *pNewOrdinalValue = NULL;
-  for (int i = 0; i < pToolProperty->m_Ordinals.Count(); i++) {
+  for (intp i = 0; i < pToolProperty->m_Ordinals.Count(); i++) {
     if (!V_stricmp(pToolProperty->m_Ordinals[i].m_ParseString.Get(), buff)) {
       pNewOrdinalValue = pToolProperty->m_Ordinals[i].m_ValueString.Get();
       break;
@@ -392,7 +392,7 @@ bool CPropertyStates::SetListProperty(ToolProperty_t *pToolProperty,
 
   // find possible current value
   const char *pCurrentOrdinalValue = NULL;
-  for (int i = 0; i < m_Properties.Count(); i++) {
+  for (intp i = 0; i < m_Properties.Count(); i++) {
     if (m_Properties[i].m_pToolProperty == pToolProperty) {
       pCurrentOrdinalValue = m_Properties[i].m_StringValue.Get();
       break;
@@ -401,7 +401,7 @@ bool CPropertyStates::SetListProperty(ToolProperty_t *pToolProperty,
 
   if (!pCurrentOrdinalValue && pRootTool) {
     // fallback to root tool's config to find current value
-    for (int i = 0; i < pRootTool->m_PropertyStates.m_Properties.Count(); i++) {
+    for (intp i = 0; i < pRootTool->m_PropertyStates.m_Properties.Count(); i++) {
       if (pRootTool->m_PropertyStates.m_Properties[i].m_pToolProperty ==
           pToolProperty) {
         pCurrentOrdinalValue =
@@ -421,7 +421,7 @@ bool CPropertyStates::SetListProperty(ToolProperty_t *pToolProperty,
 
   if (pCurrentOrdinalValue) {
     // update existing state
-    for (int i = 0; i < m_Properties.Count(); i++) {
+    for (intp i = 0; i < m_Properties.Count(); i++) {
       if (m_Properties[i].m_pToolProperty == pToolProperty) {
         m_Properties[i].m_OrdinalString = buff;
         m_Properties[i].m_StringValue = pNewOrdinalValue;
@@ -447,7 +447,7 @@ bool CPropertyStates::SetBoolProperty(ToolProperty_t *pToolProperty,
 
   // find possible current value
   const char *pCurrentOrdinalValue = NULL;
-  for (int i = 0; i < m_Properties.Count(); i++) {
+  for (intp i = 0; i < m_Properties.Count(); i++) {
     if (m_Properties[i].m_pToolProperty == pToolProperty) {
       pCurrentOrdinalValue = m_Properties[i].m_StringValue.Get();
       break;
@@ -456,7 +456,7 @@ bool CPropertyStates::SetBoolProperty(ToolProperty_t *pToolProperty,
 
   if (!pCurrentOrdinalValue && pRootTool) {
     // fallback to root tool's config to find current value
-    for (int i = 0; i < pRootTool->m_PropertyStates.m_Properties.Count(); i++) {
+    for (intp i = 0; i < pRootTool->m_PropertyStates.m_Properties.Count(); i++) {
       if (pRootTool->m_PropertyStates.m_Properties[i].m_pToolProperty ==
           pToolProperty) {
         pCurrentOrdinalValue =
@@ -476,7 +476,7 @@ bool CPropertyStates::SetBoolProperty(ToolProperty_t *pToolProperty,
 
   if (pCurrentOrdinalValue) {
     // update existing state
-    for (int i = 0; i < m_Properties.Count(); i++) {
+    for (intp i = 0; i < m_Properties.Count(); i++) {
       if (m_Properties[i].m_pToolProperty == pToolProperty) {
         m_Properties[i].m_StringValue = pNewOrdinalValue;
         return true;
@@ -522,7 +522,7 @@ bool CPropertyStates::SetIntegerProperty(ToolProperty_t *pToolProperty,
 
   // find possible current value
   const char *pCurrentOrdinalValue = NULL;
-  for (int i = 0; i < m_Properties.Count(); i++) {
+  for (intp i = 0; i < m_Properties.Count(); i++) {
     if (m_Properties[i].m_pToolProperty == pToolProperty) {
       pCurrentOrdinalValue = m_Properties[i].m_StringValue.Get();
       break;
@@ -531,7 +531,7 @@ bool CPropertyStates::SetIntegerProperty(ToolProperty_t *pToolProperty,
 
   if (!pCurrentOrdinalValue && pRootTool) {
     // fallback to root tool's config to find current value
-    for (int i = 0; i < pRootTool->m_PropertyStates.m_Properties.Count(); i++) {
+    for (intp i = 0; i < pRootTool->m_PropertyStates.m_Properties.Count(); i++) {
       if (pRootTool->m_PropertyStates.m_Properties[i].m_pToolProperty ==
           pToolProperty) {
         pCurrentOrdinalValue =
@@ -550,7 +550,7 @@ bool CPropertyStates::SetIntegerProperty(ToolProperty_t *pToolProperty,
 
   if (pCurrentOrdinalValue) {
     // update existing state
-    for (int i = 0; i < m_Properties.Count(); i++) {
+    for (intp i = 0; i < m_Properties.Count(); i++) {
       if (m_Properties[i].m_pToolProperty == pToolProperty) {
         m_Properties[i].m_StringValue = buff;
         return true;
@@ -1383,6 +1383,9 @@ void CVCProjGenerator::EndPropertySection(configKeyword_e eKeyword) {
       eKeyword = SetPS3VisualStudioIntegrationType(eKeyword);
       m_spCompilerStack.Pop(m_pCompilerTool);
       break;
+
+    default:
+      break;
   }
 
   m_nActivePropertySection = KEYWORD_UNKNOWN;
@@ -1604,7 +1607,7 @@ bool CVCProjGenerator::RemoveFileFromFolder(const char *pFilename,
 void CVCProjGenerator::GetAllConfigurationNames(
     CUtlVector<CUtlString> &configurationNames) {
   configurationNames.Purge();
-  for (int i = 0; i < m_RootConfigurations.Count(); i++) {
+  for (intp i = 0; i < m_RootConfigurations.Count(); i++) {
     configurationNames.AddToTail(m_RootConfigurations[i]->m_Name.Get());
   }
 }
@@ -1620,7 +1623,7 @@ bool CVCProjGenerator::GetRootConfiguration(const char *pConfigName,
     *ppConfig = NULL;
   }
 
-  for (int i = 0; i < m_RootConfigurations.Count(); i++) {
+  for (intp i = 0; i < m_RootConfigurations.Count(); i++) {
     if (!V_stricmp(m_RootConfigurations[i]->m_Name.Get(), pConfigName)) {
       // found
       if (ppConfig) {
@@ -1725,7 +1728,7 @@ void CVCProjGenerator::ApplyInternalPreprocessorDefinitions() {
   }
 
   // fixup root configurations
-  for (int i = 0; i < m_RootConfigurations.Count(); i++) {
+  for (intp i = 0; i < m_RootConfigurations.Count(); i++) {
     CCompilerTool *pCompilerTool = m_RootConfigurations[i]->GetCompilerTool();
     if (pCompilerTool) {
       PropertyState_t *pPropertyState =
@@ -1742,7 +1745,7 @@ void CVCProjGenerator::ApplyInternalPreprocessorDefinitions() {
        iIndex != m_FileDictionary.InvalidIndex();
        iIndex = m_FileDictionary.NextInorder(iIndex)) {
     CProjectFile *pProjectFile = m_FileDictionary[iIndex];
-    for (int i = 0; i < pProjectFile->m_Configs.Count(); i++) {
+    for (intp i = 0; i < pProjectFile->m_Configs.Count(); i++) {
       CCompilerTool *pCompilerTool =
           pProjectFile->m_Configs[i]->GetCompilerTool();
       if (pCompilerTool) {

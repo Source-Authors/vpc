@@ -35,7 +35,7 @@ bool CProjectGenerator_PS3::WriteFile(CProjectFile *pFile) {
   m_XMLWriter.Write(CFmtStrMax("RelativePath=\"%s\"", pFile->m_Name.Get()));
   m_XMLWriter.Write(">");
 
-  for (int i = 0; i < pFile->m_Configs.Count(); i++) {
+  for (intp i = 0; i < pFile->m_Configs.Count(); i++) {
     if (!WriteConfiguration(pFile->m_Configs[i])) return false;
   }
 
@@ -80,8 +80,8 @@ bool CProjectGenerator_PS3::WritePreBuildEventTool(
 
   m_XMLWriter.Write("Name=\"VCPreBuildEventTool\"");
 
-  for (int i = 0; i < pPreBuildEventTool->m_PropertyStates.m_Properties.Count();
-       i++) {
+  for (intp i = 0;
+       i < pPreBuildEventTool->m_PropertyStates.m_Properties.Count(); i++) {
     switch (pPreBuildEventTool->m_PropertyStates.m_Properties[i]
                 .m_pToolProperty->m_nPropertyId) {
       case PS3_PREBUILDEVENT_CommandLine: {
@@ -126,7 +126,7 @@ bool CProjectGenerator_PS3::WriteCustomBuildTool(
 
   m_XMLWriter.Write("Name=\"VCCustomBuildTool\"");
 
-  for (int i = 0; i < pCustomBuildTool->m_PropertyStates.m_Properties.Count();
+  for (intp i = 0; i < pCustomBuildTool->m_PropertyStates.m_Properties.Count();
        i++) {
     switch (pCustomBuildTool->m_PropertyStates.m_Properties[i]
                 .m_pToolProperty->m_nPropertyId) {
@@ -179,7 +179,7 @@ bool CProjectGenerator_PS3::WriteSNCCompilerTool(CCompilerTool *pCompilerTool) {
   // aggregates or purges state as needed
   CUtlString additionalOptions = "";
 
-  for (int i = 0; i < pCompilerTool->m_PropertyStates.m_Properties.Count();
+  for (intp i = 0; i < pCompilerTool->m_PropertyStates.m_Properties.Count();
        i++) {
     int nOrdinalValue = atoi(
         pCompilerTool->m_PropertyStates.m_Properties[i].m_StringValue.Get());
@@ -427,7 +427,7 @@ bool CProjectGenerator_PS3::WriteGCCCompilerTool(CCompilerTool *pCompilerTool) {
   // aggregates or purges state as needed
   CUtlString additionalOptions = "";
 
-  for (int i = 0; i < pCompilerTool->m_PropertyStates.m_Properties.Count();
+  for (intp i = 0; i < pCompilerTool->m_PropertyStates.m_Properties.Count();
        i++) {
     int nOrdinalValue = atoi(
         pCompilerTool->m_PropertyStates.m_Properties[i].m_StringValue.Get());
@@ -645,7 +645,7 @@ bool CProjectGenerator_PS3::WritePreLinkEventTool(
 
   m_XMLWriter.Write("Name=\"VCPreLinkEventTool\"");
 
-  for (int i = 0; i < pPreLinkEventTool->m_PropertyStates.m_Properties.Count();
+  for (intp i = 0; i < pPreLinkEventTool->m_PropertyStates.m_Properties.Count();
        i++) {
     switch (pPreLinkEventTool->m_PropertyStates.m_Properties[i]
                 .m_pToolProperty->m_nPropertyId) {
@@ -693,7 +693,7 @@ bool CProjectGenerator_PS3::WriteSNCLinkerTool(CLinkerTool *pLinkerTool) {
   // aggregates or purges state as needed
   CUtlString additionalOptions = "";
 
-  for (int i = 0; i < pLinkerTool->m_PropertyStates.m_Properties.Count(); i++) {
+  for (intp i = 0; i < pLinkerTool->m_PropertyStates.m_Properties.Count(); i++) {
     int nOrdinalValue =
         atoi(pLinkerTool->m_PropertyStates.m_Properties[i].m_StringValue.Get());
 
@@ -845,7 +845,7 @@ bool CProjectGenerator_PS3::WriteGCCLinkerTool(CLinkerTool *pLinkerTool) {
   // aggregates or purges state as needed
   CUtlString additionalOptions = "";
 
-  for (int i = 0; i < pLinkerTool->m_PropertyStates.m_Properties.Count(); i++) {
+  for (intp i = 0; i < pLinkerTool->m_PropertyStates.m_Properties.Count(); i++) {
     int nOrdinalValue =
         atoi(pLinkerTool->m_PropertyStates.m_Properties[i].m_StringValue.Get());
 
@@ -958,7 +958,7 @@ bool CProjectGenerator_PS3::WriteLibrarianTool(CLibrarianTool *pLibrarianTool) {
 
   m_XMLWriter.Write("Name=\"VCLibrarianTool\"");
 
-  for (int i = 0; i < pLibrarianTool->m_PropertyStates.m_Properties.Count();
+  for (intp i = 0; i < pLibrarianTool->m_PropertyStates.m_Properties.Count();
        i++) {
     switch (pLibrarianTool->m_PropertyStates.m_Properties[i]
                 .m_pToolProperty->m_nPropertyId) {
@@ -1003,7 +1003,7 @@ bool CProjectGenerator_PS3::WritePostBuildEventTool(
 
   m_XMLWriter.Write("Name=\"VCPostBuildEventTool\"");
 
-  for (int i = 0;
+  for (intp i = 0;
        i < pPostBuildEventTool->m_PropertyStates.m_Properties.Count(); i++) {
     switch (pPostBuildEventTool->m_PropertyStates.m_Properties[i]
                 .m_pToolProperty->m_nPropertyId) {
@@ -1070,7 +1070,7 @@ bool CProjectGenerator_PS3::WriteConfiguration(CProjectConfiguration *pConfig) {
   m_XMLWriter.Write(CFmtStrMax("Name=\"%s\"", pOutputName));
 
   // write configuration properties
-  for (int i = 0; i < pConfig->m_PropertyStates.m_Properties.Count(); i++) {
+  for (intp i = 0; i < pConfig->m_PropertyStates.m_Properties.Count(); i++) {
     switch (pConfig->m_PropertyStates.m_Properties[i]
                 .m_pToolProperty->m_nPropertyId) {
       case PS3_GENERAL_ConfigurationType:
@@ -1181,7 +1181,7 @@ bool CProjectGenerator_PS3::WriteToXML() {
 
   // write the root configurations
   m_XMLWriter.PushNode("Configurations");
-  for (int i = 0; i < configurationNames.Count(); i++) {
+  for (intp i = 0; i < configurationNames.Count(); i++) {
     CProjectConfiguration *pConfiguration = NULL;
     if (m_pVCProjGenerator->GetRootConfiguration(configurationNames[i].Get(),
                                                  &pConfiguration)) {

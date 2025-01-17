@@ -80,8 +80,8 @@ void MakeFriendlyProjectName(char *pchProject);
 
 void V_MakeAbsoluteCygwinPath(char *pOut, int outLen,
                               const char *pRelativePath) {
-  // While generating makefiles under Win32, we must translate drive letters like c:\
-  // to Cygwin-style paths like /cygdrive/c/
+  /* While generating makefiles under Win32, we must translate drive letters
+   like c:\ to Cygwin-style paths like /cygdrive/c/ */
 #ifdef _WIN32
   char tmp[MAX_PATH];
   V_MakeAbsolutePath(tmp, sizeof(tmp), pRelativePath);
@@ -412,7 +412,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
         CSplitString libs(pKV->GetString(g_pOption_SystemLibraries),
                           (const char **)g_IncludeSeparators,
                           V_ARRAYSIZE(g_IncludeSeparators));
-        for (int i = 0; i < libs.Count(); i++) {
+        for (intp i = 0; i < libs.Count(); i++) {
           fprintf(fp, "-l%s ", libs[i]);
         }
       }
@@ -424,13 +424,13 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
             pKV->GetString(g_pOption_SystemFrameworks),
             (const char **)g_IncludeSeparators,
             V_ARRAYSIZE(g_IncludeSeparators));
-        for (int i = 0; i < systemFrameworks.Count(); i++) {
+        for (intp i = 0; i < systemFrameworks.Count(); i++) {
           fprintf(fp, "-framework %s ", systemFrameworks[i]);
         }
         CSplitString localFrameworks(pKV->GetString(g_pOption_LocalFrameworks),
                                      (const char **)g_IncludeSeparators,
                                      V_ARRAYSIZE(g_IncludeSeparators));
-        for (int i = 0; i < localFrameworks.Count(); i++) {
+        for (intp i = 0; i < localFrameworks.Count(); i++) {
           char rgchFrameworkName[MAX_PATH];
           V_StripExtension(V_UnqualifiedFileName(localFrameworks[i]),
                            rgchFrameworkName, sizeof(rgchFrameworkName));
@@ -463,7 +463,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
                               (const char **)g_IncludeSeparators,
                               V_ARRAYSIZE(g_IncludeSeparators));
       fprintf(fp, "FORCEINCLUDES= ");
-      for (int i = 0; i < outStrings.Count(); i++) {
+      for (intp i = 0; i < outStrings.Count(); i++) {
         if (V_strlen(outStrings[i]) > 2)
           fprintf(fp, "-include %s ", UsePOSIXSlashes(outStrings[i]));
       }
@@ -476,7 +476,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
                               (const char **)g_IncludeSeparators,
                               V_ARRAYSIZE(g_IncludeSeparators));
       fprintf(fp, "DEFINES= ");
-      for (int i = 0; i < outStrings.Count(); i++) {
+      for (intp i = 0; i < outStrings.Count(); i++) {
         fprintf(fp, "-D%s ", outStrings[i]);
       }
 
@@ -496,7 +496,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
           pKV->GetString(g_pOption_PreprocessorDefinitions),
           (const char **)g_IncludeSeparators, V_ARRAYSIZE(g_IncludeSeparators));
       fprintf(fp, "DEFINES += ");
-      for (int i = 0; i < outStrings0.Count(); i++) {
+      for (intp i = 0; i < outStrings0.Count(); i++) {
         fprintf(fp, "-D%s ", outStrings0[i]);
       }
       WriteVpcMacroDefines(pConfig, fp);
@@ -507,7 +507,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
           pConfig1->m_pKV->GetString(g_pOption_PreprocessorDefinitions),
           (const char **)g_IncludeSeparators, V_ARRAYSIZE(g_IncludeSeparators));
       fprintf(fp, "DEFINES += ");
-      for (int i = 0; i < outStrings1.Count(); i++) {
+      for (intp i = 0; i < outStrings1.Count(); i++) {
         fprintf(fp, "-D%s ", outStrings1[i]);
       }
       WriteVpcMacroDefines(pConfig1, fp);
@@ -521,7 +521,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
           pKV->GetString(g_pOption_AdditionalIncludeDirectories),
           (const char **)g_IncludeSeparators, V_ARRAYSIZE(g_IncludeSeparators));
       fprintf(fp, "INCLUDEDIRS += ");
-      for (int i = 0; i < outStrings.Count(); i++) {
+      for (intp i = 0; i < outStrings.Count(); i++) {
         char sDir[MAX_PATH];
         V_strncpy(sDir, outStrings[i], sizeof(sDir));
         if (!V_stricmp(sDir, "$(IntDir)"))
@@ -628,7 +628,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
     CUtlVector<Filename_t> ImportLib;
     CUtlVector<Filename_t> StaticLib;
 
-    for (int i = 0; i < OriginalSort.Count(); i++) {
+    for (intp i = 0; i < OriginalSort.Count(); i++) {
       CFileConfig *pFileConfig = OriginalSort[i];
       if (pFileConfig->IsExcludedFrom(pConfig->GetConfigName())) continue;
 
@@ -651,7 +651,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
           V_ExtractFileExtension(pFilename, szExt, sizeof(szExt));
           if (!(!V_stricmp(g_pVPC->GetTargetPlatformName(), "OSX32") ||
                 !V_stricmp(g_pVPC->GetTargetPlatformName(), "OSX64")) &&
-              IsLibraryFile(pFilename) && (pchFileName - 1) &&
+              IsLibraryFile(pFilename) && *(pchFileName - 1) &&
               pchFileName[0] == 'l' && pchFileName[1] == 'i' &&
               pchFileName[2] == 'b' &&
               szExt[0] != 'a')  // its a lib ext but not an archive file, link
@@ -684,10 +684,10 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
     // Spew static libs out first, then import libraries. Otherwise things like
     // bsppack
     //	will fail to link because libvstdlib.so came before tier1.a.
-    for (int i = 0; i < StaticLib.Count(); i++) {
+    for (intp i = 0; i < StaticLib.Count(); i++) {
       fprintf(fp, "    %s \\\n", StaticLib[i].szFilename);
     }
-    for (int i = 0; i < ImportLib.Count(); i++) {
+    for (intp i = 0; i < ImportLib.Count(); i++) {
       fprintf(
           fp, "    -L%s -l%s \\\n", ImportLib[i].szFilename,
           &ImportLib[i]
@@ -752,7 +752,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
                               sizeof(sDependenciesSeparators) /
                                   sizeof(sDependenciesSeparators[0]));
 
-        for (int j = 0; j < outFiles.Count(); j++) {
+        for (intp j = 0; j < outFiles.Count(); j++) {
           const char *pchOneFile = outFiles[j];
           if (*pchOneFile == '\0') {
             continue;
@@ -890,7 +890,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
         static const char *sSeparators[] = {"\r", "\n"};
         CSplitString outLines(sFormattedCommandLine, sSeparators,
                               sizeof(sSeparators) / sizeof(sSeparators[0]));
-        for (int j = 0; j < outLines.Count(); ++j) {
+        for (intp j = 0; j < outLines.Count(); ++j) {
           const char *pchOneLine = outLines[j];
           if (*pchOneLine == '\0') continue;
 
@@ -1038,7 +1038,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
   void WriteOtherDependencies(FILE *fp,
                               CUtlVector<CUtlString> &otherDependencies) {
     fprintf(fp, "\nOTHER_DEPENDENCIES = \\\n");
-    for (int i = 0; i < otherDependencies.Count(); i++) {
+    for (intp i = 0; i < otherDependencies.Count(); i++) {
       fprintf(fp, "\t$(abspath %s)%s\n",
               UsePOSIXSlashes(otherDependencies[i].String()),
               (i == otherDependencies.Count() - 1) ? "" : " \\");

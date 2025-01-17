@@ -217,9 +217,12 @@ void *operator new[](unsigned int nSize, int nBlockUse, const char *pFileName,
 //-----------------------------------------------------------------------------
 // Singleton...
 //-----------------------------------------------------------------------------
+
+#ifdef _MSC_VER
 #pragma warning(disable : 4074)  // warning C4074: initializers put in compiler
                                  // reserved initialization area
 #pragma init_seg(compiler)
+#endif  // _MSC_VER
 
 #if MEM_SBH_ENABLED
 CSmallBlockPool<CStdMemAlloc::CFixedAllocator<MBYTES_PRIMARY_SBH, true>>::
@@ -1389,7 +1392,7 @@ FORCEINLINE size_t LMDAdjustSize(size_t &nBytes, size_t align = 0) {
 #define LMDGetSize(pHeader) (size_t)(-1)
 #define LMDToHeader(pHeader) (pHeader)
 #define LMDFromHeader(pHeader) (pHeader)
-#define LMDValidateHeap() (true)
+#define LMDValidateHeap() do {} while (false)
 #define LMDPushAllocDbgInfo(pFileName, nLine) ((void)0)
 #define LMDPopAllocDbgInfo() ((void)0)
 FORCEINLINE void *LMDRealloc(void *pMem, size_t nSize, size_t align = 0,
@@ -1905,7 +1908,7 @@ size_t CStdMemAlloc::ComputeMemoryUsedBy(char const *pchSubStr) {
   return 0;  // dbg heap only.
 }
 
-static inline size_t ExtraDevkitMemory(void) {
+[[maybe_unused]] static inline size_t ExtraDevkitMemory(void) {
 #if defined(_PS3)
   // 213MB are available in retail mode, so adjust free mem to reflect that even
   // if we're in devkit mode
@@ -1924,7 +1927,7 @@ void CStdMemAlloc::GlobalMemoryStatus(size_t *pUsedMemory,
                                       size_t *pFreeMemory) {
   if (!pUsedMemory || !pFreeMemory) return;
 
-  size_t dlMallocFree = 0;
+  [[maybe_unused]] size_t dlMallocFree = 0;
 #if defined(USE_DLMALLOC)
   // Account for free memory contained within DLMalloc's FIRST region. The
   // rationale is as follows:
@@ -1986,7 +1989,7 @@ void CStdMemAlloc::GlobalMemoryStatus(size_t *pUsedMemory,
 #define MAX_GENERIC_MEMORY_STATS 64
 GenericMemoryStat_t g_MemStats[MAX_GENERIC_MEMORY_STATS];
 int g_nMemStats = 0;
-static inline int AddGenericMemoryStat(const char *name, int value) {
+[[maybe_unused]] static inline int AddGenericMemoryStat(const char *name, int value) {
   Assert(g_nMemStats < MAX_GENERIC_MEMORY_STATS);
   if (g_nMemStats < MAX_GENERIC_MEMORY_STATS) {
     g_MemStats[g_nMemStats].name = name;
@@ -2069,8 +2072,7 @@ int CStdMemAlloc::GetGenericMemoryStats(GenericMemoryStat_t **ppMemoryStats) {
 #endif  // (!MEMALLOC_REGIONS && MEMALLOC_SEGMENT_MIXED)
 #endif  // USE_DLMALLOC
 
-  size_t nMaxPhysMemUsed_Delta;
-  nMaxPhysMemUsed_Delta = 0;
+  [[maybe_unused]] size_t nMaxPhysMemUsed_Delta = 0;
 #ifdef _PS3
   {
     // System heap (should not exist!)
@@ -2232,13 +2234,13 @@ void CStdMemAlloc::SetCRTAllocFailed(size_t nSize) {
 #endif  // _PS3
 
   char buffer[256];
-#ifdef COMPILER_GCC
+#if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
   _snprintf(buffer, sizeof(buffer),
             "***** OUT OF MEMORY! attempted allocation size: %zu ****\n", nSize);
 #else
   _snprintf(buffer, sizeof(buffer),
             "***** OUT OF MEMORY! attempted allocation size: %zu ****\n", nSize);
-#endif  // COMPILER_GCC
+#endif  // COMPILER_GCC || COMPILER_CLANG
 
 #ifdef _X360
   XBX_OutputDebugString(buffer);

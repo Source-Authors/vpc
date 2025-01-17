@@ -2,7 +2,7 @@
 
 #include "vpc.h"
 #include "dependencies.h"
-#include "utlgraph.h"
+#include "tier1/utlgraph.h"
 
 #include "tier0/memdbgon.h"
 
@@ -48,7 +48,7 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
     ++m_nIndent;
     Write("<Project Name=\"all\" Path=\"%s.project\" Active=\"Yes\"/>\n",
           szSolutionFileBaseName);
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
       project_t *pProjectT = &g_pVPC->m_Projects[pCurProject->m_iProjectIndex];
 
@@ -65,7 +65,7 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
     Write("<WorkspaceConfiguration Name=\"Debug\" Selected=\"no\">\n");
     ++m_nIndent;
     Write("<Project Name=\"all\" ConfigName=\"Debug\"/>\n");
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
       project_t *pProjectT = &g_pVPC->m_Projects[pCurProject->m_iProjectIndex];
 
@@ -78,7 +78,7 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
     Write("<WorkspaceConfiguration Name=\"Release\" Selected=\"yes\">\n");
     ++m_nIndent;
     Write("<Project Name=\"all\" ConfigName=\"Release\"/>\n");
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
       project_t *pProjectT = &g_pVPC->m_Projects[pCurProject->m_iProjectIndex];
 
@@ -173,10 +173,10 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
 
       --m_nIndent;
 
-      CUtlGraph<int, int> dependencyGraph;
+      CUtlGraph<intp, int> dependencyGraph;
 
       // walk the project list building a dependency graph
-      for (int i = 0; i < projects.Count(); i++) {
+      for (intp i = 0; i < projects.Count(); i++) {
         CDependency_Project *pCurProject = projects[i];
 
         CUtlVector<CDependency_Project *> additionalProjectDependencies;
@@ -186,7 +186,7 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
         // project_t *pProjectT = &g_projects[ pCurProject->m_iProjectIndex ];
         // printf( "%s depends on\n", pProjectT->name.String() );
 
-        for (int iTestProject = 0; iTestProject < projects.Count();
+        for (intp iTestProject = 0; iTestProject < projects.Count();
              iTestProject++) {
           if (i == iTestProject) continue;
 
@@ -210,8 +210,8 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
       Write("<Dependencies Name=\"Debug\">\n");
       ++m_nIndent;
 
-      CUtlVector<int> visitedList;
-      for (int i = 0; i < projects.Count(); i++) {
+      CUtlVector<intp> visitedList;
+      for (intp i = 0; i < projects.Count(); i++) {
         TraverseFrom(projects, dependencyGraph, visitedList, i);
       }
       --m_nIndent;
@@ -220,7 +220,7 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
       Write("<Dependencies Name=\"Release\">\n");
       ++m_nIndent;
       visitedList.Purge();
-      for (int i = 0; i < projects.Count(); i++) {
+      for (intp i = 0; i < projects.Count(); i++) {
         TraverseFrom(projects, dependencyGraph, visitedList, i);
       }
       --m_nIndent;
@@ -231,9 +231,9 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
   }
 
   void TraverseFrom(CUtlVector<CDependency_Project *> &projects,
-                    CUtlGraph<int, int> &dependencyGraph,
-                    CUtlVector<int> &visitedList, int root) {
-    CUtlGraphVisitor<int> visitor(dependencyGraph);
+                    CUtlGraph<intp, int> &dependencyGraph,
+                    CUtlVector<intp> &visitedList, intp root) {
+    CUtlGraphVisitor<intp> visitor(dependencyGraph);
 
     if (visitedList.Find(root) != visitedList.InvalidIndex()) return;
 
@@ -265,12 +265,12 @@ class CSolutionGenerator_CodeLite : public IBaseSolutionGenerator {
       CDependency_Project *pCurProject,
       CUtlVector<CDependency_Project *> &projects,
       CUtlVector<CDependency_Project *> &additionalProjectDependencies) {
-    for (int i = 0; i < pCurProject->m_AdditionalProjectDependencies.Count();
+    for (intp i = 0; i < pCurProject->m_AdditionalProjectDependencies.Count();
          i++) {
       const char *pLookingFor =
           pCurProject->m_AdditionalProjectDependencies[i].String();
 
-      int j;
+      intp j;
       for (j = 0; j < projects.Count(); j++) {
         if (V_stricmp(projects[j]->m_ProjectName.String(), pLookingFor) == 0)
           break;

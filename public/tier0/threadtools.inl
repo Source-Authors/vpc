@@ -413,7 +413,7 @@ INLINE_ON_PS3 void CThread::Yield() {
   // sys_ppu_thread_yield doesn't seem to function properly, so sleep instead.
   sys_timer_usleep(60);
 #elif defined(POSIX)
-  pthread_yield();
+  sched_yield();
 #endif
 }
 
@@ -570,7 +570,7 @@ INLINE_ON_PS3 void *CThread::ThreadProc(LPVOID pv)
 #endif
 
 #if defined(POSIX) || defined(_PS3)
-  return (void *)pInit->pThread->m_result;
+  return (void *)(std::size_t)pInit->pThread->m_result;
 #else
   return pInit->pThread->m_result;
 #endif

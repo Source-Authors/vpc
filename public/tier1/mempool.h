@@ -8,6 +8,7 @@
 #include "tier0/platform.h"
 #include "tier1/utlvector.h"
 #include "tier1/utlrbtree.h"
+#include <cstddef>  // std::size_t
 
 // Purpose: Optimized pool memory allocator
 
@@ -156,28 +157,28 @@ class CAlignedMemPool {
   static int __cdecl CompareChunk(void *const *ppLeft, void *const *ppRight);
   void Compact();
 
-  int NumTotal() {
+  intp NumTotal() {
     AUTO_LOCK(m_mutex);
     return m_Chunks.Count() * (CHUNK_SIZE / BLOCK_SIZE);
   }
-  int NumAllocated() {
+  intp NumAllocated() {
     AUTO_LOCK(m_mutex);
     return NumTotal() - m_nFree;
   }
-  int NumFree() {
+  intp NumFree() {
     AUTO_LOCK(m_mutex);
     return m_nFree;
   }
 
-  int BytesTotal() {
+  intp BytesTotal() {
     AUTO_LOCK(m_mutex);
     return NumTotal() * BLOCK_SIZE;
   }
-  int BytesAllocated() {
+  intp BytesAllocated() {
     AUTO_LOCK(m_mutex);
     return NumAllocated() * BLOCK_SIZE;
   }
-  int BytesFree() {
+  intp BytesFree() {
     AUTO_LOCK(m_mutex);
     return NumFree() * BLOCK_SIZE;
   }
@@ -195,7 +196,7 @@ class CAlignedMemPool {
   CUtlVector<void *> m_Chunks;  // Chunks are tracked outside blocks (unlike
                                 // CUtlMemoryPool) to simplify alignment issues
   FreeBlock_t *m_pFirstFree;
-  int m_nFree;
+  intp m_nFree;
   CAllocator m_Allocator;
   double m_TimeLastCompact;
 
@@ -486,7 +487,7 @@ inline void *CAlignedMemPool<ITEM_SIZE, ALIGNMENT, CHUNK_SIZE, CAllocator,
     m_Chunks.AddToTail(pNew);
     m_nFree = CHUNK_SIZE / BLOCK_SIZE;
     m_pFirstFree = pNew;
-    for (int i = 0; i < m_nFree - 1; i++) {
+    for (intp i = 0; i < m_nFree - 1; i++) {
       pNew->pNext = pNew + 1;
       pNew++;
     }
@@ -543,7 +544,7 @@ inline int __cdecl CAlignedMemPool<
     ITEM_SIZE, ALIGNMENT, CHUNK_SIZE, CAllocator, GROWMODE,
     COMPACT_THRESHOLD>::CompareChunk(void *const *ppLeft,
                                      void *const *ppRight) {
-  return ((unsigned)*ppLeft) - ((unsigned)*ppRight);
+  return ((std::size_t)*ppLeft) - ((std::size_t)*ppRight);
 }
 
 template <int ITEM_SIZE, int ALIGNMENT, int CHUNK_SIZE, class CAllocator,
@@ -565,7 +566,7 @@ inline void CAlignedMemPool<ITEM_SIZE, ALIGNMENT, CHUNK_SIZE, CAllocator,
       p = p->pNext;
     }
 
-    for (int i = 0; i < m_Chunks.Count(); i++) {
+    for (intp i = 0; i < m_Chunks.Count(); i++) {
       if (i + 1 < m_Chunks.Count()) {
         if (m_Chunks[i] > m_Chunks[i + 1]) {
           __asm { int 3 }
@@ -575,7 +576,7 @@ inline void CAlignedMemPool<ITEM_SIZE, ALIGNMENT, CHUNK_SIZE, CAllocator,
   }
 #endif
 
-  int i;
+  intp i;
 
   for (i = 0; i < m_Chunks.Count(); i++) {
     int nBlocksPerChunk = CHUNK_SIZE / BLOCK_SIZE;

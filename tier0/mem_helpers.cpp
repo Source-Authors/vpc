@@ -15,9 +15,9 @@ const char *g_pszModule = "tier0";
 bool g_bInitMemory = true;
 
 #if defined(PLATFORM_POSIX) || defined(PLATFORM_PS3)
-void DoApplyMemoryInitializations(void *pMem, size_t nSize) {}
+void DoApplyMemoryInitializations(void *pMem, std::size_t nSize) {}
 
-size_t CalcHeapUsed() { return 0; }
+std::size_t CalcHeapUsed() { return 0; }
 #else
 
 const std::uint32_t g_u32FFeeFFee = 0xffeeffee;
@@ -43,12 +43,12 @@ unsigned char g_RandomValues[256] = {
     175, 212, 101, 219, 114, 243, 44,  91,  51,  139, 91,  57,  120, 41,  98,
     119};
 
-size_t g_iCurRandomValueOffset = 0;
+std::size_t g_iCurRandomValueOffset = 0;
 
-void InitializeToFeeFee(void *pMem, size_t nSize) {
+void InitializeToFeeFee(void *pMem, std::size_t nSize) {
 #ifdef PLATFORM_64BITS
   auto *pCurQWord = static_cast<std::uint64_t *>(pMem);
-  size_t nQWords{nSize / sizeof(std::uint64_t)};
+  std::size_t nQWords{nSize / sizeof(std::uint64_t)};
   while (nQWords) {
     *pCurQWord = 0xffeeffeeffeeffeeULL;
 
@@ -57,10 +57,10 @@ void InitializeToFeeFee(void *pMem, size_t nSize) {
   }
 
   auto *pCurDWord = reinterpret_cast<std::uint32_t *>(pCurQWord);
-  size_t nDWords{(nSize & (sizeof(std::uint64_t) - 1)) / sizeof(std::uint32_t)};
+  std::size_t nDWords{(nSize & (sizeof(std::uint64_t) - 1)) / sizeof(std::uint32_t)};
 #else
   auto *pCurDWord = static_cast<std::uint32_t *>(pMem);
-  size_t nDWords{nSize / sizeof(std::uint32_t)};
+  std::size_t nDWords{nSize / sizeof(std::uint32_t)};
 #endif
 
   while (nDWords) {
@@ -71,8 +71,8 @@ void InitializeToFeeFee(void *pMem, size_t nSize) {
   }
 
   auto *pCurChar = reinterpret_cast<std::uint8_t *>(pCurDWord);
-  size_t nBytes{nSize & (sizeof(std::uint32_t) - 1)};
-  size_t iOffset = 0;
+  std::size_t nBytes{nSize & (sizeof(std::uint32_t) - 1)};
+  std::size_t iOffset = 0;
   while (nBytes) {
     *pCurChar = reinterpret_cast<const std::uint8_t *>(&g_u32FFeeFFee)[iOffset];
 
@@ -82,15 +82,15 @@ void InitializeToFeeFee(void *pMem, size_t nSize) {
   }
 }
 
-void InitializeToRandom(void *pMem, size_t nSize) {
+void InitializeToRandom(void *pMem, std::size_t nSize) {
   unsigned char *pOut = (unsigned char *)pMem;
-  for (size_t i = 0; i < nSize; i++) {
+  for (std::size_t i = 0; i < nSize; i++) {
     pOut[i] = g_RandomValues[(g_iCurRandomValueOffset & 255)];
     ++g_iCurRandomValueOffset;
   }
 }
 
-void DoApplyMemoryInitializations(void *pMem, size_t nSize) {
+void DoApplyMemoryInitializations(void *pMem, std::size_t nSize) {
   if (!pMem) return;
 
   // If they passed -noinitmemory on the command line, don't do anything here.
@@ -141,7 +141,7 @@ void DoApplyMemoryInitializations(void *pMem, size_t nSize) {
   }
 }
 
-size_t CalcHeapUsed() {
+std::size_t CalcHeapUsed() {
 #if defined(_X360)
   return 0;
 #else

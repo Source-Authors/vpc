@@ -3,8 +3,9 @@
 #ifndef VPC_DATAMAP_H_
 #define VPC_DATAMAP_H_
 
-#include "mathlib/vector.h"
+#include <string_view>  // std::size
 
+#include "mathlib/vector.h"
 #include "tier1/utlvector.h"
 
 #include "tier0/memdbgon.h"
@@ -133,7 +134,7 @@ DECLARE_FIELD_SIZE(FIELD_MODELINDEX, sizeof(int))
 DECLARE_FIELD_SIZE(FIELD_MATERIALINDEX, sizeof(int))
 
 #define ARRAYSIZE2D(p) (sizeof(p) / sizeof(p[0][0]))
-#define SIZE_OF_ARRAY(p) _ARRAYSIZE(p)
+#define SIZE_OF_ARRAY(p) static_cast<int>(std::size(p))
 
 #define _FIELD(name, fieldtype, count, flags, mapname, tolerance)              \
   {                                                                            \
@@ -622,7 +623,7 @@ class CDatadescGeneratedNameHolder {
   }
 
   ~CDatadescGeneratedNameHolder() {
-    for (int i = 0; i < m_Names.Count(); i++) {
+    for (intp i = 0; i < m_Names.Count(); i++) {
       delete m_Names[i];
     }
   }

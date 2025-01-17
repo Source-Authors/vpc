@@ -3,11 +3,11 @@
 // Logging system definitions.
 
 #include "pch_tier0.h"
-#include "logging.h"
+#include "tier0/logging.h"
 
 #include <cstring>
-#include "dbg.h"
-#include "threadtools.h"
+#include "tier0/dbg.h"
+#include "tier0/threadtools.h"
 #include "tier0_strtools.h"  // this is from tier1, but only included for inline definition of V_isspace
 
 #ifdef _PS3

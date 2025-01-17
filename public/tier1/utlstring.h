@@ -4,6 +4,7 @@
 #define VPC_TIER1_UTLSTRING_H_
 
 #include <climits>
+#include <cstddef>  // std::ptrdiff_t
 
 #include "tier1/utlmemory.h"
 #include "tier1/strtools.h"
@@ -228,7 +229,7 @@ class StringFuncs {
   static T *Duplicate(const T *pValue);
   static void Copy(T *out_pOut, const T *pIn, intp iLength);
   static int Compare(const T *pLhs, const T *pRhs);
-  static ptrdiff_t Length(const T *pValue);
+  static std::ptrdiff_t Length(const T *pValue);
   static const T *FindChar(const T *pStr, const T cSearch);
   static const T *EmptyString();
 };
@@ -243,7 +244,7 @@ class StringFuncs<char> {
   static int Compare(const char *pLhs, const char *pRhs) {
     return strcmp(pLhs, pRhs);
   }
-  static ptrdiff_t Length(const char *pValue) { return strlen(pValue); }
+  static std::ptrdiff_t Length(const char *pValue) { return strlen(pValue); }
   static const char *FindChar(const char *pStr, const char cSearch) {
     return strchr(pStr, cSearch);
   }
@@ -260,7 +261,7 @@ class StringFuncs<wchar_t> {
   static int Compare(const wchar_t *pLhs, const wchar_t *pRhs) {
     return wcscmp(pLhs, pRhs);
   }
-  static ptrdiff_t Length(const wchar_t *pValue) { return wcslen(pValue); }
+  static std::ptrdiff_t Length(const wchar_t *pValue) { return wcslen(pValue); }
   static const wchar_t *FindChar(const wchar_t *pStr, const wchar_t cSearch) {
     return wcschr(pStr, cSearch);
   }

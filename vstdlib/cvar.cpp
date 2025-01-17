@@ -365,7 +365,7 @@ void CCvar::RegisterConCommand(ConCommandBase *variable) {
 
         // Transfer children's callbacks to parent
         if (pChildVar->m_fnChangeCallbacks.Count()) {
-          for (int i = 0; i < pChildVar->m_fnChangeCallbacks.Count(); ++i) {
+          for (intp i = 0; i < pChildVar->m_fnChangeCallbacks.Count(); ++i) {
             pParentVar->m_fnChangeCallbacks.AddToTail(
                 pChildVar->m_fnChangeCallbacks[i]);
           }
@@ -495,7 +495,7 @@ void CCvar::RemoveSplitScreenConVars(CVarDLLIdentifier_t id)
     deleted.AddToTail(key);
   }
 
-  for (int i = 0; i < deleted.Count(); ++i) {
+  for (intp i = 0; i < deleted.Count(); ++i) {
     m_SplitScreenAddedConVarsMap.Remove(deleted[i]);
   }
 }

@@ -1,11 +1,11 @@
 // Copyright Valve Corporation, All rights reserved.
 
-#include "stringpool.h"
+#include "tier1/stringpool.h"
 
-#include "convar.h"
+#include "tier1/convar.h"
 #include "tier0/dbg.h"
 #include "tier1/strtools.h"
-#include "generichash.h"
+#include "tier1/generichash.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -84,7 +84,7 @@ CCountedStringPool::CCountedStringPool(StringPoolCase_t caseSensitivity) {
   MEM_ALLOC_CREDIT();
   m_HashTable.EnsureCount(HASH_TABLE_SIZE);
 
-  for (int i = 0; i < m_HashTable.Count(); i++) {
+  for (intp i = 0; i < m_HashTable.Count(); i++) {
     m_HashTable[i] = INVALID_ELEMENT;
   }
 
@@ -100,7 +100,7 @@ CCountedStringPool::CCountedStringPool(StringPoolCase_t caseSensitivity) {
 CCountedStringPool::~CCountedStringPool() { FreeAll(); }
 
 void CCountedStringPool::FreeAll() {
-  int i;
+  intp i;
 
   // Reset the hash table:
   for (i = 0; i < m_HashTable.Count(); i++) {
@@ -254,15 +254,14 @@ char *CCountedStringPool::HandleToString(unsigned short handle) {
 }
 
 void CCountedStringPool::SpewStrings() {
-  int i;
+  intp i;
   for (i = 0; i < m_Elements.Count(); i++) {
-    char *string;
-    string = m_Elements[i].pString;
-    Msg("String %d: ref:%d %s\n", i, m_Elements[i].nReferenceCount,
+    char *string = m_Elements[i].pString;
+    Msg("String %zd: ref:%d %s\n", i, m_Elements[i].nReferenceCount,
         string == NULL ? "EMPTY - ok for slot zero only!" : string);
   }
 
-  Msg("\n%d total counted strings.", m_Elements.Count());
+  Msg("\n%zd total counted strings.", m_Elements.Count());
 }
 
 #ifdef _DEBUG

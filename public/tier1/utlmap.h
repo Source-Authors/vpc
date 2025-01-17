@@ -32,7 +32,7 @@ struct base_utlmap_t {
   static const bool IsUtlMap = true;  // Used to match this at compiletime
 };
 
-#if defined(GNUC) && defined(DEBUG)
+#if defined(GNUC) && defined(_DEBUG)
 const bool base_utlmap_t::IsUtlMap SELECTANY;
 #endif
 

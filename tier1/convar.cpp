@@ -2,7 +2,7 @@
 
 #include "tier1/convar.h"
 
-#include "basetypes.h"
+#include "tier0/basetypes.h"
 #include "tier1/strtools.h"
 #include "tier1/characterset.h"
 #include "tier1/utlbuffer.h"

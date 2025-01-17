@@ -91,7 +91,7 @@
 // Small block pool
 //-----------------------------------------------------------------------------
 
-class CFreeList : public CTSListBase {
+class TSLIST_HEAD_ALIGN CFreeList : public CTSListBase {
  public:
   void Push(void *p) { CTSListBase::Push((TSLNodeBase_t *)p); }
   byte *Pop() { return (byte *)CTSListBase::Pop(); }

@@ -133,8 +133,8 @@ CUtlString CXMLWriter::FixupXMLString(const char *pInput) {
   CUtlVector<bool> needsFixups;
   CUtlString outString;
 
-  needsFixups.SetCount(ARRAYSIZE(xmlFixups));
-  for (intp i = 0; i < static_cast<intp>(ARRAYSIZE(xmlFixups)); i++) {
+  needsFixups.SetCount(static_cast<intp>(std::size(xmlFixups)));
+  for (intp i = 0; i < static_cast<intp>(std::size(xmlFixups)); i++) {
     needsFixups[i] = false;
 
     if (!m_b2010Format && xmlFixups[i].m_b2010Only) continue;
@@ -152,7 +152,7 @@ CUtlString CXMLWriter::FixupXMLString(const char *pInput) {
     char bigBuffer[2][8192];
     V_strncpy(bigBuffer[flip], pInput, sizeof(bigBuffer[0]));
 
-    for (intp i = 0; i < static_cast<intp>(ARRAYSIZE(xmlFixups)); i++) {
+    for (intp i = 0; i < static_cast<intp>(std::size(xmlFixups)); i++) {
       if (!needsFixups[i]) continue;
 
       if (!V_StrSubst(bigBuffer[flip], xmlFixups[i].m_pFrom, xmlFixups[i].m_pTo,
@@ -455,7 +455,7 @@ bool Sys_ExpandFilePattern(const char *pPattern,
 #elif defined(POSIX)
   glob_t gr;
   if (glob(pPattern, 0, NULL, &gr) == 0) {
-    for (int i = 0; i < gr.gl_pathc; i++) {
+    for (size_t i = 0; i < gr.gl_pathc; i++) {
       vecResults.AddToTail(gr.gl_pathv[i]);
     }
     globfree(&gr);

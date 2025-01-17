@@ -23,7 +23,7 @@ class CSolutionGenerator_Makefile : public IBaseSolutionGenerator {
  private:
   void GenerateProjectNames(CUtlVector<CUtlString> &projNames,
                             CUtlVector<CDependency_Project *> &projects) {
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
       char szFriendlyName[256];
       V_strncpy(szFriendlyName, pCurProject->m_ProjectName.String(),
@@ -166,13 +166,13 @@ class CSolutionGenerator_Makefile : public IBaseSolutionGenerator {
     CUtlVector<CUtlString> projNames;
     GenerateProjectNames(projNames, projects);
 
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       fprintf(fp, "%s ", projNames[i].String());
     }
 
     fprintf(fp, "\n\n\n# Individual projects + dependencies\n\n");
 
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
 
       CUtlVector<CDependency_Project *> additionalProjectDependencies;
@@ -182,7 +182,7 @@ class CSolutionGenerator_Makefile : public IBaseSolutionGenerator {
       fprintf(fp, "%s : $(if $(VALVE_NO_PROJECT_DEPS),,$(CHROOT_CONF) ",
               projNames[i].String());
 
-      for (int iTestProject = 0; iTestProject < projects.Count();
+      for (intp iTestProject = 0; iTestProject < projects.Count();
            iTestProject++) {
         if (i == iTestProject) continue;
 
@@ -225,7 +225,7 @@ class CSolutionGenerator_Makefile : public IBaseSolutionGenerator {
             "to fix that up if it bugs you. \n");
     fprintf(fp, "TAGS:\n");
     fprintf(fp, "\t@rm -f TAGS\n");
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
       char sDirTemp[MAX_PATH], sDir[MAX_PATH];
       V_strncpy(sDirTemp, pCurProject->m_ProjectFilename.String(),
@@ -253,7 +253,7 @@ class CSolutionGenerator_Makefile : public IBaseSolutionGenerator {
     fprintf(fp,
             ".PHONY: TAGS showtargets regen showregen clean cleantargets "
             "cleanandremove relink ");
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       fprintf(fp, "%s ", projNames[i].String());
     }
     fprintf(fp, "\n\n\n");
@@ -293,7 +293,7 @@ class CSolutionGenerator_Makefile : public IBaseSolutionGenerator {
     fprintf(fp, "\t$(ECHO) 'clean' && \\\n");
     fprintf(fp, "\t$(ECHO) 'regen' && \\\n");
     fprintf(fp, "\t$(ECHO) 'showregen' && \\\n");
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       fprintf(fp, "\t$(ECHO) '%s'", projNames[i].String());
       if (i != projects.Count() - 1) fprintf(fp, " && \\");
       fprintf(fp, "\n");
@@ -338,12 +338,12 @@ class CSolutionGenerator_Makefile : public IBaseSolutionGenerator {
       CDependency_Project *pCurProject,
       CUtlVector<CDependency_Project *> &projects,
       CUtlVector<CDependency_Project *> &additionalProjectDependencies) {
-    for (int i = 0; i < pCurProject->m_AdditionalProjectDependencies.Count();
+    for (intp i = 0; i < pCurProject->m_AdditionalProjectDependencies.Count();
          i++) {
       const char *pLookingFor =
           pCurProject->m_AdditionalProjectDependencies[i].String();
 
-      int j;
+      intp j;
       for (j = 0; j < projects.Count(); j++) {
         if (V_stricmp(projects[j]->m_ProjectName.String(), pLookingFor) == 0)
           break;

@@ -8,6 +8,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cstdarg>
+#include <cstddef>  // std::ptrdiff_t
 
 #include <algorithm>
 
@@ -15,7 +16,6 @@
 #include <process.h>
 #else
 #include <cstdlib>
-#define stricmp strcasecmp
 #endif
 
 #include "tier0/memdbgon.h"
@@ -36,7 +36,7 @@ static void BuildReplacements(const char *token, char *replacements) {
   // Now go pickup the any files that exist, but were non-matches
   *replacements = '\0';
 
-  for (ptrdiff_t i = 0; g_szArrPlatforms[i] != nullptr; i++) {
+  for (std::ptrdiff_t i = 0; g_szArrPlatforms[i] != nullptr; i++) {
     char path[MAX_PATH];
     char path_expanded[MAX_PATH];
 

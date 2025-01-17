@@ -178,7 +178,7 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
     fprintf(fp, "#\n");
     fprintf(fp, "#\n");
 
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
       CVCProjInfo *pProjInfo = &vcprojInfos[i];
 
@@ -197,7 +197,7 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
               szRelativeFilename, pProjInfo->m_ProjectGUID.String());
       bool bHasDependencies = false;
 
-      for (int iTestProject = 0; iTestProject < projects.Count();
+      for (intp iTestProject = 0; iTestProject < projects.Count();
            iTestProject++) {
         if (i == iTestProject) continue;
 
@@ -259,7 +259,7 @@ class CSolutionGenerator_Win32 : public IBaseSolutionGenerator {
 
   void GetProjectInfos(CUtlVector<CDependency_Project *> &projects,
                        CUtlVector<CVCProjInfo> &vcprojInfos) {
-    for (int i = 0; i < projects.Count(); i++) {
+    for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
       const char *pFilename = pCurProject->m_ProjectFilename.String();
 

@@ -97,9 +97,11 @@ int vpcmain(int argc, char **argv)
 
         if (sign == '+' || sign == '-' || sign == '/' || sign == '*' ||
             sign == '@') {
-          V_strncpy(solution_path, &next_arg[1], static_cast<intp>(std::size(solution_path)));
+          V_strncpy(solution_path, &next_arg[1],
+                    static_cast<intp>(std::size(solution_path)));
         } else {
-          V_strncpy(solution_path, next_arg, static_cast<intp>(std::size(solution_path)));
+          V_strncpy(solution_path, next_arg,
+                    static_cast<intp>(std::size(solution_path)));
           i++;
         }
 

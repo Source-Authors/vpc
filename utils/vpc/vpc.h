@@ -17,7 +17,7 @@
 #include "tier1/interface.h"
 #include "p4lib/ip4.h"
 #include "scriptsource.h"
-#include "logging.h"
+#include "tier0/logging.h"
 
 #ifdef STEAM
 #include "vstdlib/strtools.h"
@@ -26,7 +26,7 @@
 #endif
 
 #include "sys_utils.h"
-#include "keyvalues.h"
+#include "tier1/keyvalues.h"
 #include "generatordefinition.h"
 
 DECLARE_LOGGING_CHANNEL(LOG_VPC);

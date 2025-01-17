@@ -14,16 +14,31 @@
 // the two.
 #if defined(__SNC__)
 #define COMPILER_SNC 1
+#elif defined(__clang__)
+#ifndef COMPILER_CLANG
+#define COMPILER_CLANG 1
+#endif
 #elif defined(__GCC__)
+#ifndef COMPILER_GCC
 #define COMPILER_GCC 1
+#endif
 #else
-#error "Unrecognized PS3 compiler; either __SNC__ or __GCC__ must be defined"
+#error \
+    "Unrecognized PS3 compiler; either __SNC__ or __clang__ or __GCC__ must be defined"
 #endif
 
 #endif  // SN_TARGET_PS3
 
+#ifdef __clang__
+#ifndef COMPILER_CLANG
+#define COMPILER_CLANG 1
+#endif
+#else
 #ifdef __GCC__
+#ifndef COMPILER_GCC
 #define COMPILER_GCC 1
+#endif
+#endif
 #endif
 
 #if defined(_X360) || defined(_PS3)
@@ -44,9 +59,9 @@
 #error \
     "for PS3, VPC must define COMPILER_PS3 macro just like it does for COMPILER_MSVCX360 macro"
 #endif
-#if !defined(COMPILER_SNC) && !defined(COMPILER_GCC)
+#if !defined(COMPILER_SNC) && !defined(COMPILER_GCC) && !defined(COMPILER_CLANG)
 #error \
-    "for PS3, VPC must define COMPILER_SNC or COMPILER_GCC macro, depending on the target compiler, just like it does for COMPILER_MSVCX360 macro"
+    "for PS3, VPC must define COMPILER_SNC or COMPILER_GCC or COMPILER_CLANG macro, depending on the target compiler, just like it does for COMPILER_MSVCX360 macro"
 #endif
 
 #elif defined(_X360)
@@ -84,6 +99,9 @@
 #include <float.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cstdint>
+
+#include <type_traits>
 #ifdef OSX
 #include <signal.h>
 #endif
@@ -145,7 +163,7 @@
 #endif  // ! ( _PS3 && COMPILER_SNC )
 
 #ifdef __cplusplus
-#if defined(COMPILER_GCC) || defined(COMPILER_PS3)
+#if defined(COMPILER_GCC) || defined(COMPILER_PS3) || defined(COMPILER_CLANG)
 #include <new>
 #else
 #include <new.h>
@@ -332,7 +350,7 @@
 #define MSVC 1
 #endif
 
-#ifdef COMPILER_GCC
+#if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
 #define GNUC 1
 #endif
 
@@ -394,22 +412,22 @@
 //-----------------------------------------------------------------------------
 // Portable data types
 //-----------------------------------------------------------------------------
-typedef unsigned char uint8;
-typedef signed char int8;
-
-#if defined(COMPILER_MSVC)
-
-typedef __int16 int16;
-typedef unsigned __int16 uint16;
-typedef __int32 int32;
-typedef unsigned __int32 uint32;
-typedef __int64 int64;
-typedef unsigned __int64 uint64;
+typedef std::uint8_t uint8;
+typedef std::int8_t int8;
 
 // intp is an integer that can accomodate a pointer
 // (ie, sizeof(intp) >= sizeof(int) && sizeof(intp) >= sizeof(void *)
-typedef intptr_t intp;
-typedef uintptr_t uintp;
+typedef std::intptr_t intp;
+typedef std::uintptr_t uintp;
+
+typedef std::int16_t int16;
+typedef std::uint16_t uint16;
+typedef std::int32_t int32;
+typedef std::uint32_t uint32;
+typedef std::int64_t int64;
+typedef std::uint64_t uint64;
+
+#if defined(COMPILER_MSVC)
 
 #if defined(COMPILER_MSVCX360)
 #ifdef __m128
@@ -420,19 +438,6 @@ typedef uintptr_t uintp;
 
 #else  // !COMPILER_MSVC
 
-typedef short int16;
-typedef unsigned short uint16;
-typedef int int32;
-typedef unsigned int uint32;
-typedef long long int64;
-typedef unsigned long long uint64;
-#ifdef PLATFORM_64BITS
-typedef long long intp;
-typedef unsigned long long uintp;
-#else
-typedef int intp;
-typedef unsigned int uintp;
-#endif
 typedef void *HWND;
 #endif  // else COMPILER_MSVC
 
@@ -492,15 +497,15 @@ inline __attribute__((always_inline)) __m128 __vec_div(const __m128 a,
 }
 
 // load an unaligned array of float in a vector of floats
-inline __attribute__((always_inline)) __m128 __vec_ld_unaligned(
-    const float *in) {
+inline __attribute__((always_inline)) __m128
+__vec_ld_unaligned(const float *in) {
   return vec_perm(vec_ld(0, in), vec_ld(sizeof(__m128), in), vec_lvsl(0, in));
 }
 
 // load an unaligned array of 3 floats in a vector of floats, last member being
 // 0.
-inline __attribute__((always_inline)) __m128 __vec_ld_unaligned3(
-    const float *in) {
+inline __attribute__((always_inline)) __m128
+__vec_ld_unaligned3(const float *in) {
   return vec_and(
       __vec_ld_unaligned(in),
       (__m128)(vector unsigned int)(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0));
@@ -673,10 +678,7 @@ typedef void *HINSTANCE;
 #define DECL_THREAD_LOCAL __declspec(thread)
 #endif
 
-#define DISABLE_VC_WARNING(x) __pragma(warning(disable : 4310))
-#define DEFAULT_VC_WARNING(x) __pragma(warning(default : 4310))
-
-#elif defined(COMPILER_GCC) || defined(COMPILER_SNC)
+#elif defined(COMPILER_GCC) || defined(COMPILER_SNC) || defined(COMPILER_CLANG)
 
 #if defined(COMPILER_SNC)
 #define STDCALL
@@ -755,9 +757,6 @@ typedef void *HINSTANCE;
 #define DECL_THREAD_LOCAL __thread
 #endif
 
-#define DISABLE_VC_WARNING(x)
-#define DEFAULT_VC_WARNING(x)
-
 #else
 
 #define DECL_ALIGN(x) /* */
@@ -765,28 +764,25 @@ typedef void *HINSTANCE;
 
 #endif
 
-#if defined(GNUC) && !defined(COMPILER_PS3)  // use pre-align on PS3
-// gnuc has the align decoration at the end
-#define ALIGN4
-#define ALIGN8
-#define ALIGN16
-#define ALIGN32
-#define ALIGN128
-
-#undef ALIGN16_POST
-#define ALIGN4_POST DECL_ALIGN(4)
-#define ALIGN8_POST DECL_ALIGN(8)
-#define ALIGN16_POST DECL_ALIGN(16)
-#define ALIGN32_POST DECL_ALIGN(32)
-#define ALIGN128_POST DECL_ALIGN(128)
-#else
-// MSVC has the align at the start of the struct
-// PS3 SNC supports both
+#if defined(COMPILER_PS3)  // use pre-align on PS3
 #define ALIGN4 DECL_ALIGN(4)
 #define ALIGN8 DECL_ALIGN(8)
 #define ALIGN16 DECL_ALIGN(16)
 #define ALIGN32 DECL_ALIGN(32)
 #define ALIGN128 DECL_ALIGN(128)
+
+#define ALIGN4_POST
+#define ALIGN8_POST
+#define ALIGN16_POST
+#define ALIGN32_POST
+#define ALIGN128_POST
+#else
+// C++11.
+#define ALIGN4 alignas(4)
+#define ALIGN8 alignas(8)
+#define ALIGN16 alignas(16)
+#define ALIGN32 alignas(32)
+#define ALIGN128 alignas(128)
 
 #define ALIGN4_POST
 #define ALIGN8_POST
@@ -848,6 +844,23 @@ typedef void *HINSTANCE;
 // 1774, 1779, 1780, 1783, 1785, 1786, 1788
 #endif
 
+#if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
+#define WB_GCC_BEGIN_WARNING_OVERRIDE_SCOPE() _Pragma("GCC diagnostic push")
+
+#if defined(COMPILER_GCC)
+#define WB_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING() \
+  _Pragma("GCC diagnostic ignored \"-Wstringop-truncation\"")
+#else
+#define WB_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING()
+#endif
+
+#define WB_GCC_END_WARNING_OVERRIDE_SCOPE() _Pragma("GCC diagnostic pop")
+#else 
+#define WB_GCC_BEGIN_WARNING_OVERRIDE_SCOPE()
+#define WB_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING()
+#define WB_GCC_END_WARNING_OVERRIDE_SCOPE()
+#endif
+
 // Pull in the /analyze code annotations.
 #include "annotations.h"
 
@@ -860,7 +873,7 @@ typedef void *HINSTANCE;
 //-----------------------------------------------------------------------------
 // Stack-based allocation related helpers
 //-----------------------------------------------------------------------------
-#if defined(COMPILER_GCC) || defined(COMPILER_SNC)
+#if defined(COMPILER_GCC) || defined(COMPILER_SNC) || defined(COMPILER_CLANG)
 
 #define stackalloc(_size) alloca(ALIGN_VALUE(_size, 16))
 
@@ -877,7 +890,9 @@ typedef void *HINSTANCE;
 
 #endif
 
-#define stackfree(_p) 0
+#define stackfree(_p) \
+  do {                \
+  } while (false)
 
 //-----------------------------------------------------------------------------
 // Used to break into the debugger
@@ -888,7 +903,7 @@ typedef void *HINSTANCE;
 #define DebuggerBreak() __asm { int 3}
 #elif COMPILER_MSVCX360
 #define DebuggerBreak() DebugBreak()
-#elif COMPILER_GCC
+#elif defined(COMPILER_GCC) || defined(COMPILER_CLANG)
 #if defined(_PS3)
 #define DebuggerBreak() \
   { __asm volatile("tw 31,1,1"); }
@@ -1023,7 +1038,7 @@ PLATFORM_INTERFACE void Plat_MessageBox(const char *pTitle,
 #define _wtoi64(arg) wcstoll(arg, NULL, 10)
 
 #ifndef _PS3
-typedef uint32 HMODULE;
+typedef uintp HMODULE;
 #endif
 typedef void *HANDLE;
 #define __cdecl
@@ -1050,7 +1065,8 @@ typedef int socklen_t;
 //-----------------------------------------------------------------------------
 
 // need macro for constant expression
-#define ALIGN_VALUE(val, alignment) (((val) + (alignment)-1) & ~((alignment)-1))
+#define ALIGN_VALUE(val, alignment) \
+  (((val) + (alignment) - 1) & ~((alignment) - 1))
 
 // Force a function call site -not- to inlined. (useful for profiling)
 #define DONT_INLINE(a) (((int)(a) + 1) ? (a) : (a))
@@ -1119,7 +1135,7 @@ inline void SetupFPUControlWord() {
 
 #endif
 
-#elif defined(COMPILER_GCC)
+#elif defined(COMPILER_GCC) || defined(COMPILER_CLANG)
 
 // Works for PS3
 inline void SetupFPUControlWord() {
@@ -1671,7 +1687,9 @@ inline void Destruct(T *pMemory) {
   pMemory->~T();
 
 #ifdef _DEBUG
-  memset(pMemory, 0xDD, sizeof(T));
+  if constexpr (std::is_trivial_v<T>) {
+    memset(pMemory, 0xDD, sizeof(T));
+  }
 #endif
 }
 
@@ -1806,9 +1824,12 @@ PLATFORM_INTERFACE bool vtune(bool resume);
 // Dynamic libs support
 //-----------------------------------------------------------------------------
 #if defined(PLATFORM_WINDOWS)
-
 using Proc = intp(__stdcall *)();
+#else
+using Proc = void*;
+#endif
 
+#if defined(PLATFORM_WINDOWS)
 PLATFORM_INTERFACE Proc Plat_GetProcAddress(const char *pszModule,
                                             const char *pszName);
 

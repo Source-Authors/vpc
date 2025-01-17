@@ -126,7 +126,7 @@ bool CDependency::FindDependency_Internal(
     CUtlVector<CDependency *> &depList =
         (iDepList == 0 ? m_Dependencies : m_AdditionalDependencies);
 
-    for (int i = 0; i < depList.Count(); i++) {
+    for (intp i = 0; i < depList.Count(); i++) {
       CDependency *pChild = depList[i];
       if (pChild->FindDependency_Internal(callTreeOutputStack, pTest, flags,
                                           depth + 1)) {
@@ -188,16 +188,16 @@ void CDependency_Project::ExportProjectParameters() {
                      m_szStoredScriptName);
   }
 
-  for (int iConditional = 0; iConditional < g_pVPC->m_Conditionals.Count();
+  for (intp iConditional = 0; iConditional < g_pVPC->m_Conditionals.Count();
        iConditional++) {
     g_pVPC->m_Conditionals[iConditional].m_bGameConditionActive =
         m_StoredConditionalsActive[iConditional];
   }
 }
 
-int CDependency_Project::FindByProjectName(
+intp CDependency_Project::FindByProjectName(
     CUtlVector<CDependency_Project *> &projects, const char *pTestName) {
-  for (int i = 0; i < projects.Count(); i++) {
+  for (intp i = 0; i < projects.Count(); i++) {
     CDependency_Project *pProject = projects[i];
 
     if (V_stricmp(pProject->m_ProjectName.String(), pTestName) == 0) return i;
@@ -318,9 +318,9 @@ class CSingleProjectScanner : public CBaseProjectDataCollector {
     ++pGraph->m_nFilesParsedForIncludes;
 
     // Now see which of them we can open.
-    for (int iIncludeFile = 0; iIncludeFile < includes.Count();
+    for (intp iIncludeFile = 0; iIncludeFile < includes.Count();
          iIncludeFile++) {
-      for (int iIncludeDir = 0; iIncludeDir < includeDirs.Count();
+      for (intp iIncludeDir = 0; iIncludeDir < includeDirs.Count();
            iIncludeDir++) {
         char szFullName[MAX_PATH];
         V_ComposeFileName(includeDirs[iIncludeDir].String(),
@@ -421,7 +421,7 @@ class CSingleProjectScanner : public CBaseProjectDataCollector {
                                      (const char **)g_IncludeSeparators,
                                      V_ARRAYSIZE(g_IncludeSeparators));
 
-    for (int i = 0; i < relativeIncludeDirs.Count(); i++) {
+    for (intp i = 0; i < relativeIncludeDirs.Count(); i++) {
       char sAbsolute[MAX_PATH];
       V_MakeAbsolutePath(sAbsolute, sizeof(sAbsolute), relativeIncludeDirs[i]);
       m_IncludeDirectories.AddToTail(sAbsolute);
@@ -435,8 +435,8 @@ class CSingleProjectScanner : public CBaseProjectDataCollector {
     // XXX(JohnS): For projects that define a separate "GameOutputFile" step,
     // that is the final product.  This was kind of hackily added originally
     // -- the $OutputFile directive was relative to the base directory,
-    // but some generators (XCode) put all their outputs into a object directory,
-    // then use $GameOutputFile to *actually* output.
+    // but some generators (XCode) put all their outputs into a object
+    // directory, then use $GameOutputFile to *actually* output.
     m_LinkerOutputFile =
         pConfig->m_pKV->GetString(g_pOption_GameOutputFile, NULL);
     if (!m_LinkerOutputFile.Length()) {
@@ -453,7 +453,7 @@ class CSingleProjectScanner : public CBaseProjectDataCollector {
       pProject->m_AdditionalProjectDependencies.Purge();
 
       CSplitString outStrings(pVal, ";");
-      for (int i = 0; i < outStrings.Count(); i++) {
+      for (intp i = 0; i < outStrings.Count(); i++) {
         char szProjectName[MAX_PATH];
         sprintf(szProjectName, "%s", outStrings[i]);
 
@@ -473,7 +473,7 @@ class CSingleProjectScanner : public CBaseProjectDataCollector {
       pProject->m_AdditionalOutputFiles.Purge();
 
       CSplitString outStrings(pVal, ";");
-      for (int i = 0; i < outStrings.Count(); i++) {
+      for (intp i = 0; i < outStrings.Count(); i++) {
         pProject->m_AdditionalOutputFiles.AddToTail(outStrings[i]);
       }
     }
@@ -535,15 +535,15 @@ void CProjectDependencyGraph::BuildProjectDependencies(
   // Have it iterate ALL projects in the list, with whatever platform
   // conditionals are around. When it visits a
   CUtlVector<projectIndex_t> projectList;
-  CUtlVector<int> oldState;
+  CUtlVector<intp> oldState;
 
   if (nBuildProjectDepsFlags & BUILDPROJDEPS_CHECK_ALL_PROJECTS) {
     // So iterate all projects.
     projectList.SetSize(g_pVPC->m_Projects.Count());
-    for (int i = 0; i < g_pVPC->m_Projects.Count(); i++) projectList[i] = i;
+    for (intp i = 0; i < g_pVPC->m_Projects.Count(); i++) projectList[i] = i;
 
     // Simulate /allgames but remember the old state too.
-    for (int j = 0; j < g_pVPC->m_Conditionals.Count(); j++) {
+    for (intp j = 0; j < g_pVPC->m_Conditionals.Count(); j++) {
       if (g_pVPC->m_Conditionals[j].type == CONDITIONAL_GAME) {
         oldState.AddToTail((j << 16) +
                            (int)g_pVPC->m_Conditionals[j].m_bDefined);
@@ -578,8 +578,8 @@ void CProjectDependencyGraph::BuildProjectDependencies(
 
   // Restore the old game defines state?
   if (nBuildProjectDepsFlags & BUILDPROJDEPS_CHECK_ALL_PROJECTS) {
-    for (int i = 0; i < oldState.Count(); i++) {
-      int iDefine = oldState[i] >> 16;
+    for (intp i = 0; i < oldState.Count(); i++) {
+      intp iDefine = oldState[i] >> 16;
       g_pVPC->m_Conditionals[iDefine].m_bDefined = ((oldState[i] & 1) != 0);
     }
   }
@@ -601,17 +601,17 @@ void CProjectDependencyGraph::BuildProjectDependencies(
 
 void CProjectDependencyGraph::ResolveAdditionalProjectDependencies(
     CUtlVector<CDependency_Project *> *pPhase1Projects) {
-  for (int iMainProject = 0; iMainProject < m_Projects.Count();
+  for (intp iMainProject = 0; iMainProject < m_Projects.Count();
        iMainProject++) {
     CDependency_Project *pMainProject = m_Projects[iMainProject];
 
-    for (int i = 0; i < pMainProject->m_AdditionalProjectDependencies.Count();
+    for (intp i = 0; i < pMainProject->m_AdditionalProjectDependencies.Count();
          i++) {
       const char *pLookingFor =
           pMainProject->m_AdditionalProjectDependencies[i].String();
 
       // Look for this project name among all the projects.
-      int j;
+      intp j;
       for (j = 0; j < m_Projects.Count(); j++) {
         if (V_stricmp(m_Projects[j]->m_ProjectName.String(), pLookingFor) == 0)
           break;
@@ -638,7 +638,7 @@ void CProjectDependencyGraph::ResolveAdditionalProjectDependencies(
       //
       const char *pFileName = pMainProject->m_Filename.String();
 
-      int j;
+      intp j;
       for (j = 0; j < pPhase1Projects->Count(); j++) {
         if (V_stricmp((*pPhase1Projects)[j]->m_Filename.String(), pFileName) ==
             0) {
@@ -725,7 +725,7 @@ bool CProjectDependencyGraph::VisitProject(projectIndex_t iProject,
              sizeof(sTargetNameReplacement));
 
   // Now add a CDependency for each file.
-  for (int i = 0; i < outputFiles.Count(); i++) {
+  for (intp i = 0; i < outputFiles.Count(); i++) {
     const char *pFilename = outputFiles[i].String();
 
     // Replace $(TargetName) and fixup the path.
@@ -749,14 +749,14 @@ void CProjectDependencyGraph::GetProjectDependencyTree(
     dependentProjects.AddToTail(iProject);
 
   // Now add anything that depends on it.
-  for (int i = 0; i < m_Projects.Count(); i++) {
+  for (intp i = 0; i < m_Projects.Count(); i++) {
     CDependency_Project *pProject = m_Projects[i];
 
     if (pProject->m_iProjectIndex != iProject) continue;
 
     // Ok, this project/game/platform combo comes from iProject. Now find
     // anything that depends on it.
-    for (int iOther = 0; iOther < m_Projects.Count(); iOther++) {
+    for (intp iOther = 0; iOther < m_Projects.Count(); iOther++) {
       CDependency_Project *pOther = m_Projects[iOther];
 
       if (pOther->m_iProjectIndex == iProject) continue;
@@ -839,8 +839,8 @@ bool CProjectDependencyGraph::LoadCache(const char *pFilename) {
   if (!fp) return false;
 
   int version;
-  fread(&version, sizeof(version), 1, fp);
-  if (version != VPC_CRC_CACHE_VERSION) {
+  if (fread(&version, sizeof(version), 1, fp) != 1 ||
+      version != VPC_CRC_CACHE_VERSION) {
     fclose(fp);
     g_pVPC->VPCWarning("Invalid dependency cache file version in %s.",
                        pFilename);
@@ -857,12 +857,26 @@ bool CProjectDependencyGraph::LoadCache(const char *pFilename) {
       g_pVPC->VPCError("Cache loading dependency %s but it already exists!",
                        filename.String());
 
-    fread(&pDep->m_nCacheFileSize, sizeof(pDep->m_nCacheFileSize), 1, fp);
-    fread(&pDep->m_nCacheModificationTime,
-          sizeof(pDep->m_nCacheModificationTime), 1, fp);
+    if (fread(&pDep->m_nCacheFileSize, sizeof(pDep->m_nCacheFileSize), 1, fp) !=
+        1) {
+      g_pVPC->VPCWarning("Cache dependency %s has no cache file size!",
+                         filename.String());
+      break;
+    }
+    if (fread(&pDep->m_nCacheModificationTime,
+              sizeof(pDep->m_nCacheModificationTime), 1, fp) != 1) {
+      g_pVPC->VPCWarning("Cache dependency %s has no cache modification time!",
+                         filename.String());
+      break;
+    }
 
     int nDependencies;
-    fread(&nDependencies, sizeof(nDependencies), 1, fp);
+    if (fread(&nDependencies, sizeof(nDependencies), 1, fp) != 1) {
+      g_pVPC->VPCWarning("Cache dependency %s has no dependencies count!",
+                         filename.String());
+      break;
+    }
+
     pDep->m_Dependencies.SetSize(nDependencies);
 
     for (int iDependency = 0; iDependency < nDependencies; iDependency++) {
@@ -874,7 +888,7 @@ bool CProjectDependencyGraph::LoadCache(const char *pFilename) {
 
   fclose(fp);
 
-  int nOriginalEntries = m_AllFiles.Count();
+  unsigned nOriginalEntries = m_AllFiles.Count();
 
   CheckCacheEntries();
   RemoveDirtyCacheEntries();
@@ -882,7 +896,7 @@ bool CProjectDependencyGraph::LoadCache(const char *pFilename) {
 
   Log_Msg(
       LOG_VPC,
-      "\n\nLoaded %d valid dependency cache entries (%d were out of date).\n\n",
+      "\n\nLoaded %u valid dependency cache entries (%u were out of date).\n\n",
       m_AllFiles.Count(), nOriginalEntries - m_AllFiles.Count());
   return true;
 }
@@ -941,11 +955,22 @@ void CProjectDependencyGraph::WriteString(FILE *fp, CUtlString &utlString) {
 
 CUtlString CProjectDependencyGraph::ReadString(FILE *fp) {
   int len;
-  fread(&len, sizeof(len), 1, fp);
+  if (fread(&len, sizeof(len), 1, fp) != 1) {
+    g_pVPC->VPCWarning(
+        "Unable to read string from file. Missed string length!");
+    return {};
+  }
 
   char *pTemp = new char[len + 1];
-  fread(pTemp, len, 1, fp);
-  pTemp[len] = 0;
+  if (fread(pTemp, 1, len, fp) != static_cast<size_t>(len)) {
+    g_pVPC->VPCWarning(
+        "Unable to read string from file. Missed %d bytes string content!",
+        len);
+    delete[] pTemp;
+    return {};
+  }
+
+  pTemp[len] = '\0';
 
   CUtlString ret = pTemp;
   delete[] pTemp;
@@ -985,7 +1010,7 @@ void CProjectDependencyGraph::RemoveDirtyCacheEntries() {
 
       // If any of its children are dirty, then mark this guy as dirty and make
       // sure to remove the child.
-      for (int iChild = 0; iChild < pDep->m_Dependencies.Count(); iChild++) {
+      for (intp iChild = 0; iChild < pDep->m_Dependencies.Count(); iChild++) {
         CDependency *pChild = pDep->m_Dependencies[iChild];
         if (pChild->m_bCacheDirty) {
           pDep->m_bCacheDirty = true;
@@ -1030,7 +1055,7 @@ class CGameFilterProjectIterator : public IProjectIterator {
     // Ok, we've got an (absolute) project filename. Search all the projects for
     // one with that name.
     bool bAdded = false;
-    for (int i = 0; i < m_pAllProjectsList->Count(); i++) {
+    for (intp i = 0; i < m_pAllProjectsList->Count(); i++) {
       CDependency_Project *pProject = m_pAllProjectsList->Element(i);
 
       if (pProject->CompareAbsoluteFilename(szAbsolute)) {

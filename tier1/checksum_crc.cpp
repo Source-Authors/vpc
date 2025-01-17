@@ -2,10 +2,10 @@
 //
 // Purpose: Generic CRC functions
 
-#include "checksum_crc.h"
+#include "tier1/checksum_crc.h"
 
 #include "tier0/platform.h"
-#include "commonmacros.h"
+#include "tier0/commonmacros.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -67,23 +67,26 @@ CRC32_t CRC32_GetTableEntry(unsigned int slot) {
   return pulCRCTable[(unsigned char)slot];
 }
 
-void CRC32_ProcessBuffer(CRC32_t *pulCRC, const void *pBuffer, ptrdiff_t nBuffer) {
+void CRC32_ProcessBuffer(CRC32_t *pulCRC, const void *pBuffer, std::ptrdiff_t nBuffer) {
   CRC32_t ulCrc = *pulCRC;
   unsigned char *pb = (unsigned char *)pBuffer;
   unsigned int nFront;
-  ptrdiff_t nMain;
+  std::ptrdiff_t nMain;
 
 JustAfew:
 
   switch (nBuffer) {
     case 7:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
+      [[fallthrough]];
 
     case 6:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
+      [[fallthrough]];
 
     case 5:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
+      [[fallthrough]];
 
     case 4:
       ulCrc ^= LittleLong(*(CRC32_t *)pb);
@@ -96,12 +99,15 @@ JustAfew:
 
     case 3:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
+      [[fallthrough]];
 
     case 2:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
+      [[fallthrough]];
 
     case 1:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
+      [[fallthrough]];
 
     case 0:
       *pulCRC = ulCrc;
@@ -119,8 +125,10 @@ JustAfew:
   switch (nFront) {
     case 3:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
+      [[fallthrough]];
     case 2:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
+      [[fallthrough]];
     case 1:
       ulCrc = pulCRCTable[*pb++ ^ (unsigned char)ulCrc] ^ (ulCrc >> 8);
   }

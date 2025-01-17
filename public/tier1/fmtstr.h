@@ -8,6 +8,7 @@
 
 #include <cstdarg>
 #include <cstdio>
+#include <cinttypes>
 
 #include "tier0/platform.h"
 #include "tier0/dbg.h"
@@ -113,12 +114,11 @@ class CFmtStrN {
 
   // Use this for va_list formatting
   const char *sprintf_argv(const char *pszFormat, va_list arg_ptr) {
-    int result;
     bool bTruncated = false;
     static int s_nWarned = 0;
 
     InitQuietTruncation();
-    result =
+    [[maybe_unused]] int result =
         V_vsnprintfRet(m_szBuf, SIZE_BUF - 1, pszFormat, arg_ptr, &bTruncated);
     m_szBuf[SIZE_BUF - 1] = 0;
     if (bTruncated && !m_bQuietTruncation && (s_nWarned < 5)) {
@@ -162,7 +162,7 @@ class CFmtStrN {
   int Length() const { return m_nLength; }
 
   void SetLength(int nLength) {
-    m_nLength = Min(nLength, SIZE_BUF - 1);
+    m_nLength = MIN(nLength, SIZE_BUF - 1);
     m_szBuf[m_nLength] = '\0';
   }
 
@@ -288,11 +288,6 @@ class CNumStr {
   explicit CNumStr(int64 n64) { SetInt64(n64); }
   explicit CNumStr(uint64 un64) { SetUint64(un64); }
 
-#if defined(COMPILER_GCC) && defined(PLATFORM_64BITS)
-  explicit CNumStr(lint64 n64) { SetInt64((int64)n64); }
-  explicit CNumStr(ulint64 un64) { SetUint64((uint64)un64); }
-#endif
-
   explicit CNumStr(double f) { SetDouble(f); }
   explicit CNumStr(float f) { SetFloat(f); }
 
@@ -309,28 +304,28 @@ class CNumStr {
   inline void SetUint64(uint64 un64) { _ui64toa(un64, m_szBuf, 10); }
 #else
   inline void SetInt8(int8 n8) {
-    Q_snprintf(m_szBuf, sizeof(m_szBuf), "%d", (int32)n8);
+    V_snprintf(m_szBuf, sizeof(m_szBuf), "%d", (int32)n8);
   }
   inline void SetUint8(uint8 un8) {
-    Q_snprintf(m_szBuf, sizeof(m_szBuf), "%d", (int32)un8);
+    V_snprintf(m_szBuf, sizeof(m_szBuf), "%d", (int32)un8);
   }
   inline void SetInt16(int16 n16) {
-    Q_snprintf(m_szBuf, sizeof(m_szBuf), "%d", (int32)n16);
+    V_snprintf(m_szBuf, sizeof(m_szBuf), "%d", (int32)n16);
   }
   inline void SetUint16(uint16 un16) {
-    Q_snprintf(m_szBuf, sizeof(m_szBuf), "%d", (int32)un16);
+    V_snprintf(m_szBuf, sizeof(m_szBuf), "%d", (int32)un16);
   }
   inline void SetInt32(int32 n32) {
-    Q_snprintf(m_szBuf, sizeof(m_szBuf), "%d", n32);
+    V_snprintf(m_szBuf, sizeof(m_szBuf), "%d", n32);
   }
   inline void SetUint32(uint32 un32) {
-    Q_snprintf(m_szBuf, sizeof(m_szBuf), "%u", un32);
+    V_snprintf(m_szBuf, sizeof(m_szBuf), "%u", un32);
   }
   inline void SetInt64(int64 n64) {
-    Q_snprintf(m_szBuf, sizeof(m_szBuf), "%lld", n64);
+    V_snprintf(m_szBuf, sizeof(m_szBuf), "%" PRId64, n64);
   }
   inline void SetUint64(uint64 un64) {
-    Q_snprintf(m_szBuf, sizeof(m_szBuf), "%llu", un64);
+    V_snprintf(m_szBuf, sizeof(m_szBuf), "%" PRIu64, un64);
   }
 #endif
 

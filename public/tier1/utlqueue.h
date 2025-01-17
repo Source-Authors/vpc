@@ -11,14 +11,14 @@ class CUtlQueue {
  public:
   // constructor: lessfunc is required, but may be set after the constructor
   // with SetLessFunc
-  CUtlQueue(int growSize = 0, int initSize = 0);
-  CUtlQueue(T* pMemory, int numElements);
+  CUtlQueue(intp growSize = 0, intp initSize = 0);
+  CUtlQueue(T* pMemory, intp numElements);
 
   // element access
-  T& operator[](int i);
-  T const& operator[](int i) const;
-  T& Element(int i);
-  T const& Element(int i) const;
+  T& operator[](intp i);
+  T const& operator[](intp i) const;
+  T& Element(intp i);
+  T const& Element(intp i) const;
 
   // return the item from the front of the queue and delete it
   T const& RemoveAtHead();
@@ -38,10 +38,10 @@ class CUtlQueue {
   bool Check(T const element);
 
   // Returns the count of elements in the queue
-  int Count() const { return m_heap.Count(); }
+  intp Count() const { return m_heap.Count(); }
 
   // Is element index valid?
-  bool IsIdxValid(int i) const;
+  bool IsIdxValid(intp i) const;
 
   // doesn't deallocate memory
   void RemoveAll() { m_heap.RemoveAll(); }
@@ -64,18 +64,18 @@ class CUtlQueueFixed : public CUtlQueue<T, CUtlMemoryFixed<T, MAX_SIZE>> {
 
  public:
   // constructor, destructor
-  CUtlQueueFixed(int growSize = 0, int initSize = 0)
+  CUtlQueueFixed(intp growSize = 0, intp initSize = 0)
       : BaseClass(growSize, initSize) {}
-  CUtlQueueFixed(T* pMemory, int numElements)
+  CUtlQueueFixed(T* pMemory, intp numElements)
       : BaseClass(pMemory, numElements) {}
 };
 
 template <class T, class M>
-inline CUtlQueue<T, M>::CUtlQueue(int growSize, int initSize)
+inline CUtlQueue<T, M>::CUtlQueue(intp growSize, intp initSize)
     : m_heap(growSize, initSize) {}
 
 template <class T, class M>
-inline CUtlQueue<T, M>::CUtlQueue(T* pMemory, int numElements)
+inline CUtlQueue<T, M>::CUtlQueue(T* pMemory, intp numElements)
     : m_heap(pMemory, numElements) {}
 
 //-----------------------------------------------------------------------------
@@ -83,22 +83,22 @@ inline CUtlQueue<T, M>::CUtlQueue(T* pMemory, int numElements)
 //-----------------------------------------------------------------------------
 
 template <class T, class M>
-inline T& CUtlQueue<T, M>::operator[](int i) {
+inline T& CUtlQueue<T, M>::operator[](intp i) {
   return m_heap[i];
 }
 
 template <class T, class M>
-inline T const& CUtlQueue<T, M>::operator[](int i) const {
+inline T const& CUtlQueue<T, M>::operator[](intp i) const {
   return m_heap[i];
 }
 
 template <class T, class M>
-inline T& CUtlQueue<T, M>::Element(int i) {
+inline T& CUtlQueue<T, M>::Element(intp i) {
   return m_heap[i];
 }
 
 template <class T, class M>
-inline T const& CUtlQueue<T, M>::Element(int i) const {
+inline T const& CUtlQueue<T, M>::Element(intp i) const {
   return m_heap[i];
 }
 
@@ -107,21 +107,21 @@ inline T const& CUtlQueue<T, M>::Element(int i) const {
 //-----------------------------------------------------------------------------
 
 template <class T, class M>
-inline bool CUtlQueue<T, M>::IsIdxValid(int i) const {
+inline bool CUtlQueue<T, M>::IsIdxValid(intp i) const {
   return (i >= 0) && (i < m_heap.Count());
 }
 
 template <class T, class M>
 inline T const& CUtlQueue<T, M>::RemoveAtHead() {
   m_current = m_heap[0];
-  m_heap.Remove((int)0);
+  m_heap.Remove(0);
   return m_current;
 }
 
 template <class T, class M>
 inline T const& CUtlQueue<T, M>::RemoveAtTail() {
   m_current = m_heap[m_heap.Count() - 1];
-  m_heap.Remove((int)(m_heap.Count() - 1));
+  m_heap.Remove(m_heap.Count() - 1);
   return m_current;
 }
 
@@ -139,13 +139,13 @@ inline T const& CUtlQueue<T, M>::Tail() {
 
 template <class T, class M>
 void CUtlQueue<T, M>::Insert(T const& element) {
-  int index = m_heap.AddToTail();
+  intp index = m_heap.AddToTail();
   m_heap[index] = element;
 }
 
 template <class T, class M>
 bool CUtlQueue<T, M>::Check(T const element) {
-  int index = m_heap.Find(element);
+  intp index = m_heap.Find(element);
   return (index != -1);
 }
 

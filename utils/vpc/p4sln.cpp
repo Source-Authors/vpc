@@ -64,7 +64,7 @@ static void GetChangelistFilenames( CUtlVector<int> &changelists, CUtlVector<CUt
 	// If -1 is in the changelist index, then include all.
 	bool bIncludeAllChangelists = ( changelists.Find( -1 ) != changelists.InvalidIndex() );
 
-	for ( int i=0; i < fileList.Count(); i++ )
+	for ( intp i=0; i < fileList.Count(); i++ )
 	{
 		if ( bIncludeAllChangelists || changelists.Find( fileList[i].m_iChangelist ) != changelists.InvalidIndex() )
 		{
@@ -80,7 +80,7 @@ static void GetChangelistFilenames( CUtlVector<int> &changelists, CUtlVector<CUt
 static void GetProjectsDependingOnFiles( CProjectDependencyGraph &dependencyGraph, CUtlVector<CUtlString> &filenames, CUtlVector<CDependency_Project*> &projects )
 {
 	// Now figure out the projects that depend on each of these files.
-	for ( int iFile=0; iFile < filenames.Count(); iFile++ )
+	for ( intp iFile=0; iFile < filenames.Count(); iFile++ )
 	{
 		CDependency *pFile = dependencyGraph.FindDependency( filenames[iFile].String() );
 		if ( !pFile )
@@ -98,7 +98,7 @@ static void GetProjectsDependingOnFiles( CProjectDependencyGraph &dependencyGrap
 		}
 
 		// Now see which projects depend on this file.
-		for ( int iProject=0; iProject < dependencyGraph.m_Projects.Count(); iProject++ )
+		for ( intp iProject=0; iProject < dependencyGraph.m_Projects.Count(); iProject++ )
 		{
 			CDependency_Project *pProject = dependencyGraph.m_Projects[iProject];
 
@@ -124,7 +124,7 @@ static void GetProjectsDependingOnFiles( CProjectDependencyGraph &dependencyGrap
 	if ( groupRestrictions.Count() )
 	{
 		// get all of the allowed projects by iterating the restrict-to-groups
-		for ( int i = 0; i < groupRestrictions.Count(); i++ )
+		for ( intp i = 0; i < groupRestrictions.Count(); i++ )
 		{	
 			CUtlVector< projectIndex_t > projectIndices;
 			if ( !g_pVPC->GetProjectsInGroup( projectIndices, groupRestrictions[i].Get() ) )
@@ -133,7 +133,7 @@ static void GetProjectsDependingOnFiles( CProjectDependencyGraph &dependencyGrap
 			}
 
 			// aggregate into wider list
-			for ( int j = 0; j < projectIndices.Count(); j++ )
+			for ( intp j = 0; j < projectIndices.Count(); j++ )
 			{
 				allowedProjectIndices.AddToTail( projectIndices[j] );
 			}
@@ -141,10 +141,10 @@ static void GetProjectsDependingOnFiles( CProjectDependencyGraph &dependencyGrap
 	}
 
 	// Make sure that each of the dependent projects are members of the restricted groups, otherwise prevent their inclusion.
-	CUtlVector< int > doomedProjectIndices;		
+	CUtlVector< intp > doomedProjectIndices;		
 	if ( allowedProjectIndices.Count() )
 	{
-		for ( int j = 0; j < projects.Count(); j++ )
+		for ( intp j = 0; j < projects.Count(); j++ )
 		{
 			// find the target project in the allowed set
 			if ( allowedProjectIndices.Find( projects[j]->m_iProjectIndex ) == allowedProjectIndices.InvalidIndex() )
@@ -157,7 +157,7 @@ static void GetProjectsDependingOnFiles( CProjectDependencyGraph &dependencyGrap
 
 		// Remove the projects that are not part of the restrict-to-groups
 		// Indexes were added in descending order, so removal is actually from the end, truncating the set
-		for ( int j = 0; j < doomedProjectIndices.Count(); j++ )
+		for ( intp j = 0; j < doomedProjectIndices.Count(); j++ )
 		{
 			projects.Remove( doomedProjectIndices[j] );
 		}
@@ -167,7 +167,7 @@ static void GetProjectsDependingOnFiles( CProjectDependencyGraph &dependencyGrap
 
 static void UpdateProjects( CUtlVector<CDependency_Project*> &projects )
 {
-	for ( int iProject=0; iProject < projects.Count(); iProject++ )
+	for ( intp iProject=0; iProject < projects.Count(); iProject++ )
 	{
 		Log_Msg( LOG_VPC, "\n" );
 
@@ -211,7 +211,7 @@ void GenerateSolutionForPerforceChangelist( CProjectDependencyGraph &dependencyG
 	// Add g_targetProjects, which will include any other projects that they added on the command line with +tier0 *engine syntax.
 	CUtlVector<CDependency_Project*> commandLineProjects;
 	dependencyGraph.TranslateProjectIndicesToDependencyProjects( g_pVPC->m_TargetProjects, commandLineProjects );
-	for ( int i=0; i < commandLineProjects.Count(); i++ )
+	for ( intp i=0; i < commandLineProjects.Count(); i++ )
 	{
 		if ( projects.Find( commandLineProjects[i] ) == projects.InvalidIndex() )
 			projects.AddToTail( commandLineProjects[i] );
@@ -222,14 +222,14 @@ void GenerateSolutionForPerforceChangelist( CProjectDependencyGraph &dependencyG
 
 	// List the projects.
 	CUtlSortVector< CUtlString, CStringCaseLess > sortedProjectNames;
-	for ( int i=0; i < projects.Count(); i++ )
+	for ( intp i=0; i < projects.Count(); i++ )
 	{
 		sortedProjectNames.InsertNoSort( projects[i]->GetName() );
 	}
 	sortedProjectNames.RedoSort();
 
 	Msg( "Dependent projects: \n\n" );
-	for ( int i=0; i < sortedProjectNames.Count(); i++ )
+	for ( intp i=0; i < sortedProjectNames.Count(); i++ )
 	{
 		Msg( "%s\n", sortedProjectNames[i].Get() );
 	}

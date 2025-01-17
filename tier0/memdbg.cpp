@@ -7,6 +7,7 @@
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
 
 #include <cstring>
+#include <cstddef>  // std::ptrdiff_t
 #include "tier0/dbg.h"
 #if defined(USE_STACK_TRACES)
 #include "tier0/stackstats.h"
@@ -780,9 +781,11 @@ class CStringLess {
 
 //-----------------------------------------------------------------------------
 
+#ifdef _MSC_VER
 #pragma warning(disable : 4074)  // warning C4074: initializers put in compiler
                                  // reserved initialization area
 #pragma init_seg(compiler)
+#endif  // _MSC_VER
 
 //-----------------------------------------------------------------------------
 // NOTE! This should never be called directly from leaf code

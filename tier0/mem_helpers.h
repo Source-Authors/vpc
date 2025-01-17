@@ -3,6 +3,8 @@
 #ifndef VPC_TIER0_MEM_HELPERS_H_
 #define VPC_TIER0_MEM_HELPERS_H_
 
+#include <cstddef>
+
 // Normally, the runtime libraries like to mess with the memory returned by
 // malloc(), which can create problems trying to repro bugs in debug builds or
 // in the debugger.
@@ -26,8 +28,8 @@ extern bool g_bInitMemory;
     DoApplyMemoryInitializations(pMem, nSize);  \
   }
 
-void DoApplyMemoryInitializations(void *pMem, size_t nSize);
+void DoApplyMemoryInitializations(void *pMem, std::size_t nSize);
 
-size_t CalcHeapUsed();
+std::size_t CalcHeapUsed();
 
 #endif  // VPC_TIER0_MEM_HELPERS_H_

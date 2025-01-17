@@ -5,6 +5,7 @@
 
 #include "projectgenerator_vcproj.h"
 
+#undef PROPERTYNAME
 #define PROPERTYNAME(X, Y) X##_##Y,
 
 enum Win32Properties_e {

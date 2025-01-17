@@ -6,6 +6,8 @@
 #include "tier0/dbg.h"
 #include "tier0/threadtools.h"
 
+#include <string_view>  // std::size
+
 #include <sys/time.h>
 #include <unistd.h>
 
@@ -172,6 +174,7 @@ struct tm *Plat_localtime( const time_t *timep, struct tm *result )
 
 bool vtune( bool resume )
 {
+	return false;
 }
 
 
@@ -243,7 +246,7 @@ PLATFORM_INTERFACE void Plat_SetCommandLineArgs( char **argv, int argc )
 	g_CmdLine[0] = 0;
 	for ( int i = 0; i < argc; i++ )
 	{
-		strncat( g_CmdLine, argv[i], sizeof(g_CmdLine) - strlen(g_CmdLine) );
+		strncat( g_CmdLine, argv[i], sizeof(g_CmdLine) - strlen(g_CmdLine) - 1 );
 	}
 	
 	g_CmdLine[ sizeof(g_CmdLine) -1 ] = 0;
@@ -264,9 +267,14 @@ PLATFORM_INTERFACE bool Is64BitOS()
 	if ( pp != NULL )
 	{
 		char rgchArchString[256];
-		fgets( rgchArchString, sizeof( rgchArchString ), pp );
+		rgchArchString[0] = '\0';
+		if ( !fgets( rgchArchString, sizeof( rgchArchString ), pp ) && ferror( pp ) ) 
+		{
+			pclose( pp );
+			return false;
+		}
 		pclose( pp );
-		if ( !strncasecmp( rgchArchString, "x86_64", strlen( "x86_64" ) ) )
+		if ( !strncasecmp( rgchArchString, "x86_64", std::size( "x86_64" ) - 1 ) )
 			return true;
 	}
 #else
@@ -297,9 +305,9 @@ bool Plat_IsInDebugSession()
 	FILE * fp = fopen(s, "r");
 	if (fp != NULL) 
 	{
-		fread(s, 256, 1, fp);
+		size_t read = fread(s, 1, 256, fp);
 		fclose(fp);
-		return (0 == strncmp(s, "gdb", 3));
+		return (read >= 4 && 0 == strncmp(s, "gdb", 3));
 	}
 	return false;
 #endif

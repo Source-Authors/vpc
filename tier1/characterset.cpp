@@ -1,6 +1,6 @@
 // Copyright Valve Corporation, All rights reserved.
 
-#include "characterset.h"
+#include "tier1/characterset.h"
 
 #include <cstring>
 

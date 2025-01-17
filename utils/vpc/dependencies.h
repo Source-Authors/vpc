@@ -99,8 +99,8 @@ class CDependency_Project : public CDependency {
 
   // Does a case-insensitive string compare against m_ProjectName.
   // Returns -1 if not found or the index into projects.
-  static int FindByProjectName(CUtlVector<CDependency_Project *> &projects,
-                               const char *pTestName);
+  static intp FindByProjectName(CUtlVector<CDependency_Project *> &projects,
+                                const char *pTestName);
 
  public:
   // Include directories for the project.

@@ -410,7 +410,7 @@ void inline SinCos(float radians, float *RESTRICT sine,
 		fstp DWORD PTR [eax]
   }
 #elif defined(GNUC)
-  register double __cosr, __sinr;
+  double __cosr, __sinr;
   __asm __volatile__("fsincos" : "=t"(__cosr), "=u"(__sinr) : "0"(radians));
 
   *sine = __sinr;
@@ -1303,7 +1303,7 @@ FORCEINLINE unsigned long RoundFloatToUnsignedLong(float f) {
 		fistp       qword ptr nResult
   }
   return *((unsigned long *)nResult);
-#elif defined(COMPILER_GCC)
+#elif defined(COMPILER_GCC) || defined(COMPILER_CLANG)
   unsigned char nResult[8];
   __asm __volatile__("fistpl %0;" : "=m"(nResult) : "t"(f) : "st");
   return *((unsigned long *)nResult);

@@ -357,7 +357,7 @@ static int64 CalculateClockSpeed() {
 
   return (end.m_Int64 - start.m_Int64) << scale;
 #elif defined(POSIX)
-  uint64 CalculateCPUFreq();  // from cpu_linux.cpp
+  extern uint64 CalculateCPUFreq();  // from cpu_linux.cpp
   int64 freq = (int64)CalculateCPUFreq();
   if (freq == 0)  // couldn't calculate clock speed
   {
@@ -378,7 +378,25 @@ const CPUInformation& GetCPUInformation() {
   if (pi.m_Size == sizeof(pi)) return pi;
 
   // Redundant, but just in case the user somehow messes with the size.
-  memset(&pi, 0x0, sizeof(pi));
+  pi.m_Size = 0;
+  pi.m_bRDTSC = 0;
+  pi.m_bCMOV = 0; 
+  pi.m_bFCMOV = 0;
+  pi.m_bSSE = 0;
+  pi.m_bSSE2 = 0;
+  pi.m_b3DNow = 0;
+  pi.m_bMMX = 0;
+  pi.m_bHT = 0;
+  pi.m_nLogicalProcessors = 0;
+  pi.m_nPhysicalProcessors = 0;
+  pi.m_bSSE3 = 0;
+  pi.m_bSSSE3 = 0;
+  pi.m_bSSE4a = 0;
+  pi.m_bSSE41 = 0;
+  pi.m_bSSE42 = 0;
+  pi.m_Speed = 0;
+  pi.m_szProcessorID = nullptr;
+
   // Fill out the structure, and return it:
   pi.m_Size = sizeof(pi);
   // Grab the processor frequency:

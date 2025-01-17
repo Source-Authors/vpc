@@ -4,6 +4,7 @@
 #include "tier0/stacktools.h"
 #include "tier0/threadtools.h"
 #include "tier0/icommandline.h"
+#include <string>  // std::size
 
 #include "tier0/valve_off.h"
 
@@ -1449,7 +1450,7 @@ bool GetModuleNameFromAddress(const void *pAddress, tchar *pModuleNameOut,
 
 CCallStackStorage::CCallStackStorage(FN_GetCallStack GetStackFunction,
                                      uint32 iSkipCalls) {
-  iValidEntries = GetStackFunction(pStack, ARRAYSIZE(pStack), iSkipCalls + 1);
+  iValidEntries = GetStackFunction(pStack, static_cast<int>(std::size(pStack)), iSkipCalls + 1);
 }
 
 CStackTop_CopyParentStack::CStackTop_CopyParentStack(

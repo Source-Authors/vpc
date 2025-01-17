@@ -29,6 +29,7 @@
 	#include <signal.h>
 	#include <pthread.h>
 	#include <sys/time.h>
+	#include <cstddef>  // std::size
 	#define GetLastError() errno
 	typedef void *LPVOID;
 #if !defined(OSX)
@@ -188,7 +189,7 @@ static void* ThreadProcConvert( void *pParam )
 	delete ((ThreadProcInfo_t *)pParam);
 	unsigned nRet = (*info.pfnThread)(info.pParam);
 	FreeThreadID();
-	return ( void * ) nRet;
+	return ( void * ) (std::size_t) nRet;
 }
 #endif
 
@@ -542,7 +543,7 @@ bool ThreadSetPriority( ThreadHandle_t hThread, int priority )
 #elif defined(POSIX)
 	struct sched_param thread_param; 
 	thread_param.sched_priority = priority; 
-	//pthread_setschedparam( (pthread_t ) hThread, SCHED_RR, &thread_param );
+	pthread_setschedparam( (pthread_t ) hThread, SCHED_RR, &thread_param );
 	return true;
 #endif
 }
@@ -2718,7 +2719,7 @@ int CWorkerThread::WaitForReply( unsigned timeout, WaitFunc_t pfnWait )
 		}
 #endif
 
-		result = (*pfnWait)( ARRAYSIZE( waits ), waits, false, dwActualTimeout );
+		result = (*pfnWait)( static_cast<uint32>( std::size( waits ) ), waits, false, dwActualTimeout );
 
 		AssertMsg(timeout != TT_INFINITE || result != TW_TIMEOUT, "Possible hung thread, call to thread timed out");
 

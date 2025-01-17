@@ -140,8 +140,7 @@ class Vector {
   // coming from memory, not registers
   inline bool IsZeroFast() const RESTRICT {
     static_assert(sizeof(vec_t) == sizeof(int));
-    return (*(const int*)(&x) == 0 && *(const int*)(&y) == 0 &&
-            *(const int*)(&z) == 0);
+    return x == 0 && y == 0 && z == 0;
   }
 
   vec_t NormalizeInPlace();

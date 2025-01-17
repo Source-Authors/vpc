@@ -886,14 +886,14 @@
 abstract_class CFunctor : public IRefCounted {
  public:
   CFunctor() {
-#ifdef DEBUG
+#ifdef _DEBUG
     m_nUserID = 0;
 #endif
   }
   virtual ~CFunctor() {}
   virtual void operator()() = 0;
 
-#ifdef DEBUG
+#ifdef _DEBUG
   unsigned m_nUserID;  // For debugging
 #endif
 };
