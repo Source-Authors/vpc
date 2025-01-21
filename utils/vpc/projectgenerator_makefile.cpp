@@ -137,7 +137,7 @@ static bool CheckExtensions(const char *pFilename, const char **ppExtensions) {
   return false;
 }
 
-static void GetObjFilenameForFile(const char *pConfigName,
+static void GetObjFilenameForFile(const char *,
                                   const char *pFilename, char *pOut,
                                   int maxLen) {
   char sBaseFilename[MAX_PATH];
@@ -160,7 +160,7 @@ static void GetObjFilenameForFile(const char *pConfigName,
 // precompiled header.
 class CPrecompiledHeaderAccel {
  public:
-  void Setup(CUtlDict<CFileConfig *, int> &files, CFileConfig *pBaseConfig) {
+  void Setup(CUtlDict<CFileConfig *, int> &files, CFileConfig *) {
     for (int i = files.First(); i != files.InvalidIndex(); i = files.Next(i)) {
       CFileConfig *pFile = files[i];
 
@@ -342,7 +342,7 @@ class CProjectGenerator_Makefile : public CBaseProjectDataCollector {
     }
   };
 
-  void WriteVpcMacroDefines(CSpecificConfig *pConfig, FILE *fp) {
+  void WriteVpcMacroDefines(CSpecificConfig *, FILE *fp) {
     // Add VPC macros marked to become defines.
     CUtlVector<macro_t *> macroDefines;
     g_pVPC->GetMacrosMarkedForCompilerDefines(macroDefines);

@@ -294,11 +294,9 @@ char *_V_strlower(char *start) {
 #endif
 }
 
-wchar_t *_V_wcsupr(const char *file, int line, wchar_t *start) {
-  return _wcsupr(start);
-}
+wchar_t *_V_wcsupr(const char *, int, wchar_t *start) { return _wcsupr(start); }
 
-wchar_t *_V_wcslower(const char *file, int line, wchar_t *start) {
+wchar_t *_V_wcslower(const char *, int, wchar_t *start) {
   return _wcslwr(start);
 }
 

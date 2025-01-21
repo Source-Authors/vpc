@@ -247,10 +247,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /sdl")
 
   # Ignore not so interesting warnings.
-  # C4100: 'identifier' : unreferenced formal parameter
   # C4127: conditional expression is constant
   # C4201: nonstandard extension used : nameless struct/union
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4100 /wd4127 /wd4201")
+  # C4324: structure was padded due to alignment specifier
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4127 /wd4201 /wd4324")
 
   # Enable C++ + SEH exceptions.
   string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -565,11 +565,17 @@ target_compile_definitions(${PACKAGE_NAME}
     STANDALONE_VPC=1
     STATIC_TIER0=1
     STATIC_VSTDLIB=1
-    PLATFORM_64BITS=1
-    X64BITS=1
     "$<$<CONFIG:DEBUG>:_DEBUG>"
     "$<$<CONFIG:DEBUG>:DEBUG>"
 )
+
+if (SE_VPC_CXX_COMPILER MATCHES "x64")
+  target_compile_definitions(${PACKAGE_NAME}
+    PRIVATE
+      PLATFORM_64BITS=1
+      X64BITS=1
+  )
+endif (SE_VPC_CXX_COMPILER MATCHES "x64")
 
 if (SE_VPC_COMPILER_MSVC)
   target_compile_definitions(${PACKAGE_NAME}

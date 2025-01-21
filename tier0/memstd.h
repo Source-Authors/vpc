@@ -405,9 +405,9 @@ class CStdMemAlloc : public IMemAlloc {
 
     bool IsVirtual() { return false; }
 
-    bool Decommit(void *pPage) { return false; }
+    bool Decommit(void *) { return false; }
 
-    bool Commit(void *pPage) { return false; }
+    bool Commit(void *) { return false; }
   };
 
   typedef CSmallBlockHeap<CFixedAllocator<MBYTES_PRIMARY_SBH, true>>

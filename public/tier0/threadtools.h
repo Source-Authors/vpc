@@ -2238,7 +2238,7 @@ inline bool CThreadMutex::AssertOwnedByCurrentThread() {
 
 //---------------------------------------------------------
 
-inline void CThreadMutex::SetTrace(bool bTrace) {
+inline void CThreadMutex::SetTrace([[maybe_unused]] bool bTrace) {
 #ifdef _WIN32
 #ifdef THREAD_MUTEX_TRACING_ENABLED
   m_bTrace = bTrace;

@@ -959,8 +959,8 @@ class CLateBoundPtr {
 //-----------------------------------------------------------------------------
 class CFuncMemPolicyNone {
  public:
-  static void OnAcquire(void *pObject) {}
-  static void OnRelease(void *pObject) {}
+  static void OnAcquire(void *) {}
+  static void OnRelease(void *) {}
 };
 
 template <class OBJECT_TYPE_PTR = IRefCounted *>
@@ -1079,7 +1079,7 @@ typedef CRefCounted1<CFunctorData, CRefCountServiceMT> CFunctorDataBase;
 class CFunctorCallbackBase
     : public CRefCounted1<CFunctorCallback, CRefCountServiceMT> {
  protected:
-  virtual void ValidateFunctorData(CFunctorData *pData) {
+  virtual void ValidateFunctorData([[maybe_unused]] CFunctorData *pData) {
 #ifdef _DEBUG
     char pDataString[1024];
     char pCallbackString[1024];

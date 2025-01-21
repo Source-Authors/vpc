@@ -755,7 +755,7 @@ class CNoRecurseAllocator {
   pointer allocate(size_type num, const void * = 0) {
     return (pointer)DebugAlloc(num * sizeof(T));
   }
-  void deallocate(pointer p, size_type num) { DebugFree(p); }
+  void deallocate(pointer p, size_type) { DebugFree(p); }
   void construct(pointer p, const T &value) { new ((void *)p) T(value); }
   void destroy(pointer p) { p->~T(); }
 };

@@ -358,7 +358,7 @@ bool Sys_ReplaceString(const char *pStream, const char *pSearch,
       /// end of string
       len = V_strlen(pStart);
       pFind = pStart + len;
-      memcpy(pOut, pStart, len);
+      if (pOut + len - pOutBuff < outBuffSize) memcpy(pOut, pStart, len);
       pOut += len;
       break;
     } else {
@@ -367,12 +367,12 @@ bool Sys_ReplaceString(const char *pStream, const char *pSearch,
 
     // copy up to sub string
     len = pFind - pStart;
-    memcpy(pOut, pStart, len);
+    if (pOut + len - pOutBuff < outBuffSize) memcpy(pOut, pStart, len);
     pOut += len;
 
     // substitute new string
     len = V_strlen(pReplace);
-    memcpy(pOut, pReplace, len);
+    if (pOut + len - pOutBuff < outBuffSize) memcpy(pOut, pReplace, len);
     pOut += len;
 
     // advance past sub string
@@ -672,7 +672,7 @@ bool Sys_CopyToMirror(const char *pFilename) {
   return true;
 }
 
-CUtlString Sys_GuidFromFileName(const char* szFileName) {
+CUtlString Sys_GuidFromFileName(const char *szFileName) {
   // set the GUID
   MD5Context_t ctx;
   unsigned char digest[MD5_DIGEST_LENGTH];

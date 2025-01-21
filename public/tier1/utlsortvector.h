@@ -157,9 +157,9 @@ intp CUtlSortVector<T, LessFunc, BaseVector>::InsertNoSort(const T& src) {
 }
 
 template <class T, class LessFunc, class BaseVector>
-void CUtlSortVector<T, LessFunc, BaseVector>::QuickSort(LessFunc& less,
-                                                        intp nLower,
-                                                        intp nUpper) {
+void CUtlSortVector<T, LessFunc, BaseVector>::QuickSort(
+    LessFunc& less, [[maybe_unused]] intp nLower,
+    [[maybe_unused]] intp nUpper) {
 #ifdef _WIN32
   typedef int(__cdecl * QSortCompareFunc_t)(void* context, const void*,
                                             const void*);

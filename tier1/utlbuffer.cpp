@@ -1232,7 +1232,7 @@ bool CUtlBuffer::PutOverflow(intp nSize) {
   return true;
 }
 
-bool CUtlBuffer::GetOverflow(intp nSize) { return false; }
+bool CUtlBuffer::GetOverflow(intp) { return false; }
 
 //-----------------------------------------------------------------------------
 // Checks if a put is ok

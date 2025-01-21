@@ -112,37 +112,38 @@ inline const char *GetFmtStr(int nRadix = 10, bool bPrint = true) {
 }
 
 template <>
-inline FMSTRRETTYPE GetFmtStr<short>(int nRadix, bool) {
+inline FMSTRRETTYPE GetFmtStr<short>([[maybe_unused]] int nRadix, bool) {
   Assert(nRadix == 10);
   return "%hd";
 }
 template <>
-inline FMSTRRETTYPE GetFmtStr<ushort>(int nRadix, bool) {
+inline FMSTRRETTYPE GetFmtStr<ushort>([[maybe_unused]] int nRadix, bool) {
   Assert(nRadix == 10);
   return "%hu";
 }
 template <>
-inline FMSTRRETTYPE GetFmtStr<int>(int nRadix, bool) {
+inline FMSTRRETTYPE GetFmtStr<int>([[maybe_unused]] int nRadix, bool) {
   Assert(nRadix == 10);
   return "%d";
 }
 template <>
-inline FMSTRRETTYPE GetFmtStr<uint>(int nRadix, bool) {
+inline FMSTRRETTYPE GetFmtStr<uint>([[maybe_unused]] int nRadix, bool) {
   Assert(nRadix == 10 || nRadix == 16);
   return nRadix == 16 ? "%x" : "%u";
 }
 template <>
-inline FMSTRRETTYPE GetFmtStr<int64>(int nRadix, bool) {
+inline FMSTRRETTYPE GetFmtStr<int64>([[maybe_unused]] int nRadix, bool) {
   Assert(nRadix == 10);
   return "%lld";
 }
 template <>
-inline FMSTRRETTYPE GetFmtStr<float>(int nRadix, bool) {
+inline FMSTRRETTYPE GetFmtStr<float>([[maybe_unused]] int nRadix, bool) {
   Assert(nRadix == 10);
   return "%f";
 }
 template <>
-inline FMSTRRETTYPE GetFmtStr<double>(int nRadix, bool bPrint) {
+inline FMSTRRETTYPE GetFmtStr<double>([[maybe_unused]] int nRadix,
+                                      bool bPrint) {
   Assert(nRadix == 10);
   return bPrint ? "%.15lf" : "%lf";
 }  // force Printf to print DBL_DIG=15 digits of precision for doubles -
@@ -212,7 +213,8 @@ class CUtlBuffer {
   void SetExternalBuffer(void *pMemory, intp nSize, intp nInitialPut,
                          int nFlags = 0);
   bool IsExternallyAllocated() const;
-  void AssumeMemory(void *pMemory, intp nSize, intp nInitialPut, int nFlags = 0);
+  void AssumeMemory(void *pMemory, intp nSize, intp nInitialPut,
+                    int nFlags = 0);
   void *Detach();
   void *DetachMemory();
 
@@ -285,7 +287,7 @@ class CUtlBuffer {
   // counts as 2 characters when bActualSize == false and only 1 character when
   // bActualSize == true
   intp PeekDelimitedStringLength(CUtlCharConversion *pConv,
-                                bool bActualSize = true);
+                                 bool bActualSize = true);
 
   // Just like scanf, but doesn't work in binary mode
   intp Scanf(SCANF_FORMAT_STRING const char *pFmt, ...);
@@ -314,7 +316,7 @@ class CUtlBuffer {
   // Parses the next token, given a set of character breaks to stop at
   // Returns the length of the token parsed in bytes (-1 if none parsed)
   intp ParseToken(characterset_t *pBreaks, char *pTokenBuf, intp nMaxLen,
-                 bool bParseComments = true);
+                  bool bParseComments = true);
 
   // Write stuff in
   // Binary mode: it'll just write the bits directly in, and strings will be
@@ -629,8 +631,8 @@ class CUtlInplaceBuffer : public CUtlBuffer {
   //
   // @returns	ptr-to-zero-terminated-line		if line was successfully
   // read and buffer modified
-  //			NULL							when EOF is reached
-  //or error occurs
+  //			NULL
+  // when EOF is reached or error occurs
   //
   char *InplaceGetLinePtr(void);
 };
@@ -744,7 +746,7 @@ inline void CUtlBuffer::GetTypeBin<double>(double &dest) {
 }
 
 template <class T>
-inline T StringToNumber(char *pString, char **ppEnd, int nRadix) {
+inline T StringToNumber(char *pString, char **ppEnd, int) {
   Assert(0);
   *ppEnd = pString;
   return 0;

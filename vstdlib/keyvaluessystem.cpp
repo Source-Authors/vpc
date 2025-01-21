@@ -438,8 +438,8 @@ const char *CKeyValuesSystem::GetStringForSymbol(HKeySymbol symbol) {
 //-----------------------------------------------------------------------------
 // Purpose: adds KeyValues record into global list so we can track memory leaks
 //-----------------------------------------------------------------------------
-void CKeyValuesSystem::AddKeyValuesToMemoryLeakList(void *pMem,
-                                                    HKeySymbol name) {
+void CKeyValuesSystem::AddKeyValuesToMemoryLeakList(
+    [[maybe_unused]] void *pMem, [[maybe_unused]] HKeySymbol name) {
 #ifdef _DEBUG
   // only track the memory leaks in debug builds
   MemoryLeakTracker_t item = {name, pMem};
@@ -450,7 +450,8 @@ void CKeyValuesSystem::AddKeyValuesToMemoryLeakList(void *pMem,
 //-----------------------------------------------------------------------------
 // Purpose: used to track memory leaks
 //-----------------------------------------------------------------------------
-void CKeyValuesSystem::RemoveKeyValuesFromMemoryLeakList(void *pMem) {
+void CKeyValuesSystem::RemoveKeyValuesFromMemoryLeakList(
+    [[maybe_unused]] void *pMem) {
 #ifdef _DEBUG
   // only track the memory leaks in debug builds
   MemoryLeakTracker_t item = {0, pMem};

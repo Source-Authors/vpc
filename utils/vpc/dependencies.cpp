@@ -482,8 +482,7 @@ class CSingleProjectScanner : public CBaseProjectDataCollector {
   virtual const char *GetProjectFileExtension() { return "UNUSED"; }
 
  protected:
-  virtual bool StartPropertySection(configKeyword_e keyword,
-                                    bool *pbShouldSkip) {
+  virtual bool StartPropertySection(configKeyword_e keyword, bool *) {
     m_bInLinker = (keyword == KEYWORD_LINKER || keyword == KEYWORD_LIBRARIAN);
     return true;
   }
@@ -497,9 +496,7 @@ class CSingleProjectScanner : public CBaseProjectDataCollector {
     BaseClass::HandleProperty(pProperty, pCustomScriptData);
   }
 
-  virtual void EndPropertySection(configKeyword_e keyword) {
-    m_bInLinker = false;
-  }
+  virtual void EndPropertySection(configKeyword_e) { m_bInLinker = false; }
 
  public:
   // Project include directories. These strings are deleted when the object goes
@@ -1047,8 +1044,7 @@ class CGameFilterProjectIterator : public IProjectIterator {
   CGameFilterProjectIterator()
       : m_pAllProjectsList(NULL), m_pOutProjectsList(NULL) {}
 
-  virtual bool VisitProject(projectIndex_t iProject,
-                            const char *szProjectName) {
+  virtual bool VisitProject(projectIndex_t, const char *szProjectName) {
     char szAbsolute[MAX_PATH];
     V_MakeAbsolutePath(szAbsolute, sizeof(szAbsolute), szProjectName);
 

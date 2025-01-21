@@ -255,7 +255,7 @@ class CKeyValuesGrowableStringTable {
     }
 
     // The hash function.
-    unsigned int operator()(intp nItem) const {
+    unsigned int operator()(intp) const {
       return HashStringCaseless(m_pchCurString);
     }
 
@@ -756,7 +756,8 @@ void KeyValues::RecursiveSaveToFile(IBaseFileSystem *filesystem, FileHandle_t f,
 
           char buf[32];
           // write "0x" + 16 char 0-padded hex encoded 64 bit value
-          V_snprintf(buf, sizeof(buf), "0x%016" PRIx64, *((uint64 *)dat->m_sValue));
+          V_snprintf(buf, sizeof(buf), "0x%016" PRIx64,
+                     *((uint64 *)dat->m_sValue));
 
           INTERNALWRITE(buf, V_strlen(buf));
           INTERNALWRITE("\"\n", 2);
@@ -2517,8 +2518,9 @@ void *KeyValues::operator new(size_t iAllocSize) {
   return KeyValuesSystem()->AllocKeyValuesMemory(iAllocSize);
 }
 
-void *KeyValues::operator new(size_t iAllocSize, int nBlockUse,
-                              const char *pFileName, int nLine) {
+void *KeyValues::operator new(size_t iAllocSize, int,
+                              [[maybe_unused]] const char *pFileName,
+                              [[maybe_unused]] int nLine) {
   MemAlloc_PushAllocDbgInfo(pFileName, nLine);
   void *p = KeyValuesSystem()->AllocKeyValuesMemory(iAllocSize);
   MemAlloc_PopAllocDbgInfo();
@@ -2534,8 +2536,7 @@ void KeyValues::operator delete(void *pMem) {
   KeyValuesSystem()->FreeKeyValuesMemory(pMem);
 }
 
-void KeyValues::operator delete(void *pMem, int nBlockUse,
-                                const char *pFileName, int nLine) {
+void KeyValues::operator delete(void *pMem, int, const char *, int) {
   KeyValuesSystem()->FreeKeyValuesMemory(pMem);
 }
 

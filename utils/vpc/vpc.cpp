@@ -560,7 +560,8 @@ bool CVPC::IsProjectCurrent(const char *pOutputFilename, bool bSpewStatus) {
     return false;
   }
 
-  if (Is2010PlusFileFormat() && !Sys_Exists(CFmtStr("%s.filters", pOutputFilename))) {
+  if (Is2010PlusFileFormat() &&
+      !Sys_Exists(CFmtStr("%s.filters", pOutputFilename))) {
     return false;
   }
 
@@ -1541,8 +1542,7 @@ void CVPC::IterateTargetProjects(CUtlVector<projectIndex_t> &projectList,
 bool CVPC::BuildTargetProjects() {
   class CDefaultProjectIterator : public IProjectIterator {
    public:
-    virtual bool VisitProject(projectIndex_t iProject,
-                              const char *pScriptPath) {
+    virtual bool VisitProject(projectIndex_t, const char *pScriptPath) {
       Log_Msg(LOG_VPC, "\n");
 
       // check project's crc signature

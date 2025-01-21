@@ -479,7 +479,11 @@ inline intp V_IndexAfterPrefix(const char *pName, const char *prefix,
 
   if (!*pIndexStr) return nDefault;
 
-  return strtoll(pIndexStr, nullptr, 10);
+#ifdef PLATFORM_64BITS
+  return static_cast<intp>(strtoll(pIndexStr, nullptr, 10));
+#else
+  return static_cast<intp>(strtol(pIndexStr, nullptr, 10));
+#endif
 }
 
 // returns startindex if none found, 2 if "prefix" found, and n+1 if "prefixn"

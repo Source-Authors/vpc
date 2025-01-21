@@ -894,7 +894,7 @@ void VPC_Keyword_Folder(
 //	VPC_Keyword_Shaders
 //
 //-----------------------------------------------------------------------------
-void VPC_Keyword_Shaders(int depth) {
+void VPC_Keyword_Shaders(int) {
   const char *pToken;
   char shadersName[MAX_PATH];
   CUtlBuffer vpcBuffer;
@@ -1569,8 +1569,7 @@ void VPC_HandleIncludeStatement(int depth, bool bQuiet,
 }
 
 void VPC_HandleProjectCommands([[maybe_unused]] const char *pUnusedScriptName,
-                               int depth,
-                               bool bQuiet) {
+                               int depth, bool bQuiet) {
   const char *pToken;
 
   while (1) {
@@ -1674,7 +1673,7 @@ void WriteCRCCheckFile(const char *pVCProjFilename) {
 // screws up when it tries to copy the new schemacompiler.exe to game\bin but
 // it's in use.
 //
-void VPC_ForceAdditionalSchemaDependencies(const char *pProjectName) {
+void VPC_ForceAdditionalSchemaDependencies(const char *) {
   if (g_pVPC->m_SchemaFiles.Count() == 0) return;
 
   // Add "$BASE;SchemaCompiler" to $AdditionalProjectDependencies.

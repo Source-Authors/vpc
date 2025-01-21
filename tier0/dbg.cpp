@@ -106,7 +106,8 @@ void _ExitOnFatalAssert(const tchar *pFile, int line) {
 //-----------------------------------------------------------------------------
 // Templates to assist in validating pointers:
 //-----------------------------------------------------------------------------
-PLATFORM_INTERFACE void _AssertValidReadPtr(void *ptr, int count /* = 1*/) {
+PLATFORM_INTERFACE void _AssertValidReadPtr(
+    [[maybe_unused]] void *ptr, [[maybe_unused]] int count /* = 1*/) {
 #if defined(_WIN32) && !defined(_X360)
   Assert(!IsBadReadPtr(ptr, count));
 #else
@@ -114,7 +115,8 @@ PLATFORM_INTERFACE void _AssertValidReadPtr(void *ptr, int count /* = 1*/) {
 #endif
 }
 
-PLATFORM_INTERFACE void _AssertValidWritePtr(void *ptr, int count /* = 1*/) {
+PLATFORM_INTERFACE void _AssertValidWritePtr(
+    [[maybe_unused]] void *ptr, [[maybe_unused]] int count /* = 1*/) {
 #if defined(_WIN32) && !defined(_X360)
   Assert(!IsBadWritePtr(ptr, count));
 #else
@@ -122,8 +124,8 @@ PLATFORM_INTERFACE void _AssertValidWritePtr(void *ptr, int count /* = 1*/) {
 #endif
 }
 
-PLATFORM_INTERFACE void _AssertValidReadWritePtr(void *ptr,
-                                                 int count /* = 1*/) {
+PLATFORM_INTERFACE void _AssertValidReadWritePtr(
+    [[maybe_unused]] void *ptr, [[maybe_unused]] int count /* = 1*/) {
 #if defined(_WIN32) && !defined(_X360)
   Assert(!(IsBadWritePtr(ptr, count) || IsBadReadPtr(ptr, count)));
 #else
@@ -131,8 +133,8 @@ PLATFORM_INTERFACE void _AssertValidReadWritePtr(void *ptr,
 #endif
 }
 
-PLATFORM_INTERFACE void _AssertValidStringPtr(const tchar *ptr,
-                                              int maxchar /* = 0xFFFFFF */) {
+PLATFORM_INTERFACE void _AssertValidStringPtr([[maybe_unused]] const tchar *ptr,
+    [[maybe_unused]] int maxchar /* = 0xFFFFFF */) {
 #if defined(_WIN32) && !defined(_X360)
 #ifdef TCHAR_IS_CHAR
   Assert(!IsBadStringPtr(ptr, maxchar));

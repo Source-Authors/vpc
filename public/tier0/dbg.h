@@ -500,13 +500,14 @@ inline void AssertValidReadWritePtr(T *ptr, int count = 1) {
 
 #else
 
-inline void AssertValidStringPtr(const tchar *ptr, int maxchar = 0xFFFFFF) {}
+inline void AssertValidStringPtr(const tchar *,
+                                 [[maybe_unused]] int maxchar = 0xFFFFFF) {}
 template <class T>
-inline void AssertValidReadPtr(T *ptr, int count = 1) {}
+inline void AssertValidReadPtr(T *, [[maybe_unused]] int count = 1) {}
 template <class T>
-inline void AssertValidWritePtr(T *ptr, int count = 1) {}
+inline void AssertValidWritePtr(T *, [[maybe_unused]] int count = 1) {}
 template <class T>
-inline void AssertValidReadWritePtr(T *ptr, int count = 1) {}
+inline void AssertValidReadWritePtr(T *, [[maybe_unused]] int count = 1) {}
 #define AssertValidThis()
 #endif
 

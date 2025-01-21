@@ -179,7 +179,7 @@ void CBaseProjectDataCollector::EndConfigurationBlock() {
 }
 
 bool CBaseProjectDataCollector::StartPropertySection(configKeyword_e keyword,
-                                                     bool *pbShouldSkip) {
+                                                     bool *) {
   m_CurPropertySection.Push(keyword);
   return true;
 }
@@ -233,7 +233,8 @@ void CBaseProjectDataCollector::HandleProperty(const char *pProperty,
   }
 }
 
-void CBaseProjectDataCollector::EndPropertySection(configKeyword_e keyword) {
+void CBaseProjectDataCollector::EndPropertySection(
+    [[maybe_unused]] configKeyword_e keyword) {
   configKeyword_e kw;
   m_CurPropertySection.Pop(kw);
   Assert(kw == keyword);

@@ -11,13 +11,13 @@
 // memoverride.cpp isn't built into Linux projects
 #ifndef LINUX
 // Define this in release to get memory tracking even in release builds
-//#define USE_MEM_DEBUG 1
+// #define USE_MEM_DEBUG 1
 
 // Define this in release to get light memory debugging
-//#define USE_LIGHT_MEM_DEBUG
+// #define USE_LIGHT_MEM_DEBUG
 
 // Define this to require -uselmd to turn light memory debugging on
-//#define LIGHT_MEM_DEBUG_REQUIRES_CMD_LINE_SWITCH
+// #define LIGHT_MEM_DEBUG_REQUIRES_CMD_LINE_SWITCH
 #endif
 
 #if defined(_MEMTEST)
@@ -31,7 +31,7 @@
 // allocator. This adds some memory to the game's Small Block Heap and Medium
 // Block Heap, to compensate. This configuration was disabled for Portal 2, as
 // we could not sufficiently test it before ship.
-//#define STEAM_SHARES_GAME_ALLOCATOR
+// #define STEAM_SHARES_GAME_ALLOCATOR
 #endif
 
 #if defined(STEAM_SHARES_GAME_ALLOCATOR)
@@ -497,7 +497,8 @@ class CAlignedNewDelete : public T {
 
 class CMemAllocAttributeAlloction {
  public:
-  CMemAllocAttributeAlloction(const char *pszFile, int line) {
+  CMemAllocAttributeAlloction([[maybe_unused]] const char *pszFile,
+                              [[maybe_unused]] int line) {
     MemAlloc_PushAllocDbgInfo(pszFile, line);
   }
 

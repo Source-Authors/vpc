@@ -44,7 +44,7 @@ class CDefaultCvarQuery : public CBaseAppSystem<ICvarQuery> {
     return NULL;
   }
 
-  virtual bool AreConVarsLinkable(const ConVar *child, const ConVar *parent) {
+  virtual bool AreConVarsLinkable(const ConVar *, const ConVar *) {
     return true;
   }
 };
@@ -789,7 +789,9 @@ void CCvar::RemoveConsoleDisplayFunc(IConsoleDisplayFunc *pDisplayFunc) {
   m_DisplayFuncs.FindAndRemove(pDisplayFunc);
 }
 
-intp CCvar::GetConsoleDisplayFuncCount() const { return m_DisplayFuncs.Count(); }
+intp CCvar::GetConsoleDisplayFuncCount() const {
+  return m_DisplayFuncs.Count();
+}
 
 void CCvar::GetConsoleText(int nDisplayFuncIndex, char *pchText,
                            size_t bufSize) const {
@@ -960,7 +962,7 @@ void CCvar::Find(const CCommand &args) {
 }
 
 #ifdef _DEBUG
-void CCvar::HashReport(const CCommand &args) { m_CommandHash.Report(); }
+void CCvar::HashReport(const CCommand &) { m_CommandHash.Report(); }
 #endif
 
 void CCvar::SetMaxSplitScreenSlots(int nSlots) {

@@ -284,10 +284,8 @@ void VPC_Keyword_FileConfiguration() {
 //	Just advances past config keywords without acting on them
 //
 //-----------------------------------------------------------------------------
-void VPC_Read_Config_Keywords(const char *pkeywordToken) {
-  const char *pToken;
-
-  pToken = g_pVPC->GetScript().GetToken(true);
+void VPC_Read_Config_Keywords(const char *) {
+  const char *pToken = g_pVPC->GetScript().GetToken(true);
   if (!pToken || !pToken[0] || V_stricmp(pToken, "{")) g_pVPC->VPCSyntaxError();
 
   while (1) {

@@ -388,7 +388,7 @@ class CHelperFunctionsLoader {
     if (m_szPDBSearchPath != NULL) delete[] m_szPDBSearchPath;
   }
 
-  static BOOL CALLBACK UnloadSymbolsCallback(PSTR ModuleName, DWORD64 BaseOfDll,
+  static BOOL CALLBACK UnloadSymbolsCallback(PSTR, DWORD64 BaseOfDll,
                                              PVOID UserContext) {
     const CHelperFunctionsLoader *pThis =
         ((CHelperFunctionsLoader *)UserContext);
@@ -956,7 +956,7 @@ int TranslateStackInfo(const void *const *pCallStack, int iCallStackCount,
   return iCallStackCount;
 }
 
-void PreloadStackInformation(void *const *pAddresses, int iAddressCount) {
+void PreloadStackInformation(void *const *, int ) {
   // nop on anything but 360
 }
 
