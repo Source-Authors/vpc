@@ -569,7 +569,7 @@ target_compile_definitions(${PACKAGE_NAME}
     "$<$<CONFIG:DEBUG>:DEBUG>"
 )
 
-if (SE_VPC_CXX_COMPILER MATCHES "x64")
+if (NOT SE_VPC_COMPILER_MSVC OR SE_VPC_CXX_COMPILER MATCHES "x64")
   target_compile_definitions(${PACKAGE_NAME}
     PRIVATE
       PLATFORM_64BITS=1
