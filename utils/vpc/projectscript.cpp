@@ -1512,9 +1512,20 @@ void VPC_AddCurrentVPCScriptToProjectFolder(bool bDoCRCCheck) {
 
   // only emit the extra information on windows, and only for the project vpc
   if (bDoCRCCheck && g_pVPC->EvaluateConditionalExpression("$WINDOWS")) {
-    CUtlString sSentinel =
-        CFmtStr("$PROJECTDIR\\%s.sentinel", g_pVPC->GetScript().GetName())
-            .Access();
+    CUtlString projectDir;
+    {
+      // dimhotepus: Drop double quotes from PROJECTDIR as MSVC doesn't like "xxx"\z.sentinel.
+      CUtlVector<char *> parts;
+      V_SplitString(g_pVPC->GetMacroValue("PROJECTDIR"), "\"", parts);
+
+      for (const auto *part : parts) projectDir.Append(part);
+
+      parts.PurgeAndDeleteElements();
+    }
+
+    CUtlString sSentinel = CFmtStr("%s\\%s.sentinel", projectDir.Get(),
+                                   g_pVPC->GetScript().GetName())
+                               .Access();
     bool bShouldSkip;
 
     CUtlVector<CUtlString> configurationNames;
@@ -1529,11 +1540,12 @@ void VPC_AddCurrentVPCScriptToProjectFolder(bool bDoCRCCheck) {
       g_pVPC->GetProjectGenerator()->HandleProperty(
           "$Description", CFmtStr("\"Running VPC CRC Check - %s\"",
                                   g_pVPC->GetScript().GetName()));
+      // dimhotepus: Wrap in double quotes to handle paths with spaces.
       g_pVPC->GetProjectGenerator()->HandleProperty(
           "$CommandLine",
-          CFmtStr(
-              "\"rem IncrediBuild_AllowOverlap\n%s\necho crc_complete > %s\"",
-              g_pVPC->GetMacroValue("CRCCHECK"), sSentinel.Get()));
+          CFmtStr("\"rem IncrediBuild_AllowOverlap\n%s\necho crc_complete > "
+                  "$QUOTE%s$QUOTE\"",
+                  g_pVPC->GetMacroValue("CRCCHECK"), sSentinel.Get()));
       g_pVPC->GetProjectGenerator()->HandleProperty("$Outputs", sSentinel);
       g_pVPC->GetProjectGenerator()->EndPropertySection(
           KEYWORD_CUSTOMBUILDSTEP);
@@ -1920,7 +1932,8 @@ bool CVPC::ParseProjectScript(const char *pScriptName, int depth, bool bQuiet,
 
     // create reserved $PROJECTDIR
     char szProjectRootPath[MAX_PATH];
-    V_snprintf(szProjectRootPath, sizeof(szProjectRootPath), "%s",
+    // dimhotepus: Wrap in double quotes so paths with spaces work.
+    V_snprintf(szProjectRootPath, sizeof(szProjectRootPath), "\"%s\"",
                g_pVPC->GetProjectPath());
     V_RemoveDotSlashes(szProjectRootPath);
     SetMacro("PROJECTDIR", szProjectRootPath, true);
