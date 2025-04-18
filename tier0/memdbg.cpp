@@ -1562,8 +1562,10 @@ void CDbgMemAlloc::RegisterDeallocation(unsigned int nStatIndex,
 }
 #endif
 
-void CDbgMemAlloc::RegisterAllocation(MemInfo_t &info, size_t nLogicalSize,
-                                      size_t nActualSize, unsigned nTime) {
+void CDbgMemAlloc::RegisterAllocation([[maybe_unused]] MemInfo_t &info,
+                                      [[maybe_unused]] size_t nLogicalSize,
+                                      [[maybe_unused]] size_t nActualSize,
+                                      [[maybe_unused]] unsigned nTime) {
 #ifndef __SANITIZE_ADDRESS__
   ++info.m_nCurrentCount;
   ++info.m_nTotalCount;
@@ -1605,8 +1607,10 @@ void CDbgMemAlloc::RegisterAllocation(MemInfo_t &info, size_t nLogicalSize,
 #endif
 }
 
-void CDbgMemAlloc::RegisterDeallocation(MemInfo_t &info, size_t nLogicalSize,
-                                        size_t nActualSize, unsigned nTime) {
+void CDbgMemAlloc::RegisterDeallocation([[maybe_unused]] MemInfo_t &info,
+                                        [[maybe_unused]] size_t nLogicalSize,
+                                        [[maybe_unused]] size_t nActualSize,
+                                        [[maybe_unused]] unsigned nTime) {
 #ifndef __SANITIZE_ADDRESS__
   --info.m_nCurrentCount;
   info.m_nCurrentSize -= nLogicalSize;
