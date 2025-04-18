@@ -1172,9 +1172,9 @@ struct CDbgMemAlloc_GetRawCrtMemOverrideFuncs_Early {
 //-----------------------------------------------------------------------------
 // Singleton...
 //-----------------------------------------------------------------------------
-static CDbgMemAlloc s_DbgMemAlloc CONSTRUCT_EARLY;
-
 #ifdef _PS3
+
+static CDbgMemAlloc s_DbgMemAlloc CONSTRUCT_EARLY;
 
 IMemAlloc *g_pMemAllocInternalPS3 = &s_DbgMemAlloc;
 PLATFORM_OVERRIDE_MEM_ALLOC_INTERNAL_PS3_IMPL
@@ -1182,9 +1182,15 @@ PLATFORM_OVERRIDE_MEM_ALLOC_INTERNAL_PS3_IMPL
 #else  // !_PS3
 
 #ifndef TIER0_VALIDATE_HEAP
-IMemAlloc *g_pMemAlloc CONSTRUCT_EARLY = &s_DbgMemAlloc;
+IMemAlloc *g_pMemAlloc() {
+  static CDbgMemAlloc s_DbgMemAlloc;
+  return &s_DbgMemAlloc;
+}
 #else
-IMemAlloc *g_pActualAlloc = &s_DbgMemAlloc;
+IMemAlloc *g_pActualAlloc() {
+  static CDbgMemAlloc s_DbgMemAlloc;
+  return &s_DbgMemAlloc;
+}
 #endif
 
 #endif  // _PS3
@@ -2732,7 +2738,7 @@ void __attribute__((constructor)) mem_init(void) {
 void *operator new(size_t nSize, int nBlockUse, const char *pFileName,
                    int nLine) {
   set_osx_hooks();
-  void *pMem = g_pMemAlloc->Alloc(nSize, pFileName, nLine);
+  void *pMem = g_pMemAlloc()->Alloc(nSize, pFileName, nLine);
   set_override_hooks();
   return pMem;
 }
@@ -2740,7 +2746,7 @@ void *operator new(size_t nSize, int nBlockUse, const char *pFileName,
 void *operator new[](size_t nSize, int nBlockUse, const char *pFileName,
                      int nLine) {
   set_osx_hooks();
-  void *pMem = g_pMemAlloc->Alloc(nSize, pFileName, nLine);
+  void *pMem = g_pMemAlloc()->Alloc(nSize, pFileName, nLine);
   set_override_hooks();
   return pMem;
 }

@@ -152,9 +152,10 @@ class CKeyValuesSystem : public IKeyValuesSystem {
 //-----------------------------------------------------------------------------
 // Instance singleton and expose interface to rest of code
 //-----------------------------------------------------------------------------
-static CKeyValuesSystem g_KeyValuesSystem;
-
-IKeyValuesSystem *KeyValuesSystem() { return &g_KeyValuesSystem; }
+IKeyValuesSystem *KeyValuesSystem() {
+  static CKeyValuesSystem g_KeyValuesSystem;
+  return &g_KeyValuesSystem;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor

@@ -141,7 +141,10 @@ IMemAlloc *g_pMemAllocInternalPS3 = &s_ValidateAlloc;
 
 #else // !_PS3
 
-IMemAlloc *g_pMemAlloc = &s_ValidateAlloc;
+IMemAlloc *g_pMemAlloc() {
+  static CValidateAlloc s_ValidateAlloc;
+  return &s_ValidateAlloc;
+};
 
 #endif // _PS3
 

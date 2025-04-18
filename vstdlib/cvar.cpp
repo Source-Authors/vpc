@@ -237,8 +237,11 @@ ICvar::ICVarIteratorInternal *CCvar::FactoryInternalIterator(void) {
 //-----------------------------------------------------------------------------
 // Factor for CVars
 //-----------------------------------------------------------------------------
-static CCvar s_Cvar;
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CCvar, ICvar, CVAR_INTERFACE_VERSION, s_Cvar);
+static void *CreateCVar() {
+  static CCvar s_Cvar;
+  return &s_Cvar;
+};
+EXPOSE_INTERFACE_FN(CreateCVar, ICvar, CVAR_INTERFACE_VERSION);
 
 //-----------------------------------------------------------------------------
 // Returns a CVar dictionary for tool usage

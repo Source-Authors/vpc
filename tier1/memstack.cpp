@@ -122,7 +122,7 @@ bool CMemoryStack::Init(const char *pszAllocOwner, size_t maxSize,
                                           PAGE_NOACCESS);
 #else
   m_pVirtualMemorySection =
-      g_pMemAlloc->AllocateVirtualMemorySection(m_maxSize);
+      g_pMemAlloc()->AllocateVirtualMemorySection(m_maxSize);
   if (!m_pVirtualMemorySection) {
     Warning("AllocateVirtualMemorySection failed( size=%d )\n", m_maxSize);
     Assert(0);
@@ -133,7 +133,7 @@ bool CMemoryStack::Init(const char *pszAllocOwner, size_t maxSize,
 #endif
   if (!m_pBase) {
 #if !defined(NO_MALLOC_OVERRIDE)
-    g_pMemAlloc->OutOfMemory();
+    g_pMemAlloc()->OutOfMemory();
 #endif
     return false;
   }
@@ -152,7 +152,7 @@ bool CMemoryStack::Init(const char *pszAllocOwner, size_t maxSize,
 #endif
     if (!bInitialCommitSucceeded) {
 #if !defined(NO_MALLOC_OVERRIDE)
-      g_pMemAlloc->OutOfMemory(initialCommit);
+      g_pMemAlloc()->OutOfMemory(initialCommit);
 #endif
       return false;
     }
@@ -287,7 +287,7 @@ bool CMemoryStack::CommitTo(byte *pNextAlloc) {
 #endif
     if (!bAllocationSucceeded) {
 #if !defined(NO_MALLOC_OVERRIDE)
-      g_pMemAlloc->OutOfMemory(commitSize);
+      g_pMemAlloc()->OutOfMemory(commitSize);
 #endif
       return false;
     }

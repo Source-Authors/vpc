@@ -6,7 +6,7 @@
 
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
 
-//#include <malloc.h>
+// #include <malloc.h>
 
 #include <algorithm>
 
@@ -41,7 +41,7 @@
 #define USE_DLMALLOC
 #define MEMALLOC_SEGMENT_MIXED
 #define MBH_SIZE_MB (45 + MBYTES_STEAM_MBH_USAGE)
-//#define MEMALLOC_REGIONS
+// #define MEMALLOC_REGIONS
 #endif  // _WIN32 || _PS3
 
 #ifndef USE_DLMALLOC
@@ -240,9 +240,9 @@ CSmallBlockPool<CStdMemAlloc::CVirtualAllocator>::SharedData_t CSmallBlockPool<
 #endif
 #endif  // MEM_SBH_ENABLED
 
-static CStdMemAlloc s_StdMemAlloc CONSTRUCT_EARLY;
-
 #ifdef _PS3
+
+static CStdMemAlloc s_StdMemAlloc CONSTRUCT_EARLY;
 
 MemOverrideRawCrtFunctions_t *g_pMemOverrideRawCrtFns;
 IMemAlloc *g_pMemAllocInternalPS3 = &s_StdMemAlloc;
@@ -251,9 +251,15 @@ PLATFORM_OVERRIDE_MEM_ALLOC_INTERNAL_PS3_IMPL
 #else  // !_PS3
 
 #ifndef TIER0_VALIDATE_HEAP
-IMemAlloc *g_pMemAlloc = &s_StdMemAlloc;
+IMemAlloc *g_pMemAlloc() {
+  static CStdMemAlloc s_StdMemAlloc;
+  return &s_StdMemAlloc;
+}
 #else
-IMemAlloc *g_pActualAlloc = &s_StdMemAlloc;
+IMemAlloc *g_pActualAlloc() {
+  static CStdMemAlloc s_StdMemAlloc;
+  return &s_StdMemAlloc;
+}
 #endif
 
 #endif  // _PS3
@@ -318,7 +324,7 @@ size_t CSmallBlockPool<CAllocator>::GetBlockSize() {
 // Define VALIDATE_SBH_FREE_LIST to a given block size to validate that pool's
 // freelist (it'll crash on the next alloc/free after the list is corrupted)
 // NOTE: this may affect perf more than USE_LIGHT_MEM_DEBUG
-//#define VALIDATE_SBH_FREE_LIST 320
+// #define VALIDATE_SBH_FREE_LIST 320
 template <typename CAllocator>
 void CSmallBlockPool<CAllocator>::ValidateFreelist(
     [[maybe_unused]] SharedData_t *pSharedData) {
@@ -1249,7 +1255,7 @@ size_t LMDComputeHeaderSize(size_t align = 0) {
   // For aligned allocs, the header is preceded by padding which maintains
   // alignment
   if (align > LMD_MAX_ALIGN)
-    s_StdMemAlloc.SetCRTAllocFailed(
+    g_pMemAlloc()->SetCRTAllocFailed(
         align);  // TODO: could convert alignment to exponent to get around
                  // this, or use a flag for alignments over 1KB or 1MB...
   return ((sizeof(AllocHeader_t) + (align - 1)) & ~(align - 1));
@@ -1358,16 +1364,16 @@ bool LMDValidateHeap() {
 void *LMDRealloc(void *pMem, size_t nSize, size_t align = 0,
                  const char *pszModule = g_pszUnknown, int line = 0) {
   if (nSize == 0) {
-    s_StdMemAlloc.Free(pMem);
+    g_pMemAlloc()->Free(pMem);
     return NULL;
   }
   void *pNew;
 #ifdef MEMALLOC_SUPPORTS_ALIGNED_ALLOCATIONS
   if (align)
-    pNew = s_StdMemAlloc.AllocAlign(nSize, align, pszModule, line);
+    pNew = g_pMemAlloc()->AllocAlign(nSize, align, pszModule, line);
   else
 #endif  // MEMALLOC_SUPPORTS_ALIGNED_ALLOCATIONS
-    pNew = s_StdMemAlloc.Alloc(nSize, pszModule, line);
+    pNew = g_pMemAlloc()->Alloc(nSize, pszModule, line);
   if (!pMem) {
     return pNew;
   }
@@ -1377,7 +1383,7 @@ void *LMDRealloc(void *pMem, size_t nSize, size_t align = 0,
   }
   size_t nCopySize = MIN(nSize, pHeader->nBytes);
   memcpy(pNew, pMem, nCopySize);
-  s_StdMemAlloc.Free(pMem, pszModule, line);
+  g_pMemAlloc()->Free(pMem, pszModule, line);
   return pNew;
 }
 

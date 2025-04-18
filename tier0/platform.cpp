@@ -450,7 +450,7 @@ PLATFORM_INTERFACE void *Plat_Alloc(unsigned long size) {
 PLATFORM_INTERFACE void *Plat_Realloc(void *ptr, unsigned long size) {
   EnterCriticalSection(&g_AllocCS);
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
-  void *pRet = g_pMemAlloc->Realloc(ptr, size);
+  void *pRet = g_pMemAlloc()->Realloc(ptr, size);
 #else
   void *pRet = realloc(ptr, size);
 #endif
@@ -468,7 +468,7 @@ PLATFORM_INTERFACE void *Plat_Realloc(void *ptr, unsigned long size) {
 PLATFORM_INTERFACE void Plat_Free(void *ptr) {
   EnterCriticalSection(&g_AllocCS);
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
-  g_pMemAlloc->Free(ptr);
+  g_pMemAlloc()->Free(ptr);
 #else
   free(ptr);
 #endif
