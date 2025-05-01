@@ -705,8 +705,6 @@ const char *V_strnchr(const char *pStr, char c, intp n) {
 
 void V_strncpy(char *pDest, char const *pSrc, intp maxLen) {
   Assert(maxLen >= 0);
-  // Check for truncation.
-  Assert(maxLen > V_strlen(pSrc));
   AssertValidStringPtr(pSrc);
 
   DEBUG_LINK_CHECK;
@@ -728,8 +726,6 @@ void V_wcsncpy(wchar_t *pDest, wchar_t const *pSrc, intp maxLenInBytes) {
   AssertValidReadPtr(pSrc);
 
   size_t maxLen = maxLenInBytes / sizeof(wchar_t);
-  // Check for truncation.
-  Assert(maxLen > wcslen(pSrc));
 
   if (maxLen) {
     wcsncpy(pDest, pSrc, maxLen - 1);
