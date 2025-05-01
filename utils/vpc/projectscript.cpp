@@ -1514,7 +1514,8 @@ void VPC_AddCurrentVPCScriptToProjectFolder(bool bDoCRCCheck) {
   if (bDoCRCCheck && g_pVPC->EvaluateConditionalExpression("$WINDOWS")) {
     CUtlString projectDir;
     {
-      // dimhotepus: Drop double quotes from PROJECTDIR as MSVC doesn't like "xxx"\z.sentinel.
+      // dimhotepus: Drop double quotes from PROJECTDIR as MSVC doesn't like
+      // "xxx"\z.sentinel.
       CUtlVector<char *> parts;
       V_SplitString(g_pVPC->GetMacroValue("PROJECTDIR"), "\"", parts);
 
@@ -1530,6 +1531,7 @@ void VPC_AddCurrentVPCScriptToProjectFolder(bool bDoCRCCheck) {
 
     CUtlVector<CUtlString> configurationNames;
     g_pVPC->GetProjectGenerator()->GetAllConfigurationNames(configurationNames);
+    CFmtStr outputs("\"%s\"", sSentinel.Get());
     for (intp i = 0; i < configurationNames.Count(); i++) {
       g_pVPC->GetProjectGenerator()->StartConfigurationBlock(
           configurationNames[i], true);
@@ -1546,7 +1548,7 @@ void VPC_AddCurrentVPCScriptToProjectFolder(bool bDoCRCCheck) {
           CFmtStr("\"rem IncrediBuild_AllowOverlap\n%s\necho crc_complete > "
                   "$QUOTE%s$QUOTE\"",
                   g_pVPC->GetMacroValue("CRCCHECK"), sSentinel.Get()));
-      g_pVPC->GetProjectGenerator()->HandleProperty("$Outputs", sSentinel);
+      g_pVPC->GetProjectGenerator()->HandleProperty("$Outputs", outputs);
       g_pVPC->GetProjectGenerator()->EndPropertySection(
           KEYWORD_CUSTOMBUILDSTEP);
       g_pVPC->GetProjectGenerator()->EndConfigurationBlock();
