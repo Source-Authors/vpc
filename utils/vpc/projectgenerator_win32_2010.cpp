@@ -341,6 +341,7 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
   m_XMLWriter.Write(
       "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.props\" />");
   m_XMLWriter.PushNode("ImportGroup", "Label=\"ExtensionSettings\"");
+  // dimhotepus: Always add MASM props.
   m_XMLWriter.Write(
       "<Import Project=\"$(VCTargetsPath)\\BuildCustomizations\\masm.props\" "
       "/>");
@@ -425,6 +426,7 @@ bool CProjectGenerator_Win32_2010::WritePrimaryXML(
   m_XMLWriter.Write(
       "<Import Project=\"$(VCTargetsPath)\\Microsoft.Cpp.targets\" />");
   m_XMLWriter.PushNode("ImportGroup", "Label=\"ExtensionTargets\"");
+  // dimhotepus: Always include MASM targets.
   m_XMLWriter.Write(
       "<Import Project=\"$(VCTargetsPath)\\BuildCustomizations\\masm.targets\" "
       "/>");
