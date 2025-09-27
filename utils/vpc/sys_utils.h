@@ -137,12 +137,6 @@ inline bool IsHFileExtension(const char *pExtension) {
          !V_stricmp(pExtension, "hh") || !V_stricmp(pExtension, "h");
 }
 
-inline bool IsMasmFileExtension(const char *pExtension) {
-  if (!pExtension) return false;
-
-  return !V_stricmp(pExtension, "asm") || !V_stricmp(pExtension, "masm");
-}
-
 CUtlString Sys_GuidFromFileName(const char *szFileName);
 
 #endif  // VPC_SYS_UTILS_H_
