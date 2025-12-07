@@ -158,6 +158,7 @@ enum EVSVersion {
   k_EVSVersion_2013,
   k_EVSVersion_2015,
   k_EVSVersion_2022,
+  k_EVSVersion_2026,
 };
 
 class CVPC {
@@ -199,6 +200,7 @@ class CVPC {
   bool Is2013() const { return m_eVSVersion == k_EVSVersion_2013; }
   bool Is2015() const { return m_eVSVersion == k_EVSVersion_2015; }
   bool Is2022() const { return m_eVSVersion == k_EVSVersion_2022; }
+  bool Is2026() const { return m_eVSVersion == k_EVSVersion_2026; }
   bool IsDedicatedBuild() const { return m_bDedicatedBuild; }
   bool IsUnity() const { return m_bUseUnity; }
   bool IsShowCaseIssues() const { return m_bShowCaseIssues; }

@@ -1000,6 +1000,9 @@ void CVPC::HandleSingleCommandLineArg(const char *pArg) {
     } else if (!V_stricmp(pArgName, "2022")) {
       m_eVSVersion = k_EVSVersion_2022;
       m_ExtraOptionsCRCString += pArgName;
+    } else if (!V_stricmp(pArgName, "2026")) {
+      m_eVSVersion = k_EVSVersion_2026;
+      m_ExtraOptionsCRCString += pArgName;
     } else if (!V_stricmp(pArgName, "nounity")) {
       m_bUseUnity = false;
       m_ExtraOptionsCRCString += pArgName;
@@ -1758,6 +1761,25 @@ void CVPC::SetMacrosAndConditionals() {
       !V_stricmp(cVPCPlatform.String(), "X360")) {
     // VS2010 is strictly win32/xbox360
     switch (m_eVSVersion) {
+      case k_EVSVersion_2026:
+        m_ExtraOptionsCRCString += "VS2026";
+        SetConditional("VS2026", true);
+
+        // temporarily allow VS2022 conditionals also as there are many. Will
+        // fix.
+        SetConditional("VS2022", true);
+
+        // temporarily allow VS2015 conditionals also as there are many. Will
+        // fix.
+        SetConditional("VS2015", true);
+
+        // temporarily allow VS2013 conditionals also as there are many. Will
+        // fix.
+        SetConditional("VS2013", true);
+
+        m_bUseVS2010FileFormat = true;
+        break;
+
       case k_EVSVersion_2022:
         m_ExtraOptionsCRCString += "VS2022";
         SetConditional("VS2022", true);
@@ -2270,7 +2292,9 @@ void CVPC::SetupGenerators() {
     } else {
       // spew what we are generating
       const char *pchLogLine = "Generating for Visual Studio 2005.\n";
-      if (m_eVSVersion == k_EVSVersion_2022)
+      if (m_eVSVersion == k_EVSVersion_2026)
+        pchLogLine = "Generating for Visual Studio 2026.\n";
+      else if (m_eVSVersion == k_EVSVersion_2022)
         pchLogLine = "Generating for Visual Studio 2022.\n";
       else if (m_eVSVersion == k_EVSVersion_2015)
         pchLogLine = "Generating for Visual Studio 2015.\n";
