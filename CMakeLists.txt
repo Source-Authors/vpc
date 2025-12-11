@@ -11,6 +11,9 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING
   "Choose the type of build.")
 set(SE_VPC_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
   "CMake build type used to build ${PACKAGE_NAME}.")
+# Export compile commands for tools like clang-tidy.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL
+ "CMake should export compile commmands as tools use it.")
 
 project(vpc LANGUAGES CXX)
 
