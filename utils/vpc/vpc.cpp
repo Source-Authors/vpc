@@ -86,7 +86,7 @@ CVPC::CVPC() {
   }
 
 #ifdef WIN32
-  m_eVSVersion = k_EVSVersion_2022;
+  m_eVSVersion = k_EVSVersion_2026;
   m_bUseVS2010FileFormat = true;
   m_bUseUnity = false;
 #else
@@ -667,8 +667,11 @@ void CVPC::SpewUsage(void) {
               "[/mirror]:     <path> - Mirror output files to specified path. "
               "Used for A:B testing.\n");
       Log_Msg(LOG_VPC,
+              "[/2026]:       Generate projects and solutions for Visual "
+              "Studio 2026 [default]\n");
+      Log_Msg(LOG_VPC,
               "[/2022]:       Generate projects and solutions for Visual "
-              "Studio 2022 [default]\n");
+              "Studio 2022\n");
       Log_Msg(LOG_VPC,
               "[/2015]:       Generate projects and solutions for Visual "
               "Studio 2015\n");
