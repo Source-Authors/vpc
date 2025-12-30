@@ -423,56 +423,46 @@ Plat_AllocErrorFn g_AllocError = Plat_DefaultAllocErrorFn;
 
 #if !defined(_X360) && !defined(_PS3)
 
-CRITICAL_SECTION g_AllocCS;
-class CAllocCSInit {
- public:
-  CAllocCSInit() { InitializeCriticalSection(&g_AllocCS); }
-} g_AllocCSInit;
-
 PLATFORM_INTERFACE void *Plat_Alloc(unsigned long size) {
-  EnterCriticalSection(&g_AllocCS);
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
   void *pRet = MemAlloc_Alloc(size);
 #else
   void *pRet = malloc(size);
 #endif
-  LeaveCriticalSection(&g_AllocCS);
+
   if (pRet) {
     return pRet;
-  } else {
-#if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
-    g_AllocError(size);
-#endif
-    return 0;
   }
+  
+#if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
+  g_AllocError(size);
+#endif
+  return 0;
 }
 
 PLATFORM_INTERFACE void *Plat_Realloc(void *ptr, unsigned long size) {
-  EnterCriticalSection(&g_AllocCS);
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
   void *pRet = g_pMemAlloc()->Realloc(ptr, size);
 #else
   void *pRet = realloc(ptr, size);
 #endif
-  LeaveCriticalSection(&g_AllocCS);
+
   if (pRet) {
     return pRet;
-  } else {
+  } 
+  
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
-    g_AllocError(size);
+  g_AllocError(size);
 #endif
-    return 0;
-  }
+  return 0;
 }
 
 PLATFORM_INTERFACE void Plat_Free(void *ptr) {
-  EnterCriticalSection(&g_AllocCS);
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
   g_pMemAlloc()->Free(ptr);
 #else
   free(ptr);
 #endif
-  LeaveCriticalSection(&g_AllocCS);
 }
 
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
