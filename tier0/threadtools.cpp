@@ -269,13 +269,14 @@ static void AddThreadHandleToIDMap( HANDLE hThread, uint threadID )
 	pMap->m_hThread = hThread;
 	pMap->m_ThreadID = threadID;
 
-	// Add it to the global list.
-	g_ThreadHandleToIDMapMutex.Lock();
-	pMap->m_pNext = g_pThreadHandleToIDMaps;
-	g_pThreadHandleToIDMaps = pMap;
-	++g_nThreadHandleToIDMaps;
+	{
+		// Add it to the global list.
+		AUTO_LOCK(g_ThreadHandleToIDMapMutex);
 
-	g_ThreadHandleToIDMapMutex.Unlock();
+		pMap->m_pNext = g_pThreadHandleToIDMaps;
+		g_pThreadHandleToIDMaps = pMap;
+		++g_nThreadHandleToIDMaps;
+	}
 
 	if ( g_nThreadHandleToIDMaps > 500 )
 		Error( "ThreadHandleToIDMap overflow." );
@@ -303,7 +304,7 @@ static void RemoveThreadHandleToIDMap( HANDLE hThread )
 
 	CThreadHandleToIDMap *pMap, **ppPrev;
 	
-	g_ThreadHandleToIDMapMutex.Lock();
+	AUTO_LOCK(g_ThreadHandleToIDMapMutex);
 
 	if ( g_nThreadHandleToIDMaps <= 0 )
 		Error( "ThreadHandleToIDMap underflow." );
@@ -314,8 +315,6 @@ static void RemoveThreadHandleToIDMap( HANDLE hThread )
 		delete pMap;
 		--g_nThreadHandleToIDMaps;
 	}
-
-	g_ThreadHandleToIDMapMutex.Unlock();
 }
 
 static uint LookupThreadIDFromHandle( HANDLE hThread )
@@ -328,9 +327,12 @@ static uint LookupThreadIDFromHandle( HANDLE hThread )
 	{
 		CThreadHandleToIDMap *pMap, **ppPrev;
 
-		g_ThreadHandleToIDMapMutex.Lock();
-		bool bRet = InternalLookupHandleToThreadIDMap( hThread, pMap, ppPrev );
-		g_ThreadHandleToIDMapMutex.Unlock();
+		bool bRet;
+
+		{
+			AUTO_LOCK(g_ThreadHandleToIDMapMutex);
+			bRet = InternalLookupHandleToThreadIDMap( hThread, pMap, ppPrev );
+		}
 		
 		if ( bRet )
 			return pMap->m_ThreadID;
@@ -2230,11 +2232,14 @@ void CThreadRWLock::WaitForRead()
 
 void CThreadRWLock::LockForWrite()
 {
-	m_mutex.Lock();
-	bool bWait = ( m_nWriters != 0 || m_nActiveReaders != 0 );
-	m_nWriters++;
-	m_CanRead.Reset();
-	m_mutex.Unlock();
+	bool bWait;
+
+	{
+		AUTO_LOCK(m_mutex);
+		bWait = ( m_nWriters != 0 || m_nActiveReaders != 0 );
+		m_nWriters++;
+		m_CanRead.Reset();
+	}
 
 	if ( bWait )
 	{
@@ -2244,7 +2249,7 @@ void CThreadRWLock::LockForWrite()
 
 void CThreadRWLock::UnlockWrite()
 {
-	m_mutex.Lock();
+	AUTO_LOCK(m_mutex);
 	m_nWriters--;
 	if ( m_nWriters == 0)
 	{
@@ -2257,7 +2262,6 @@ void CThreadRWLock::UnlockWrite()
 	{
 		m_CanWrite.Set();
 	}
-	m_mutex.Unlock();
 }
 
 //-----------------------------------------------------------------------------

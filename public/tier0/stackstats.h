@@ -52,10 +52,10 @@ struct CCallStackStatsGatherer_FunctionTable_t {
 // translator function
 class CCallStackStatsGatherer_Standardized_t {
  public:
-  CCallStackStatsGatherer_Standardized_t(void){};
+  CCallStackStatsGatherer_Standardized_t(void) {};
   CCallStackStatsGatherer_Standardized_t(
       void *pThis, const CCallStackStatsGatherer_FunctionTable_t &FnTable)
-      : pGatherer(pThis), pFunctionTable(&FnTable){};
+      : pGatherer(pThis), pFunctionTable(&FnTable) {};
 
   // go ahead and create some helper functions that are likely to be used by
   // helper code
@@ -85,7 +85,7 @@ class CCallStackStatsGatherer_StructAccessor_Base {
  public:
   CCallStackStatsGatherer_StructAccessor_Base(
       const CCallStackStatsGatherer_Standardized_t &Gatherer, int iEntryIndex)
-      : m_Gatherer(Gatherer), m_iEntryIndex(iEntryIndex){};
+      : m_Gatherer(Gatherer), m_iEntryIndex(iEntryIndex) {};
 
  protected:
   uint32
@@ -108,7 +108,7 @@ class CCallStackStatsGatherer_StatMutexPool {
   void LockEntry(uint32 iEntryIndex, bool bLock) {
 #if defined(ENABLE_STACK_STATS_GATHERING)
     static_assert((SHAREDENTRYMUTEXES & (SHAREDENTRYMUTEXES - 1)) ==
-                        0);  // must be a power of 2
+                  0);  // must be a power of 2
 
     if (bLock) {
       m_IndividualEntryMutexes[iEntryIndex & (SHAREDENTRYMUTEXES - 1)].Lock();
@@ -126,10 +126,11 @@ class CCallStackStatsGatherer_StatMutexPool {
 // tracking. CAPTUREDCALLSTACKLENGTH - The maximum length of your stack trace
 // that we'll use to distinguish entries STACKACQUISITIONFUNCTION - The function
 // to use to gather the current call stack. GetCallStack() is safe,
-// GetCallStack_Fast() is faster, but has special requirements STATMUTEXHANDLER -
-// If you want automatic mutex management for your individual entries, supply a
-// handler here. 						You'll need to not only call GetEntry(), but lock/unlock the
-//entry while accessing it. TEMPLATIZEDMEMORYALLOCATOR - We'll need to allocate
+// GetCallStack_Fast() is faster, but has special requirements STATMUTEXHANDLER
+// - If you want automatic mutex management for your individual entries, supply
+// a handler here. 						You'll need to
+// not only call GetEntry(), but lock/unlock the
+// entry while accessing it. TEMPLATIZEDMEMORYALLOCATOR - We'll need to allocate
 // memory, supply an allocator if you want to manage that
 template <class STATSTRUCT, size_t CAPTUREDCALLSTACKLENGTH,
           FN_GetCallStack STACKACQUISITIONFUNCTION = GetCallStack,
@@ -148,9 +149,9 @@ class CCallStackStatsGatherer : public STATMUTEXHANDLER {
   CCallStackStatsGatherer_StructAccessor_Base<STATSTRUCT> GetEntry(
       void *const
           CallStack[CAPTUREDCALLSTACKLENGTH]);  // get the entry using some
-                                                // callstack grabbed a while ago.
-                                                // Assumes ALL invalid entries
-                                                // have been nullified
+                                                // callstack grabbed a while
+                                                // ago. Assumes ALL invalid
+                                                // entries have been nullified
   CCallStackStatsGatherer_StructAccessor_Base<STATSTRUCT> GetEntry(
       void *const CallStack[CAPTUREDCALLSTACKLENGTH],
       uint32 iValidEntries);  // same as above, but does the work of nullifying
@@ -266,8 +267,7 @@ class CCallStackStatsGatherer : public STATMUTEXHANDLER {
 
   void KeepSubTree(CCallStackStatsGatherer_Standardized_t &SubTree) {
     AUTO_LOCK_FM(m_SubTreeMutex);
-    for (typename StoredSubTreeVector_t::iterator treeIter =
-             m_StoredSubTrees.begin();
+    for (auto treeIter = m_StoredSubTrees.begin();
          treeIter != m_StoredSubTrees.end(); ++treeIter) {
       if (SubTree.pGatherer == treeIter->pGatherer) return;
     }
@@ -309,7 +309,8 @@ class CCallStackStatsGatherer : public STATMUTEXHANDLER {
     // szTemp ), "\n\t" );
 
     // Warning( "Attempting to link
-    // trees:\n=======================ONE=======================\n\t%s\n", szTemp
+    // trees:\n=======================ONE=======================\n\t%s\n",
+    // szTemp
     // ); TranslateStackInfo( treeIter->Stack, CAPTUREDCALLSTACKLENGTH, szTemp,
     // sizeof( szTemp ), "\n\t" ); Warning(
     // "=======================TWO=======================\n\t%s\n", szTemp );
@@ -324,7 +325,8 @@ class CCallStackStatsGatherer : public STATMUTEXHANDLER {
       if (CallStackIn[i] == pMatchAddress) {
         // TranslateStackInfo( CallStackIn, i, szTemp, sizeof( szTemp ), "\n\t"
         // ); Warning(
-        // "======================MATCH======================\n\t%s\n", szTemp );
+        // "======================MATCH======================\n\t%s\n", szTemp
+        // );
 
         CallStackOut[i] =
             treeIter->tree
@@ -341,7 +343,7 @@ class CCallStackStatsGatherer : public STATMUTEXHANDLER {
   }
 
   struct StatIndex_t {
-    StatIndex_t(void) : m_Index((unsigned int)-1){};
+    StatIndex_t(void) : m_Index((unsigned int)-1) {};
     unsigned int m_Index;
   };
 
@@ -384,7 +386,7 @@ class CCallStackStatsGatherer : public STATMUTEXHANDLER {
   // access the same index simultaneously
   CThreadRWLock m_StatEntryLock;
 
-#else  //#if defined( ENABLE_STACK_STATS_GATHERING )
+#else  // #if defined( ENABLE_STACK_STATS_GATHERING )
 
   STATSTRUCT m_SingleEntry;  // the class is disabled, we'll always return this
                              // same struct
@@ -395,7 +397,7 @@ class CCallStackStatsGatherer : public STATMUTEXHANDLER {
     return 0;
   }
 
-#endif  //#if defined( ENABLE_STACK_STATS_GATHERING )
+#endif  // #if defined( ENABLE_STACK_STATS_GATHERING )
 };
 
 template <class STATSTRUCT, size_t CAPTUREDCALLSTACKLENGTH,
@@ -477,13 +479,13 @@ PLATFORM_INTERFACE size_t _CCallStackStatsGatherer_Write_FieldDescriptions(
   iWroteBytes += _CCallStackStatsGatherer_Write_FieldDescriptions(          \
       GetStatStructFieldDescriptions(), pDescribeWriteBuffer + iWroteBytes, \
       iDescribeMaxLength - iWroteBytes);
-//#define WRITE_STATSTRUCT_FIELDMERGESCRIPT( scriptMergeLanguage ) iWroteBytes
+// #define WRITE_STATSTRUCT_FIELDMERGESCRIPT( scriptMergeLanguage ) iWroteBytes
 //+= _CCallStackStatsGatherer_Write_FieldMergeScript(
-//GetStatStructFieldDescriptions(),
-//CallStackStatStructDescFuncs::scriptMergeLanguage, pDescribeWriteBuffer +
-//iWroteBytes, iDescribeMaxLength - iWroteBytes );
+// GetStatStructFieldDescriptions(),
+// CallStackStatStructDescFuncs::scriptMergeLanguage, pDescribeWriteBuffer +
+// iWroteBytes, iDescribeMaxLength - iWroteBytes );
 
-#else  //#if defined( ENABLE_STACK_STATS_GATHERING )
+#else  // #if defined( ENABLE_STACK_STATS_GATHERING )
 
 #define DECLARE_CALLSTACKSTATSTRUCT()
 #define BEGIN_STATSTRUCTDESCRIPTION(className)
@@ -495,9 +497,9 @@ PLATFORM_INTERFACE size_t _CCallStackStatsGatherer_Write_FieldDescriptions(
 #define END_STATSTRUCTFIELDDESCRIPTION()
 
 #define WRITE_STATSTRUCT_FIELDDESCRIPTION()
-//#define WRITE_STATSTRUCT_FIELDMERGESCRIPT( scriptMergeLanguage )
+// #define WRITE_STATSTRUCT_FIELDMERGESCRIPT( scriptMergeLanguage )
 
-#endif  //#if defined( ENABLE_STACK_STATS_GATHERING )
+#endif  // #if defined( ENABLE_STACK_STATS_GATHERING )
 
 template <class STATSTRUCT, size_t CAPTUREDCALLSTACKLENGTH,
           FN_GetCallStack STACKACQUISITIONFUNCTION, typename STATMUTEXHANDLER,
@@ -700,19 +702,18 @@ const CCallStackStatsGatherer_FunctionTable_t &CCallStackStatsGatherer<
     STATSTRUCT, CAPTUREDCALLSTACKLENGTH, STACKACQUISITIONFUNCTION,
     STATMUTEXHANDLER, TEMPLATIZEDMEMORYALLOCATOR>::GetFunctionTable(void) {
   static CCallStackStatsGatherer_FunctionTable_t retVal = {
-    GetDumpInfo,
-    PushSubTree,
-    PopSubTree,
+      GetDumpInfo,
+      PushSubTree,
+      PopSubTree,
 #if defined(ENABLE_STACK_STATS_GATHERING)
-    STATSTRUCT::DescribeCallStackStatStruct,
+      STATSTRUCT::DescribeCallStackStatStruct,
 #else
-    NULL_DescribeCallStackStatStruct,
+      NULL_DescribeCallStackStatStruct,
 #endif
-    SyncMutexes,
-    GetEntry,
-    ApplyTreeAccessLock,
-    LockEntry
-  };
+      SyncMutexes,
+      GetEntry,
+      ApplyTreeAccessLock,
+      LockEntry};
 
   return retVal;
 }
@@ -773,9 +774,8 @@ void CCallStackStatsGatherer<STATSTRUCT, CAPTUREDCALLSTACKLENGTH,
     pushVal.Stack[i] = NULL;
   }
 
-  pParentCast->m_SubTreeMutex.Lock();
+  AUTO_LOCK(pParentCast->m_SubTreeMutex);
   pParentCast->m_PushedSubTrees.push_back(pushVal);
-  pParentCast->m_SubTreeMutex.Unlock();
 #endif
 }
 
@@ -801,11 +801,12 @@ void CCallStackStatsGatherer<
     STATMUTEXHANDLER, TEMPLATIZEDMEMORYALLOCATOR>::PopSubTree(void *pParent) {
 #if defined(ENABLE_STACK_STATS_GATHERING)
   ThisCast *pParentCast = (ThisCast *)pParent;
-  pParentCast->m_SubTreeMutex.Lock();
+
   unsigned long iThreadID = ThreadGetCurrentId();
 
-  for (typename PushedSubTreeVector_t::reverse_iterator treeIter =
-           pParentCast->m_PushedSubTrees.rbegin();
+  AUTO_LOCK(pParentCast->m_SubTreeMutex);
+
+  for (auto treeIter = pParentCast->m_PushedSubTrees.rbegin();
        treeIter != pParentCast->m_PushedSubTrees.rend(); ++treeIter) {
     if (treeIter->iThreadID == iThreadID) {
       ++treeIter;  //[24.4.1/1] &*(reverse_iterator(i)) == &*(i - 1)
@@ -814,8 +815,6 @@ void CCallStackStatsGatherer<
       break;
     }
   }
-
-  pParentCast->m_SubTreeMutex.Unlock();
 #endif
 }
 
@@ -833,14 +832,12 @@ void CCallStackStatsGatherer<STATSTRUCT, CAPTUREDCALLSTACKLENGTH,
     pParentCast->m_IndexMapMutex.Lock();
     pParentCast->m_SubTreeMutex.Lock();
 
-    for (typename StoredSubTreeVector_t::iterator treeIter =
-             pParentCast->m_StoredSubTrees.begin();
+    for (auto treeIter = pParentCast->m_StoredSubTrees.begin();
          treeIter != pParentCast->m_StoredSubTrees.end(); ++treeIter) {
       treeIter->pFunctionTable->pfn_SyncMutexes(treeIter->pGatherer, true);
     }
   } else {
-    for (typename StoredSubTreeVector_t::iterator treeIter =
-             pParentCast->m_StoredSubTrees.begin();
+    for (auto treeIter = pParentCast->m_StoredSubTrees.begin();
          treeIter != pParentCast->m_StoredSubTrees.end(); ++treeIter) {
       treeIter->pFunctionTable->pfn_SyncMutexes(treeIter->pGatherer, false);
     }
@@ -906,15 +903,16 @@ void CCallStackStatsGatherer<STATSTRUCT, CAPTUREDCALLSTACKLENGTH,
                              TEMPLATIZEDMEMORYALLOCATOR>::Reset(void) {
 #if defined(ENABLE_STACK_STATS_GATHERING)
   m_StatEntryLock.LockForWrite();
-  m_IndexMapMutex.Lock();
-  m_SubTreeMutex.Lock();
 
-  m_StatEntries.clear();
-  m_IndexMap.clear();
-  m_StoredSubTrees.clear();
+  {
+    AUTO_LOCK(m_IndexMapMutex);
+    AUTO_LOCK(m_SubTreeMutex);
 
-  m_SubTreeMutex.Unlock();
-  m_IndexMapMutex.Unlock();
+    m_StatEntries.clear();
+    m_IndexMap.clear();
+    m_StoredSubTrees.clear();
+  }
+
   m_StatEntryLock.UnlockWrite();
 #endif
 }
@@ -953,20 +951,20 @@ class PLATFORM_CLASS CallStackStatStructDescFuncs {
 
 #if 0  // embedded script handling not ready yet
        // this is expected to write a piece of script code into the body of a
-       // function that will merge two values of this type The function will have
-       // two parameters, "mergeTo", and "mergeFrom". Both are tables with your
-       // field defined by name So, an example to merge an integer count defined
-       // as "foo" in the stack struct would look like this "mergeTo.foo +=
-       // mergeFrom.foo\n"
+       // function that will merge two values of this type The function will
+       // have two parameters, "mergeTo", and "mergeFrom". Both are tables with
+       // your field defined by name So, an example to merge an integer count
+       // defined as "foo" in the stack struct would look like this "mergeTo.foo
+       // += mergeFrom.foo\n"
 	virtual size_t DescribeMergeOperation( MergeScript_Language scriptLanguage, uint8 *pDescribeWriteBuffer, size_t iDescribeMaxLength ) = 0;
 #endif
 
   // reserve your description field versions here to avoid stomping others
   enum DescribeFieldVersions_t {
     DFV_BasicStatStructFieldTypes_t,  // Format: 1 byte
-                                      // BasicStatStructFieldTypes_t type, 4 byte
-                                      // field offset, null terminated string
-                                      // field name
+                                      // BasicStatStructFieldTypes_t type, 4
+                                      // byte field offset, null terminated
+                                      // string field name
   };
 
   const char *m_szFieldName;
@@ -1033,7 +1031,7 @@ class PLATFORM_CLASS BasicStatStructFieldDesc
  public:
   BasicStatStructFieldDesc(BasicStatStructFieldTypes_t type,
                            BasicStatStructFieldCombineMethods_t combineMethod)
-      : m_Type(type), m_Combine(combineMethod){};
+      : m_Type(type), m_Combine(combineMethod) {};
   size_t DescribeField(uint8 *pDescribeWriteBuffer, size_t iDescribeMaxLength);
 #if 0  // embedded script handling not ready yet
 	size_t DescribeMergeOperation( MergeScript_Language scriptLanguage, uint8 *pDescribeWriteBuffer, size_t iDescribeMaxLength );

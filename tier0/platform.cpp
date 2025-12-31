@@ -158,7 +158,7 @@ void Plat_GetLocalTime(struct tm *pNow) {
 void Plat_ConvertToLocalTime(uint64 nTime, struct tm *pNow) {
   // Since localtime() returns a global, we need to protect against multiple
   // threads stomping it.
-  g_LocalTimeMutex.Lock();
+  AUTO_LOCK(g_LocalTimeMutex);
 
   time_t ltime = (time_t)nTime;
   tm *pTime = localtime(&ltime);
@@ -166,12 +166,10 @@ void Plat_ConvertToLocalTime(uint64 nTime, struct tm *pNow) {
     *pNow = *pTime;
   else
     memset(pNow, 0, sizeof(*pNow));
-
-  g_LocalTimeMutex.Unlock();
 }
 
 void Plat_GetTimeString(struct tm *pTime, char *pOut, int nMaxBytes) {
-  g_LocalTimeMutex.Lock();
+  AUTO_LOCK(g_LocalTimeMutex);
 
   char *pStr = asctime(pTime);
   if (pStr) {
@@ -181,8 +179,6 @@ void Plat_GetTimeString(struct tm *pTime, char *pOut, int nMaxBytes) {
     // asctime failed.
     pOut[0] = '\0';
   }
-
-  g_LocalTimeMutex.Unlock();
 }
 
 void Plat_gmtime(uint64 nTime, struct tm *pTime) {

@@ -1914,9 +1914,7 @@ class PLATFORM_CLASS CThread {
   ThreadId_t GetThreadID() const { return (ThreadId_t)m_threadId; }
 
 #ifdef PLATFORM_WINDOWS
-  ThreadHandle_t GetThreadHandle() const {
-    return (ThreadHandle_t)m_hThread;
-  }
+  ThreadHandle_t GetThreadHandle() const { return (ThreadHandle_t)m_hThread; }
 
   static unsigned long __stdcall ThreadProc(void *pv);
   typedef unsigned long(__stdcall *ThreadProc_t)(void *);
@@ -2081,18 +2079,22 @@ class CMessageQueue {
   void WaitMessage(T *pMsg) {
     for (;;) {
       while (!MessageWaiting()) SignalEvent.Wait();
-      QueueAccessMutex.Lock();
-      if (!Head) {
-        // multiple readers could make this null
-        QueueAccessMutex.Unlock();
-        continue;
+
+      MsgNode *remove_this;
+
+      {
+        AUTO_LOCK(QueueAccessMutex);
+        if (!Head) {
+          // multiple readers could make this null
+          continue;
+        }
+        *(pMsg) = Head->Data;
+        remove_this = Head;
+        Head = Head->Next;
+        if (!Head)  // if empty, fix tail ptr
+          Tail = NULL;
       }
-      *(pMsg) = Head->Data;
-      MsgNode *remove_this = Head;
-      Head = Head->Next;
-      if (!Head)  // if empty, fix tail ptr
-        Tail = NULL;
-      QueueAccessMutex.Unlock();
+
       delete remove_this;
       break;
     }
@@ -2102,7 +2104,8 @@ class CMessageQueue {
     MsgNode *new1 = new MsgNode;
     new1->Data = Msg;
     new1->Next = NULL;
-    QueueAccessMutex.Lock();
+
+    AUTO_LOCK(QueueAccessMutex);
     if (Tail) {
       Tail->Next = new1;
       Tail = new1;
@@ -2111,7 +2114,6 @@ class CMessageQueue {
       Tail = new1;
     }
     SignalEvent.Set();
-    QueueAccessMutex.Unlock();
   }
 };
 
@@ -2304,21 +2306,19 @@ inline CThreadRWLock::CThreadRWLock()
       m_nPendingReaders(0) {}
 
 inline void CThreadRWLock::LockForRead() {
-  m_mutex.Lock();
+  AUTO_LOCK(m_mutex);
   if (m_nWriters) {
     WaitForRead();
   }
   m_nActiveReaders++;
-  m_mutex.Unlock();
 }
 
 inline void CThreadRWLock::UnlockRead() {
-  m_mutex.Lock();
+  AUTO_LOCK(m_mutex);
   m_nActiveReaders--;
   if (m_nActiveReaders == 0 && m_nWriters != 0) {
     m_CanWrite.Set();
   }
-  m_mutex.Unlock();
 }
 
 //-----------------------------------------------------------------------------

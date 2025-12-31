@@ -249,7 +249,7 @@ void CLoggingSystem::SetChannelSpewLevelByTag(
 void CLoggingSystem::PushLoggingState(bool bThreadLocal, bool bClearState) {
   if (!m_pStateMutex) m_pStateMutex = new CThreadFastMutex();
 
-  m_pStateMutex->Lock();
+  AUTO_LOCK(*m_pStateMutex);
 
   int nNewState = FindUnusedStateIndex();
   // Ensure we're not out of state blocks.
@@ -272,14 +272,12 @@ void CLoggingSystem::PushLoggingState(bool bThreadLocal, bool bClearState) {
   } else {
     m_nGlobalStateIndex = nNewState;
   }
-
-  m_pStateMutex->Unlock();
 }
 
 void CLoggingSystem::PopLoggingState(bool bThreadLocal) {
   if (!m_pStateMutex) m_pStateMutex = new CThreadFastMutex();
 
-  m_pStateMutex->Lock();
+  AUTO_LOCK(*m_pStateMutex);
 
   int nCurrentState =
       bThreadLocal ? (int)g_nThreadLocalStateIndex : m_nGlobalStateIndex;
@@ -297,14 +295,13 @@ void CLoggingSystem::PopLoggingState(bool bThreadLocal) {
   } else {
     m_nGlobalStateIndex = m_LoggingStates[nCurrentState].m_nPreviousStackEntry;
   }
-
-  m_pStateMutex->Unlock();
 }
 
 void CLoggingSystem::RegisterLoggingListener(ILoggingListener *pListener) {
   if (!m_pStateMutex) m_pStateMutex = new CThreadFastMutex();
 
-  m_pStateMutex->Lock();
+  AUTO_LOCK(*m_pStateMutex);
+
   LoggingState_t *pState = GetCurrentState();
   // Do not overflow m_RegisteredListeners.
   if (pState->m_nListenerCount >= MAX_LOGGING_LISTENER_COUNT) {
@@ -314,13 +311,12 @@ void CLoggingSystem::RegisterLoggingListener(ILoggingListener *pListener) {
     pState->m_RegisteredListeners[pState->m_nListenerCount] = pListener;
     ++pState->m_nListenerCount;
   }
-  m_pStateMutex->Unlock();
 }
 
 void CLoggingSystem::UnregisterLoggingListener(ILoggingListener *pListener) {
   if (!m_pStateMutex) m_pStateMutex = new CThreadFastMutex();
 
-  m_pStateMutex->Lock();
+  AUTO_LOCK(*m_pStateMutex);
   LoggingState_t *pState = GetCurrentState();
   for (int i = 0; i < pState->m_nListenerCount; ++i) {
     if (pState->m_RegisteredListeners[i] == pListener) {
@@ -332,13 +328,12 @@ void CLoggingSystem::UnregisterLoggingListener(ILoggingListener *pListener) {
       break;
     }
   }
-  m_pStateMutex->Unlock();
 }
 
 bool CLoggingSystem::IsListenerRegistered(ILoggingListener *pListener) {
   if (!m_pStateMutex) m_pStateMutex = new CThreadFastMutex();
 
-  m_pStateMutex->Lock();
+  AUTO_LOCK(*m_pStateMutex);
   const LoggingState_t *pState = GetCurrentState();
   bool bFound = false;
   for (int i = 0; i < pState->m_nListenerCount; ++i) {
@@ -347,32 +342,29 @@ bool CLoggingSystem::IsListenerRegistered(ILoggingListener *pListener) {
       break;
     }
   }
-  m_pStateMutex->Unlock();
   return bFound;
 }
 
 void CLoggingSystem::ResetCurrentLoggingState() {
   if (!m_pStateMutex) m_pStateMutex = new CThreadFastMutex();
 
-  m_pStateMutex->Lock();
+  AUTO_LOCK(*m_pStateMutex);
   LoggingState_t *pState = GetCurrentState();
   pState->m_nListenerCount = 0;
   pState->m_pLoggingResponse = &m_DefaultLoggingResponse;
-  m_pStateMutex->Unlock();
 }
 
 void CLoggingSystem::SetLoggingResponsePolicy(
     ILoggingResponsePolicy *pLoggingResponse) {
   if (!m_pStateMutex) m_pStateMutex = new CThreadFastMutex();
 
-  m_pStateMutex->Lock();
+  AUTO_LOCK(*m_pStateMutex);
   LoggingState_t *pState = GetCurrentState();
   if (pLoggingResponse == NULL) {
     pState->m_pLoggingResponse = &m_DefaultLoggingResponse;
   } else {
     pState->m_pLoggingResponse = pLoggingResponse;
   }
-  m_pStateMutex->Unlock();
 }
 
 LoggingResponse_t CLoggingSystem::LogDirect(LoggingChannelID_t channelID,
@@ -393,24 +385,26 @@ LoggingResponse_t CLoggingSystem::LogDirect(LoggingChannelID_t channelID,
   // It is assumed that the mutex is reentrant safe on all platforms.
   if (!m_pStateMutex) m_pStateMutex = new CThreadFastMutex();
 
-  m_pStateMutex->Lock();
+  LoggingResponse_t response;
 
-  LoggingState_t *pState = GetCurrentState();
+  {
+    AUTO_LOCK(*m_pStateMutex);
 
-  for (int i = 0; i < pState->m_nListenerCount; ++i) {
-    pState->m_RegisteredListeners[i]->Log(&context, pMessage);
-  }
+    LoggingState_t *pState = GetCurrentState();
+
+    for (int i = 0; i < pState->m_nListenerCount; ++i) {
+      pState->m_RegisteredListeners[i]->Log(&context, pMessage);
+    }
 
 #if defined(_PS3) && !defined(_CERT)
-  if (!pState->m_nListenerCount) {
-    unsigned int unBytesWritten;
-    sys_tty_write(SYS_TTYP15, pMessage, strlen(pMessage), &unBytesWritten);
-  }
+    if (!pState->m_nListenerCount) {
+      unsigned int unBytesWritten;
+      sys_tty_write(SYS_TTYP15, pMessage, strlen(pMessage), &unBytesWritten);
+    }
 #endif
 
-  LoggingResponse_t response = pState->m_pLoggingResponse->OnLog(&context);
-
-  m_pStateMutex->Unlock();
+    response = pState->m_pLoggingResponse->OnLog(&context);
+  }
 
   switch (response) {
     case LR_DEBUGGER:
