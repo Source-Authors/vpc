@@ -529,7 +529,6 @@ class CSlnxSolutionWriter_Win32 : public IBaseSolutionWriter_Win32 {
 
     for (intp i = 0; i < projects.Count(); i++) {
       CDependency_Project *pCurProject = projects[i];
-      CVCProjInfo *pProjInfo = &vcprojInfos[i];
 
       // Get a relative filename for the vcproj file.
       const char *pFullProjectFilename =
@@ -541,8 +540,7 @@ class CSlnxSolutionWriter_Win32 : public IBaseSolutionWriter_Win32 {
             "Can't make a relative path (to the base source directory) for %s.",
             pFullProjectFilename);
 
-      fprintf(m_fp, "  <Project Path=\"%s\" Id=\"%s\" />\n", szRelativeFilename,
-              pProjInfo->m_ProjectGUID.String());
+      fprintf(m_fp, "  <Project Path=\"%s\" />\n", szRelativeFilename );
     }
 
     if (!m_vpc->Is2010()) {
