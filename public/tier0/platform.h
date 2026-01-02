@@ -845,20 +845,20 @@ typedef void *HINSTANCE;
 #endif
 
 #if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
-#define WB_GCC_BEGIN_WARNING_OVERRIDE_SCOPE() _Pragma("GCC diagnostic push")
+#define SE_GCC_BEGIN_WARNING_OVERRIDE_SCOPE() _Pragma("GCC diagnostic push")
 
 #if defined(COMPILER_GCC)
-#define WB_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING() \
+#define SE_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING() \
   _Pragma("GCC diagnostic ignored \"-Wstringop-truncation\"")
 #else
-#define WB_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING()
+#define SE_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING()
 #endif
 
-#define WB_GCC_END_WARNING_OVERRIDE_SCOPE() _Pragma("GCC diagnostic pop")
+#define SE_GCC_END_WARNING_OVERRIDE_SCOPE() _Pragma("GCC diagnostic pop")
 #else 
-#define WB_GCC_BEGIN_WARNING_OVERRIDE_SCOPE()
-#define WB_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING()
-#define WB_GCC_END_WARNING_OVERRIDE_SCOPE()
+#define SE_GCC_BEGIN_WARNING_OVERRIDE_SCOPE()
+#define SE_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING()
+#define SE_GCC_END_WARNING_OVERRIDE_SCOPE()
 #endif
 
 // Pull in the /analyze code annotations.

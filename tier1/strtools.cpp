@@ -710,12 +710,12 @@ void V_strncpy(char *pDest, char const *pSrc, intp maxLen) {
   DEBUG_LINK_CHECK;
 
   if (maxLen > 0) {
-    WB_GCC_BEGIN_WARNING_OVERRIDE_SCOPE()
+    SE_GCC_BEGIN_WARNING_OVERRIDE_SCOPE()
     // GCC warns about string truncation, but maxLen is pDest buffer size.
     // So truncation is exactly what we need.
-    WB_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING()
+    SE_GCC_DISABLE_STRING_OP_TRUNCATION_WARNING()
     strncpy(pDest, pSrc, maxLen - 1);
-    WB_GCC_END_WARNING_OVERRIDE_SCOPE()
+    SE_GCC_END_WARNING_OVERRIDE_SCOPE()
 
     pDest[maxLen - 1] = '\0';
   }

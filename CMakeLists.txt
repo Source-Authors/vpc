@@ -212,7 +212,7 @@ message(STATUS "[common]: ${PACKAGE_NAME} cxx compiler: ${SE_VPC_CXX_COMPILER}."
 message(STATUS "[common]: ${PACKAGE_NAME} build type: ${SE_VPC_BUILD_TYPE}.")
 
 if (SE_VPC_OS_WIN)
-  set(SRC_PRODUCT_NAME "Valve Project Creator")
+  set(SE_PRODUCT_NAME "Valve Project Creator")
 
   # Generate common product version info.
   configure_file(
@@ -661,7 +661,7 @@ if (SE_VPC_OS_WIN)
       STRICT=1
       NOMINMAX=1
       _CRT_SECURE_NO_WARNINGS=1
-      SRC_PRODUCT_INTERNAL_NAME_STRING="${PACKAGE_NAME}"
-      SRC_PRODUCT_ORIGINAL_NAME_STRING="${PACKAGE_NAME}.exe"
+      SE_PRODUCT_INTERNAL_NAME_STRING="${PACKAGE_NAME}"
+      SE_PRODUCT_ORIGINAL_NAME_STRING="${PACKAGE_NAME}.exe"
   )
 endif (SE_VPC_OS_WIN)
