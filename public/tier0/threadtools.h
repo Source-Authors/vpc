@@ -2558,10 +2558,14 @@ inline void CThreadSpinRWLock::LockForWrite()
 #endif
 
 // read data from a memory address
-template <class T>
-FORCEINLINE T ReadVolatileMemory(T const *pPtr) {
-  volatile const T *pVolatilePtr = (volatile const T *)pPtr;
-  return *pVolatilePtr;
+template<class T>
+FORCEINLINE
+[[nodiscard]]
+[[deprecated("Since C++17 you should use atomics.")]]
+T ReadVolatileMemory( T const *pPtr )
+{
+	volatile const T * pVolatilePtr = ( volatile const T * ) pPtr;
+	return *pVolatilePtr;
 }
 
 //-----------------------------------------------------------------------------
