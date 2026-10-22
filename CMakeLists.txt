@@ -665,3 +665,37 @@ if (SE_VPC_OS_WIN)
       SE_PRODUCT_ORIGINAL_NAME_STRING="${PACKAGE_NAME}.exe"
   )
 endif (SE_VPC_OS_WIN)
+
+## Install
+
+# Bundle Windows Universal CRT, too.
+include(InstallRequiredSystemLibraries)
+
+include(GNUInstallDirs)
+
+set(SE_VPC_INSTALL_TARGETS vpc)
+
+install(
+  TARGETS
+    ${SE_VPC_INSTALL_TARGETS}
+  PERMISSIONS
+    OWNER_READ OWNER_EXECUTE
+  
+  ARCHIVE
+  LIBRARY
+  RUNTIME
+  BUNDLE
+    DESTINATION
+      "${CMAKE_INSTALL_BINDIR}"
+)
+
+install(
+  FILES
+    "${SE_VPC_ROOT_DIR}/LICENSE"
+    "${SE_VPC_ROOT_DIR}/README.md"
+    "${SE_VPC_ROOT_DIR}/SECURITY.md"
+  DESTINATION
+    .
+  PERMISSIONS
+    OWNER_READ OWNER_EXECUTE
+)
